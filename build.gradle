@@ -1,26 +1,26 @@
+// 모듈간 버전 충돌을 막기 위해 plugins 의 공통 plugin 버전과 java 버전은 이곳에서 전역적으로 관리합니다.
+
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.5'
+    id 'org.springframework.boot' version '3.3.5' apply false
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'com.raillylinker'
 version = '0.0.1-SNAPSHOT'
 
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'io.spring.dependency-management'
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    // (모듈)
-    implementation project(":module-l1-api-sample-v1")
-
-    // (기본)
-    implementation 'org.springframework.boot:spring-boot-starter'
 }

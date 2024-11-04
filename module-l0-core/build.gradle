@@ -3,12 +3,12 @@ plugins {
     id 'org.springframework.boot'
 }
 
-group = 'com.raillylinker.module_l1_api_sample_v1'
+group = 'com.raillylinker.module_l0_core'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
     // (모듈)
-//    implementation project(":module-idp-common")
+    implementation project(":module-l1-api-sample-v1")
 
     // (기본)
     testImplementation platform('org.junit:junit-bom:5.11.3')
@@ -20,10 +20,6 @@ dependencies {
 
     // (API 파라미터 검증)
     implementation 'org.springframework.boot:spring-boot-starter-validation:3.3.5'
-
-    // (Spring Starter Web)
-    // : 스프링 부트 웹 개발
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.5'
 }
 
 test {

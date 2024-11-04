@@ -2,4 +2,6 @@ rootProject.name = 'java_springboot_mvc_multimodule_template'
 
 // (모듈 모음)
 // !!!모듈 추가/수정시 아래에 반영!!!
+include 'module-l0-core'
 include 'module-l1-api-sample-v1'
+

@@ -1,4 +1,4 @@
-package com.raillylinker.java_springboot_mvc_multimodule_template;
+package com.raillylinker.module_l0_core;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
