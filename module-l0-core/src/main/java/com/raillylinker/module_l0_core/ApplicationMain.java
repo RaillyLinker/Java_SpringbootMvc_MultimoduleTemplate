@@ -1,5 +1,7 @@
 package com.raillylinker.module_l0_core;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,7 +29,7 @@ public class ApplicationMain {
         };
     }
 
-    public static void main(String[] args) {
+    public static void main(@Valid @NotNull @org.jetbrains.annotations.NotNull String[] args) {
         SpringApplication.run(ApplicationMain.class, args);
     }
 }
