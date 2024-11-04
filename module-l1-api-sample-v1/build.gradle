@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+group = 'com.raillylinker'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // (모듈)
+//    implementation project(":module-idp-common")
+
+    // (기본)
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // (API 파라미터 검증)
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // (Spring Starter Web)
+    // : 스프링 부트 웹 개발
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.4'
+}
+
+test {
+    useJUnitPlatform()
+}
