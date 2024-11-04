@@ -13,12 +13,14 @@ java {
     }
 }
 
+// 모든 프로젝트에 적용
 allprojects {
     repositories {
         mavenCentral()
     }
 }
 
+// 하위 프로젝트에만 적용
 subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
