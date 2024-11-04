@@ -1,5 +1,4 @@
 plugins {
-    id 'java'
     id 'org.springframework.boot'
 }
 
@@ -8,18 +7,6 @@ version = '0.0.1-SNAPSHOT'
 
 dependencies {
     // (모듈)
-//    implementation project(":module-idp-common")
-
-    // (기본)
-    testImplementation platform('org.junit:junit-bom:5.11.3')
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
-
-    implementation 'org.springframework.boot:spring-boot-starter:3.3.5'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.5'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.3'
-
-    // (API 파라미터 검증)
-    implementation 'org.springframework.boot:spring-boot-starter-validation:3.3.5'
 
     // (Spring Starter Web)
     // : 스프링 부트 웹 개발
