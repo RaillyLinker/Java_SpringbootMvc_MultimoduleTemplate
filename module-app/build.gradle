@@ -2,12 +2,12 @@ plugins {
     id 'org.springframework.boot'
 }
 
-group = 'com.raillylinker.module_l0_core'
+group = 'com.raillylinker.module_app'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
     // (모듈)
-    implementation project(":module-l1-api-sample-v1")
+    implementation project(":module-api-sample-v1")
 }
 
 test {

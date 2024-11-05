@@ -1,3 +1,4 @@
+// !!!plugin 버전 설정 및 apply 여부!!!
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5' apply false
@@ -7,24 +8,27 @@ plugins {
 group = 'com.raillylinker'
 version = '0.0.1-SNAPSHOT'
 
+// !!!프로젝트 자바 버전 설정!!!
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
-// 모든 프로젝트에 적용
+// 모든 프로젝트에 적용할 설정
 allprojects {
     repositories {
         mavenCentral()
     }
 }
 
-// 하위 프로젝트에만 적용
+// 하위 프로젝트에만 적용할 설정
 subprojects {
+    // 하위 프로젝트 공통 플러그인
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
+    // 하위 프로젝트 공통 라이브러리
     dependencies {
         // (기본)
         implementation 'org.springframework.boot:spring-boot-starter:3.3.5'

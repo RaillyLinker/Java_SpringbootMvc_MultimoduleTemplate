@@ -1,4 +1,4 @@
-package com.raillylinker.module_l0_core;
+package com.raillylinker.module_app;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +13,8 @@ import java.util.TimeZone;
 @ComponentScan(
         basePackages = {
                 // !!!Bean 스캔할 모듈들의 패키지 리스트 추가하기!!!
-                "com.raillylinker.module_l1_api_sample_v1"
+                "com.raillylinker.module_start",
+                "com.raillylinker.module_api_sample_v1"
         }
 )
 //@EntityScan("com.raillylinker.module_idp_jpa.jpa_beans.entities")

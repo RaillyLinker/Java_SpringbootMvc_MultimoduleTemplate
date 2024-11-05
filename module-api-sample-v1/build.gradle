@@ -2,7 +2,7 @@ plugins {
     id 'org.springframework.boot'
 }
 
-group = 'com.raillylinker.module_l1_api_sample_v1'
+group = 'com.raillylinker.module_api_sample_v1'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
