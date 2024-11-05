@@ -7,4 +7,5 @@ include 'module-app'
 include 'module-api-project'
 include 'module-api-sample-v1'
 include 'module-infra'
+include 'module-scheduler'
 

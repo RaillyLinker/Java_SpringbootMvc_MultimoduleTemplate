@@ -9,6 +9,8 @@ dependencies {
     // (모듈)
     implementation project(":module-infra")
 
+    implementation project(":module-scheduler")
+
     implementation project(":module-api-project")
     implementation project(":module-api-sample-v1")
 }

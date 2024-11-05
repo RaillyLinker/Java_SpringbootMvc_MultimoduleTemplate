@@ -7,16 +7,22 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.TimeZone;
 
 
+@EnableScheduling // 스케쥴러 사용 설정
+@EnableAsync // 스케쥴러의 Async 사용 설정
 @ComponentScan(
         basePackages = {
                 // !!!Bean 스캔할 모듈들의 패키지 리스트 추가하기!!!
                 "com.raillylinker.module_app",
 
                 "com.raillylinker.module_infra",
+
+                "com.raillylinker.module_scheduler",
 
                 "com.raillylinker.module_api_project",
                 "com.raillylinker.module_api_sample_v1"
