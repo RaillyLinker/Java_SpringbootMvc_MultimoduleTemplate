@@ -1,4 +1,4 @@
-package com.raillylinker.module_app.configurations;
+package com.raillylinker.module_infra.configurations;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

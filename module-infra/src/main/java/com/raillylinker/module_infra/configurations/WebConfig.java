@@ -1,4 +1,4 @@
-package com.raillylinker.module_app.configurations;
+package com.raillylinker.module_infra.configurations;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

@@ -1,0 +1,18 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+group = 'com.raillylinker.module_infra'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    // (모듈)
+
+    // (Swagger)
+    // : API 자동 문서화
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,24 @@
+# (실행 환경 공통 설정)
+# : 개발 환경에 상관 없이 공통으로 적용되는 설정
+
+spring:
+  config:
+    activate: # 프로필명 설정
+      on-profile: infra
+
+server:
+  error:
+    include-stacktrace: NEVER # 자세한 에러 명세는 클라이언트에게 전달하지 않기
+
+springdoc: # swaggerdoc 설정
+  model-and-view-allowed: true # ModelAndView 허용
+  use-fqn: true # Schema 정보를 package 명까지 붙여서 보여주기
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    doc-expansion: none
+  cache:
+    disabled: true
