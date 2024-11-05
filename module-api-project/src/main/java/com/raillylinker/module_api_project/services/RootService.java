@@ -1,5 +1,6 @@
 package com.raillylinker.module_api_project.services;
 
+import com.raillylinker.module_api_project.controllers.RootController;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -13,26 +14,29 @@ public interface RootService {
             HttpServletResponse httpServletResponse
     );
 
-//    ////
-//    // (Project Runtime Config Redis Key-Value 모두 조회)
-//    C1Controller.Api2SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo api2SelectAllProjectRuntimeConfigsRedisKeyValue(
-//            @Valid @NotNull @org.jetbrains.annotations.NotNull
-//            HttpServletResponse httpServletResponse
-//    );
-//
-//    ////
-//    // (Redis Project Runtime Config actuatorAllowIpList 입력)
-//    void api3InsertProjectRuntimeConfigActuatorAllowIpList(
-//            @Valid @NotNull @org.jetbrains.annotations.NotNull
-//            HttpServletResponse httpServletResponse,
-//            @Valid @NotNull @org.jetbrains.annotations.NotNull
-//            C1Controller.Api3InsertProjectRuntimeConfigActuatorAllowIpListInputVo inputVo
-//    );
-//
-//    ////
-//    // (Redis Project Runtime Config loggingDenyIpList 입력)
-//    void api4InsertProjectRuntimeConfigLoggingDenyIpList(
-//            @Valid @NotNull @org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse,
-//            @Valid @NotNull @org.jetbrains.annotations.NotNull C1Controller.Api4InsertProjectRuntimeConfigLoggingDenyIpListInputVo inputVo
-//    );
+
+    ////
+    // (Project Runtime Config Redis Key-Value 모두 조회)
+    RootController.SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo selectAllProjectRuntimeConfigsRedisKeyValue(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse
+    );
+
+
+    ////
+    // (Redis Project Runtime Config actuatorAllowIpList 입력)
+    void insertProjectRuntimeConfigActuatorAllowIpList(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            RootController.InsertProjectRuntimeConfigActuatorAllowIpListInputVo inputVo
+    );
+
+
+    ////
+    // (Redis Project Runtime Config loggingDenyIpList 입력)
+    void insertProjectRuntimeConfigLoggingDenyIpList(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull RootController.InsertProjectRuntimeConfigLoggingDenyIpListInputVo inputVo
+    );
 }
