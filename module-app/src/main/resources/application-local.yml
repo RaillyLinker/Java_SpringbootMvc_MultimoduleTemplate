@@ -11,3 +11,7 @@ spring:
       # !!!multipart 데이터량 설정!!!
       maxFileSize: 50MB
       maxRequestSize: 50MB
+
+springdoc:
+  swagger-ui:
+    enabled: true # Swagger 문서 공개 여부
