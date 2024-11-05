@@ -9,6 +9,10 @@ dependencies {
     // (모듈)
     implementation project(":module-api-project")
     implementation project(":module-api-sample-v1")
+
+    // (Swagger)
+    // : API 자동 문서화
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 }
 
 test {
