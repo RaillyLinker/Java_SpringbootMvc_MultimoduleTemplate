@@ -25,7 +25,9 @@ import java.util.TimeZone;
                 "com.raillylinker.module_scheduler",
 
                 "com.raillylinker.module_api_project",
-                "com.raillylinker.module_api_sample_v1"
+                "com.raillylinker.module_api_sample_v1",
+
+                "com.raillylinker.module_data_redis"
         }
 )
 //@EntityScan("com.raillylinker.module_idp_jpa.jpa_beans.entities")
