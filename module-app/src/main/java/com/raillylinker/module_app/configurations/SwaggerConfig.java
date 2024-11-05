@@ -1,4 +1,4 @@
-package com.raillylinker.module_infra.configurations;
+package com.raillylinker.module_app.configurations;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 
 import java.util.function.Consumer;
+
 
 @Configuration
 public class SwaggerConfig {

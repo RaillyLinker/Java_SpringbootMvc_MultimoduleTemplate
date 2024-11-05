@@ -1,4 +1,4 @@
-package com.raillylinker.module_infra.configurations;
+package com.raillylinker.module_app.configurations;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.*;
 
 import java.util.List;
+
 
 @Configuration
 @EnableWebMvc

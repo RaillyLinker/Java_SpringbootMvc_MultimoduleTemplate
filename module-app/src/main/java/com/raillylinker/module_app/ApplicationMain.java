@@ -20,8 +20,6 @@ import java.util.TimeZone;
                 // !!!Bean 스캔할 모듈들의 패키지 리스트 추가하기!!!
                 "com.raillylinker.module_app",
 
-                "com.raillylinker.module_infra",
-
                 "com.raillylinker.module_scheduler",
 
                 "com.raillylinker.module_api_project",
