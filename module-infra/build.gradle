@@ -7,6 +7,11 @@ version = '0.0.1-SNAPSHOT'
 
 dependencies {
     // (모듈)
+    implementation project(":module-data-redis")
+
+    // (Spring Starter Web)
+    // : 스프링 부트 웹 개발
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.4'
 
     // (Swagger)
     // : API 자동 문서화
