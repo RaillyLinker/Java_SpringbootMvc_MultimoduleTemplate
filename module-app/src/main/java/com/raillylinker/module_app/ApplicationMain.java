@@ -19,15 +19,11 @@ import java.util.TimeZone;
         basePackages = {
                 // !!!Bean 스캔할 모듈들의 패키지 리스트 추가하기!!!
                 "com.raillylinker.module_app",
-
                 "com.raillylinker.module_scheduler",
-
                 "com.raillylinker.module_socket",
-
                 "com.raillylinker.module_kafka",
-
                 "com.raillylinker.module_redis",
-
+                "com.raillylinker.module_retrofit2",
                 "com.raillylinker.module_api_project"
         }
 )

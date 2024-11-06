@@ -8,13 +8,9 @@ version = '0.0.1-SNAPSHOT'
 dependencies {
     // (모듈)
     implementation project(":module-scheduler")
-
     implementation project(":module-socket")
-
     implementation project(":module-kafka")
-
     implementation project(":module-redis")
-
     implementation project(":module-api-project")
 
     // (Spring Starter Web)
