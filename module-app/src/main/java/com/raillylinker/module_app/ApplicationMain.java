@@ -24,6 +24,8 @@ import java.util.TimeZone;
 
                 "com.raillylinker.module_socket",
 
+                "com.raillylinker.module_kafka",
+
                 "com.raillylinker.module_api_project",
 
                 "com.raillylinker.module_data_redis"

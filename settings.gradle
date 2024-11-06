@@ -11,3 +11,6 @@ include 'module-data-redis'
 include 'module-socket'
 
 include 'module-api-project'
+
+include 'module-kafka'
+

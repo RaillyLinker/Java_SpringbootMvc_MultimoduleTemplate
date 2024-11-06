@@ -11,6 +11,8 @@ dependencies {
 
     implementation project(":module-socket")
 
+    implementation project(":module-kafka")
+
     implementation project(":module-api-project")
 
     implementation project(":module-data-redis")
