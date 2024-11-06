@@ -22,6 +22,8 @@ import java.util.TimeZone;
 
                 "com.raillylinker.module_scheduler",
 
+                "com.raillylinker.module_socket",
+
                 "com.raillylinker.module_api_project",
                 "com.raillylinker.module_api_sample_v1",
 

@@ -8,6 +8,8 @@ include 'module-scheduler'
 
 include 'module-data-redis'
 
+include 'module-socket'
+
 include 'module-api-project'
 include 'module-api-sample-v1'
 
