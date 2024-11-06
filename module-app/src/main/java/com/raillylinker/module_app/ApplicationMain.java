@@ -25,6 +25,7 @@ import java.util.TimeZone;
                 "com.raillylinker.module_redis",
                 "com.raillylinker.module_retrofit2",
                 "com.raillylinker.module_common",
+                "com.raillylinker.module_mongodb",
                 "com.raillylinker.module_api_project"
         }
 )

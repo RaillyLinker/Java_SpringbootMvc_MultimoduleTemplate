@@ -10,3 +10,5 @@ include 'module-kafka'
 include 'module-retrofit2'
 include 'module-common'
 include 'module-api-project'
+include 'module-mongodb'
+
