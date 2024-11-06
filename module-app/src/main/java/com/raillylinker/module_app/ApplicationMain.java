@@ -7,26 +7,20 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.TimeZone;
 
 
+@EnableMongoAuditing // MongoDB 에서 @CreatedDate, @LastModifiedDate 사용 설정
 @EnableScheduling // 스케쥴러 사용 설정
 @EnableAsync // 스케쥴러의 Async 사용 설정
 @ComponentScan(
         basePackages = {
-                // !!!Bean 스캔할 모듈들의 패키지 리스트 추가하기!!!
-                "com.raillylinker.module_app",
-                "com.raillylinker.module_scheduler",
-                "com.raillylinker.module_socket",
-                "com.raillylinker.module_kafka",
-                "com.raillylinker.module_redis",
-                "com.raillylinker.module_retrofit2",
-                "com.raillylinker.module_common",
-                "com.raillylinker.module_mongodb",
-                "com.raillylinker.module_api_project"
+                // !!!Bean 스캔할 모듈들의 패키지 리스트(group) 추가하기!!!
+                "com.raillylinker"
         }
 )
 //@EntityScan("com.raillylinker.module_idp_jpa.jpa_beans.entities")

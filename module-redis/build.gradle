@@ -2,7 +2,6 @@ plugins {
     id 'org.springframework.boot'
 }
 
-group = 'com.raillylinker.module_redis'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
@@ -12,8 +11,4 @@ dependencies {
     // : 메모리 키 값 데이터 구조 스토어
     implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.3.4'
     implementation 'com.google.code.gson:gson:2.11.0'
-}
-
-test {
-    useJUnitPlatform()
 }

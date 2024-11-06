@@ -2,7 +2,6 @@ plugins {
     id 'org.springframework.boot'
 }
 
-group = 'com.raillylinker.module_app'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
@@ -23,9 +22,8 @@ dependencies {
 
     // (Spring Actuator)
     // : 서버 모니터링 정보
-    implementation("org.springframework.boot:spring-boot-starter-actuator:3.3.5")
-}
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:3.3.5'
 
-test {
-    useJUnitPlatform()
+    // (MongoDB)
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb:3.3.4'
 }

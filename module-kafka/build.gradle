@@ -2,7 +2,6 @@ plugins {
     id 'org.springframework.boot'
 }
 
-group = 'com.raillylinker.module_kafka'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
@@ -10,8 +9,4 @@ dependencies {
 
     // (Kafka)
     implementation 'org.springframework.kafka:spring-kafka:3.2.4'
-}
-
-test {
-    useJUnitPlatform()
 }

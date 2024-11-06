@@ -2,7 +2,6 @@ plugins {
     id 'org.springframework.boot'
 }
 
-group = 'com.raillylinker.module_retrofit2'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
@@ -19,8 +18,4 @@ dependencies {
 
     // (Jackson Core)
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.18.0'
-}
-
-test {
-    useJUnitPlatform()
 }

@@ -2,7 +2,6 @@ plugins {
     id 'org.springframework.boot'
 }
 
-group = 'com.raillylinker.module_socket'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
@@ -19,8 +18,4 @@ dependencies {
     // (GSON)
     // : Json - Object 라이브러리
     implementation 'com.google.code.gson:gson:2.11.0'
-}
-
-test {
-    useJUnitPlatform()
 }
