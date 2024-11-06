@@ -1,7 +1,7 @@
 package com.raillylinker.module_app.filters;
 
-import com.raillylinker.module_data_redis.abstract_classes.BasicRedisMap;
-import com.raillylinker.module_data_redis.redis_map_components.redis1_main.Redis1_Map_RuntimeConfigIpList;
+import com.raillylinker.module_redis.abstract_classes.BasicRedisMap;
+import com.raillylinker.module_redis.redis_map_components.redis1_main.Redis1_Map_RuntimeConfigIpList;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -6,11 +6,10 @@ include 'module-app'
 
 include 'module-scheduler'
 
-include 'module-data-redis'
+include 'module-redis'
 
 include 'module-socket'
 
-include 'module-api-project'
-
 include 'module-kafka'
 
+include 'module-api-project'

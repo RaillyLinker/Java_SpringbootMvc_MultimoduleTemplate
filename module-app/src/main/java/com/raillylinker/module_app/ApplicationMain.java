@@ -26,9 +26,9 @@ import java.util.TimeZone;
 
                 "com.raillylinker.module_kafka",
 
-                "com.raillylinker.module_api_project",
+                "com.raillylinker.module_redis",
 
-                "com.raillylinker.module_data_redis"
+                "com.raillylinker.module_api_project"
         }
 )
 //@EntityScan("com.raillylinker.module_idp_jpa.jpa_beans.entities")

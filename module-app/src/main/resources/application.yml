@@ -34,22 +34,22 @@ spring:
       local8080:
         - local
         - port8080
-        - data-redis
-        - data-redis-local
+        - redis
+        - redis-local
         - kafka
         - kafka-local
       dev8080:
         - dev
         - port8080
-        - data-redis
-        - data-redis-dev
+        - redis
+        - redis-dev
         - kafka
         - kafka-dev
       prod80:
         - prod
         - port80
-        - data-redis
-        - data-redis-prod
+        - redis
+        - redis-prod
         - kafka
         - kafka-prod
     default: local8080 # jar 실행시 프로필 설정이 없을 때 적용할 프로필
