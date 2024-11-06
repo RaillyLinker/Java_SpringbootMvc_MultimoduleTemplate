@@ -1,6 +1,6 @@
 package com.raillylinker.module_common.util_components.impls;
 
-import com.raillylinker.springboot_mvc_template_private_java.util_components.ExcelFileUtil;
+import com.raillylinker.module_common.util_components.ExcelFileUtil;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
