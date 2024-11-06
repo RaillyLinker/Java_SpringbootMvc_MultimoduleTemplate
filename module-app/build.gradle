@@ -12,7 +12,6 @@ dependencies {
     implementation project(":module-socket")
 
     implementation project(":module-api-project")
-    implementation project(":module-api-sample-v1")
 
     implementation project(":module-data-redis")
 
