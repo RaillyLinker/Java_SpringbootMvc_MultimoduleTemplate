@@ -9,15 +9,19 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(
-        name = "fk_test_many_to_one_child",
-        catalog = "template"
+        name = "total_auth_member_phone",
+        catalog = "railly_linker_company",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"phone_number", "row_delete_date_str"})
+        }
 )
-@Comment("Foreign Key 테스트용 테이블 (one to many 테스트용 자식 테이블)")
-public class Db1_Template_FkTestManyToOneChild {
-    public Db1_Template_FkTestManyToOneChild() {
+@Comment("통합 로그인 계정 회원 전화 정보 테이블")
+public class Db1_RaillyLinkerCompany_TotalAuthMemberPhone {
+    public Db1_RaillyLinkerCompany_TotalAuthMemberPhone() {
     }
 
     // [기본 입력값이 존재하는 변수들]
@@ -45,26 +49,28 @@ public class Db1_Template_FkTestManyToOneChild {
 
     // ---------------------------------------------------------------------------------------------
     // [입력값 수동 입력 변수들]
-    public Db1_Template_FkTestManyToOneChild(
+    public Db1_RaillyLinkerCompany_TotalAuthMemberPhone(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            String childName,
+            Db1_RaillyLinkerCompany_TotalAuthMember totalAuthMember,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            Db1_Template_FkTestParent fkTestParent
+            String phoneNumber
     ) {
-        this.childName = childName;
-        this.fkTestParent = fkTestParent;
+        this.totalAuthMember = totalAuthMember;
+        this.phoneNumber = phoneNumber;
     }
 
-    @Column(name = "child_name", nullable = false, columnDefinition = "VARCHAR(255)")
-    @Comment("자식 테이블 이름")
-    public String childName;
-
     @ManyToOne
-    @JoinColumn(name = "fk_test_parent_uid", nullable = false)
-    @Comment("FK 부모 테이블 고유번호 (template.fk_test_parent.uid)")
-    public Db1_Template_FkTestParent fkTestParent;
+    @JoinColumn(name = "total_auth_member_uid", nullable = false)
+    @Comment("멤버 고유번호(railly_linker_company.total_auth_member.uid)")
+    public Db1_RaillyLinkerCompany_TotalAuthMember totalAuthMember;
+
+    @Column(name = "phone_number", nullable = false, columnDefinition = "VARCHAR(45)")
+    @Comment("전화번호(국가번호 + 전화번호, 중복 비허용)")
+    public String phoneNumber;
 
 
     // ---------------------------------------------------------------------------------------------
     // [@OneToMany 변수들]
+    @OneToMany(mappedBy = "frontTotalAuthMemberPhone", fetch = FetchType.LAZY)
+    public List<Db1_RaillyLinkerCompany_TotalAuthMember> totalAuthMemberList;
 }

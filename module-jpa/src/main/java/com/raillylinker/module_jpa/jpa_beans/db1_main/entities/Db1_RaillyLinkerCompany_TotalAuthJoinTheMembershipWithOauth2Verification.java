@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        name = "fk_test_many_to_one_child",
-        catalog = "template"
+        name = "total_auth_join_the_membership_with_oauth2_verification",
+        catalog = "railly_linker_company"
 )
-@Comment("Foreign Key 테스트용 테이블 (one to many 테스트용 자식 테이블)")
-public class Db1_Template_FkTestManyToOneChild {
-    public Db1_Template_FkTestManyToOneChild() {
+@Comment("통합 로그인 계정 OAuth2 회원가입 검증 테이블")
+public class Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification {
+    public Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification() {
     }
 
     // [기본 입력값이 존재하는 변수들]
@@ -45,24 +45,37 @@ public class Db1_Template_FkTestManyToOneChild {
 
     // ---------------------------------------------------------------------------------------------
     // [입력값 수동 입력 변수들]
-    public Db1_Template_FkTestManyToOneChild(
+    public Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            String childName,
+            Byte oauth2TypeCode,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            Db1_Template_FkTestParent fkTestParent
+            String oauth2Id,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            String verificationSecret,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            LocalDateTime verificationExpireWhen
     ) {
-        this.childName = childName;
-        this.fkTestParent = fkTestParent;
+        this.oauth2TypeCode = oauth2TypeCode;
+        this.oauth2Id = oauth2Id;
+        this.verificationSecret = verificationSecret;
+        this.verificationExpireWhen = verificationExpireWhen;
     }
 
-    @Column(name = "child_name", nullable = false, columnDefinition = "VARCHAR(255)")
-    @Comment("자식 테이블 이름")
-    public String childName;
+    @Column(name = "oauth2_type_code", nullable = false, columnDefinition = "TINYINT UNSIGNED")
+    @Comment("oauth2 종류 (1 : GOOGLE, 2 : NAVER, 3 : KAKAO)")
+    public Byte oauth2TypeCode;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_test_parent_uid", nullable = false)
-    @Comment("FK 부모 테이블 고유번호 (template.fk_test_parent.uid)")
-    public Db1_Template_FkTestParent fkTestParent;
+    @Column(name = "oauth2_id", nullable = false, columnDefinition = "VARCHAR(50)")
+    @Comment("OAuth2 로그인으로 얻어온 고유값")
+    public String oauth2Id;
+
+    @Column(name = "verification_secret", nullable = false, columnDefinition = "VARCHAR(20)")
+    @Comment("검증 비문")
+    public String verificationSecret;
+
+    @Column(name = "verification_expire_when", nullable = false, columnDefinition = "DATETIME(3)")
+    @Comment("검증 만료 일시")
+    public LocalDateTime verificationExpireWhen;
 
 
     // ---------------------------------------------------------------------------------------------

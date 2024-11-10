@@ -17,7 +17,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 import java.util.HashMap;
 
-
 // [DB 설정]
 @Configuration
 @EnableJpaRepositories(
@@ -100,7 +99,7 @@ public class Db1MainConfig {
     }
 
     @Bean(DATABASE_DIRECTORY_NAME + "_DataSource")
-    @ConfigurationProperties(prefix = "datasource." + DATABASE_CONFIG_NAME)
+    @ConfigurationProperties(prefix = "datasource-jpa." + DATABASE_CONFIG_NAME)
     public @Valid @NotNull @org.jetbrains.annotations.NotNull DataSource customDataSource() {
         return DataSourceBuilder.create().build();
     }

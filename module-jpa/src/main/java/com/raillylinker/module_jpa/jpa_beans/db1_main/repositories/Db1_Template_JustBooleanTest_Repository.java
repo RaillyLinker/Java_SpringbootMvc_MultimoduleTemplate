@@ -4,7 +4,6 @@ import com.raillylinker.module_jpa.jpa_beans.db1_main.entities.Db1_Template_Just
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
 public interface Db1_Template_JustBooleanTest_Repository extends JpaRepository<Db1_Template_JustBooleanTest, Long> {
 }

@@ -12,12 +12,15 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        name = "fk_test_many_to_one_child",
-        catalog = "template"
+        name = "total_auth_member_oauth2_login",
+        catalog = "railly_linker_company",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"oauth2_type_code", "oauth2_id", "row_delete_date_str"})
+        }
 )
-@Comment("Foreign Key 테스트용 테이블 (one to many 테스트용 자식 테이블)")
-public class Db1_Template_FkTestManyToOneChild {
-    public Db1_Template_FkTestManyToOneChild() {
+@Comment("통합 로그인 계정 회원의 OAuth2 로그인 정보 테이블")
+public class Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login {
+    public Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login() {
     }
 
     // [기본 입력값이 존재하는 변수들]
@@ -45,24 +48,31 @@ public class Db1_Template_FkTestManyToOneChild {
 
     // ---------------------------------------------------------------------------------------------
     // [입력값 수동 입력 변수들]
-    public Db1_Template_FkTestManyToOneChild(
+    public Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            String childName,
+            Db1_RaillyLinkerCompany_TotalAuthMember totalAuthMember,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            Db1_Template_FkTestParent fkTestParent
+            Byte oauth2TypeCode,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            String oauth2Id
     ) {
-        this.childName = childName;
-        this.fkTestParent = fkTestParent;
+        this.totalAuthMember = totalAuthMember;
+        this.oauth2TypeCode = oauth2TypeCode;
+        this.oauth2Id = oauth2Id;
     }
 
-    @Column(name = "child_name", nullable = false, columnDefinition = "VARCHAR(255)")
-    @Comment("자식 테이블 이름")
-    public String childName;
-
     @ManyToOne
-    @JoinColumn(name = "fk_test_parent_uid", nullable = false)
-    @Comment("FK 부모 테이블 고유번호 (template.fk_test_parent.uid)")
-    public Db1_Template_FkTestParent fkTestParent;
+    @JoinColumn(name = "total_auth_member_uid", nullable = false)
+    @Comment("멤버 고유번호(railly_linker_company.total_auth_member.uid)")
+    public Db1_RaillyLinkerCompany_TotalAuthMember totalAuthMember;
+
+    @Column(name = "oauth2_type_code", nullable = false, columnDefinition = "TINYINT UNSIGNED")
+    @Comment("oauth2 종류 (1 : GOOGLE, 2 : NAVER, 3 : KAKAO, 4 : APPLE)")
+    public Byte oauth2TypeCode;
+
+    @Column(name = "oauth2_id", nullable = false, columnDefinition = "VARCHAR(50)")
+    @Comment("OAuth2 로그인으로 얻어온 고유값")
+    public String oauth2Id;
 
 
     // ---------------------------------------------------------------------------------------------

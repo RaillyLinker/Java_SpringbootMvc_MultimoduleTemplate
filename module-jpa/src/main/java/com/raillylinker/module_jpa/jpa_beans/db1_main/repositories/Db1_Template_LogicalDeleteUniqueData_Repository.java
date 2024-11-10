@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-
 @Repository
 public interface Db1_Template_LogicalDeleteUniqueData_Repository extends JpaRepository<Db1_Template_LogicalDeleteUniqueData, Long> {
     @Valid @NotNull @org.jetbrains.annotations.NotNull

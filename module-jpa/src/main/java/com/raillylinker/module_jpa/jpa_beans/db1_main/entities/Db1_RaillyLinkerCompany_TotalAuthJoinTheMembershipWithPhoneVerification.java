@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        name = "fk_test_many_to_one_child",
-        catalog = "template"
+        name = "total_auth_join_the_membership_with_phone_verification",
+        catalog = "railly_linker_company"
 )
-@Comment("Foreign Key 테스트용 테이블 (one to many 테스트용 자식 테이블)")
-public class Db1_Template_FkTestManyToOneChild {
-    public Db1_Template_FkTestManyToOneChild() {
+@Comment("통합 로그인 계정 전화번호 회원가입 검증 테이블")
+public class Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithPhoneVerification {
+    public Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithPhoneVerification() {
     }
 
     // [기본 입력값이 존재하는 변수들]
@@ -45,24 +45,30 @@ public class Db1_Template_FkTestManyToOneChild {
 
     // ---------------------------------------------------------------------------------------------
     // [입력값 수동 입력 변수들]
-    public Db1_Template_FkTestManyToOneChild(
+    public Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithPhoneVerification(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            String childName,
+            String phoneNumber,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            Db1_Template_FkTestParent fkTestParent
+            String verificationSecret,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            LocalDateTime verificationExpireWhen
     ) {
-        this.childName = childName;
-        this.fkTestParent = fkTestParent;
+        this.phoneNumber = phoneNumber;
+        this.verificationSecret = verificationSecret;
+        this.verificationExpireWhen = verificationExpireWhen;
     }
 
-    @Column(name = "child_name", nullable = false, columnDefinition = "VARCHAR(255)")
-    @Comment("자식 테이블 이름")
-    public String childName;
+    @Column(name = "phone_number", nullable = false, columnDefinition = "VARCHAR(45)")
+    @Comment("전화 번호")
+    public String phoneNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_test_parent_uid", nullable = false)
-    @Comment("FK 부모 테이블 고유번호 (template.fk_test_parent.uid)")
-    public Db1_Template_FkTestParent fkTestParent;
+    @Column(name = "verification_secret", nullable = false, columnDefinition = "VARCHAR(20)")
+    @Comment("검증 비문")
+    public String verificationSecret;
+
+    @Column(name = "verification_expire_when", nullable = false, columnDefinition = "DATETIME(3)")
+    @Comment("검증 만료 일시")
+    public LocalDateTime verificationExpireWhen;
 
 
     // ---------------------------------------------------------------------------------------------

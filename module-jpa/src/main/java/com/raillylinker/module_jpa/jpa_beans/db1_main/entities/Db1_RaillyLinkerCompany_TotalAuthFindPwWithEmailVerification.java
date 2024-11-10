@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        name = "fk_test_many_to_one_child",
-        catalog = "template"
+        name = "total_auth_find_pw_with_email_verification",
+        catalog = "railly_linker_company"
 )
-@Comment("Foreign Key 테스트용 테이블 (one to many 테스트용 자식 테이블)")
-public class Db1_Template_FkTestManyToOneChild {
-    public Db1_Template_FkTestManyToOneChild() {
+@Comment("통합 로그인 계정 이메일로 비밀번호 찾기 검증 테이블")
+public class Db1_RaillyLinkerCompany_TotalAuthFindPwWithEmailVerification {
+    public Db1_RaillyLinkerCompany_TotalAuthFindPwWithEmailVerification() {
     }
 
     // [기본 입력값이 존재하는 변수들]
@@ -45,24 +45,30 @@ public class Db1_Template_FkTestManyToOneChild {
 
     // ---------------------------------------------------------------------------------------------
     // [입력값 수동 입력 변수들]
-    public Db1_Template_FkTestManyToOneChild(
+    public Db1_RaillyLinkerCompany_TotalAuthFindPwWithEmailVerification(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            String childName,
+            String emailAddress,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            Db1_Template_FkTestParent fkTestParent
+            String verificationSecret,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            LocalDateTime verificationExpireWhen
     ) {
-        this.childName = childName;
-        this.fkTestParent = fkTestParent;
+        this.emailAddress = emailAddress;
+        this.verificationSecret = verificationSecret;
+        this.verificationExpireWhen = verificationExpireWhen;
     }
 
-    @Column(name = "child_name", nullable = false, columnDefinition = "VARCHAR(255)")
-    @Comment("자식 테이블 이름")
-    public String childName;
+    @Column(name = "email_address", nullable = false, columnDefinition = "VARCHAR(100)")
+    @Comment("이메일 주소")
+    public String emailAddress;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_test_parent_uid", nullable = false)
-    @Comment("FK 부모 테이블 고유번호 (template.fk_test_parent.uid)")
-    public Db1_Template_FkTestParent fkTestParent;
+    @Column(name = "verification_secret", nullable = false, columnDefinition = "VARCHAR(20)")
+    @Comment("검증 비문")
+    public String verificationSecret;
+
+    @Column(name = "verification_expire_when", nullable = false, columnDefinition = "DATETIME(3)")
+    @Comment("검증 만료 일시")
+    public LocalDateTime verificationExpireWhen;
 
 
     // ---------------------------------------------------------------------------------------------

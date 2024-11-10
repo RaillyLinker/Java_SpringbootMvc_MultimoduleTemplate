@@ -9,15 +9,16 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(
-        name = "fk_test_many_to_one_child",
-        catalog = "template"
+        name = "total_auth_member_profile",
+        catalog = "railly_linker_company"
 )
-@Comment("Foreign Key 테스트용 테이블 (one to many 테스트용 자식 테이블)")
-public class Db1_Template_FkTestManyToOneChild {
-    public Db1_Template_FkTestManyToOneChild() {
+@Comment("통합 로그인 계정 회원 프로필 정보 테이블")
+public class Db1_RaillyLinkerCompany_TotalAuthMemberProfile {
+    public Db1_RaillyLinkerCompany_TotalAuthMemberProfile() {
     }
 
     // [기본 입력값이 존재하는 변수들]
@@ -45,26 +46,28 @@ public class Db1_Template_FkTestManyToOneChild {
 
     // ---------------------------------------------------------------------------------------------
     // [입력값 수동 입력 변수들]
-    public Db1_Template_FkTestManyToOneChild(
+    public Db1_RaillyLinkerCompany_TotalAuthMemberProfile(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            String childName,
+            Db1_RaillyLinkerCompany_TotalAuthMember totalAuthMember,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            Db1_Template_FkTestParent fkTestParent
+            String imageFullUrl
     ) {
-        this.childName = childName;
-        this.fkTestParent = fkTestParent;
+        this.totalAuthMember = totalAuthMember;
+        this.imageFullUrl = imageFullUrl;
     }
 
-    @Column(name = "child_name", nullable = false, columnDefinition = "VARCHAR(255)")
-    @Comment("자식 테이블 이름")
-    public String childName;
-
     @ManyToOne
-    @JoinColumn(name = "fk_test_parent_uid", nullable = false)
-    @Comment("FK 부모 테이블 고유번호 (template.fk_test_parent.uid)")
-    public Db1_Template_FkTestParent fkTestParent;
+    @JoinColumn(name = "total_auth_member_uid", nullable = false)
+    @Comment("멤버 고유번호(railly_linker_company.total_auth_member.uid)")
+    public Db1_RaillyLinkerCompany_TotalAuthMember totalAuthMember;
+
+    @Column(name = "image_full_url", nullable = false, columnDefinition = "VARCHAR(200)")
+    @Comment("프로필 이미지 Full URL")
+    public String imageFullUrl;
 
 
     // ---------------------------------------------------------------------------------------------
     // [@OneToMany 변수들]
+    @OneToMany(mappedBy = "frontTotalAuthMemberProfile", fetch = FetchType.LAZY)
+    public List<Db1_RaillyLinkerCompany_TotalAuthMember> totalAuthMemberList;
 }

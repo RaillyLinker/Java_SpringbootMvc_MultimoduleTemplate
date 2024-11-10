@@ -18,7 +18,6 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import java.util.ArrayList;
 import java.util.List;
 
-
 // [JPA Database @CustomTransactional 어노테이션 함수 처리 AOP]
 @Component
 @Aspect

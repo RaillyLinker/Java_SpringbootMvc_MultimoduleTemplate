@@ -13,10 +13,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-
 @Repository
 public interface Db1_Template_Tests_Repository extends JpaRepository<Db1_Template_TestData, Long> {
-    @Valid @NotNull @org.jetbrains.annotations.NotNull
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     Page<Db1_Template_TestData> findAllByRowDeleteDateStrOrderByRowCreateDate(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String rowDeleteDateStr,
@@ -24,13 +25,17 @@ public interface Db1_Template_Tests_Repository extends JpaRepository<Db1_Templat
             Pageable pageable
     );
 
-    @Valid @NotNull @org.jetbrains.annotations.NotNull
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     Long countByRowDeleteDateStr(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String rowDeleteDateStr
     );
 
-    @Valid @NotNull @org.jetbrains.annotations.NotNull
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     Optional<Db1_Template_TestData> findByUidAndRowDeleteDateStr(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long uid,
@@ -38,19 +43,25 @@ public interface Db1_Template_Tests_Repository extends JpaRepository<Db1_Templat
             String rowDeleteDateStr
     );
 
-    @Valid @NotNull @org.jetbrains.annotations.NotNull
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     List<Db1_Template_TestData> findAllByRowDeleteDateStrOrderByRowCreateDate(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String rowDeleteDateStr
     );
 
-    @Valid @NotNull @org.jetbrains.annotations.NotNull
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     List<Db1_Template_TestData> findAllByRowDeleteDateStrNotOrderByRowCreateDate(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String rowDeleteDateStr
     );
 
-    @Valid @NotNull @org.jetbrains.annotations.NotNull
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     List<Db1_Template_TestData> findAllByContentOrderByRowCreateDate(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String content
@@ -66,7 +77,9 @@ public interface Db1_Template_Tests_Repository extends JpaRepository<Db1_Templat
                 ORDER BY
                 template_test_data.rowCreateDate DESC
             """)
-    @Valid @NotNull @org.jetbrains.annotations.NotNull
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     List<Db1_Template_TestData> findAllByContentOrderByRowCreateDateJpql(
             @Param("content")
             @Valid @NotNull @org.jetbrains.annotations.NotNull

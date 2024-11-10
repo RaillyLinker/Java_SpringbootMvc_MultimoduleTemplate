@@ -3,13 +3,13 @@ package com.raillylinker.module_jpa.jpa_beans.db1_main.entities;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 
 @Entity
 @Table(
@@ -37,6 +37,11 @@ public class Db1_Template_FkTestParent {
     @UpdateTimestamp
     @Comment("행 수정일")
     public LocalDateTime rowUpdateDate;
+
+    @Column(name = "row_delete_date_str", nullable = false, columnDefinition = "VARCHAR(50)")
+    @ColumnDefault("'/'")
+    @Comment("행 삭제일(yyyy_MM_dd_T_HH_mm_ss_SSS_z, 삭제되지 않았다면 /)")
+    public String rowDeleteDateStr = "/";
 
 
     // ---------------------------------------------------------------------------------------------

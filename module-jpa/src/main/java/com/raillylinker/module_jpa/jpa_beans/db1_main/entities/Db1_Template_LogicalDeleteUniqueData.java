@@ -10,7 +10,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-
 /*
      - 본 테이블은 논리적 삭제를 적용한 테이블에 Unique 변수를 적용하는 방법을 설명하기 위한 샘플입니다.
          논리적 삭제시, 데이터에서 행이 삭제될 일은 없다고 보면 되므로,

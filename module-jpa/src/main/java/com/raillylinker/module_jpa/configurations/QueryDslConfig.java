@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 public class QueryDslConfig {
     public QueryDslConfig(@Valid @NotNull @org.jetbrains.annotations.NotNull EntityManager em) {

@@ -18,5 +18,5 @@ public final class ModuleConst {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    public static final String PACKAGE_NAME = "com.raillylinker.module_jpa.const_objects";
+    public static final String PACKAGE_NAME = "com.raillylinker.module_jpa";
 }
