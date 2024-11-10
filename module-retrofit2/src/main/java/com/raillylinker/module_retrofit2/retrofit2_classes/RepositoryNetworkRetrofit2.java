@@ -18,7 +18,6 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-
 public class RepositoryNetworkRetrofit2 {
     // <멤버 변수 공간>
     // (Network Request Api 객체들)

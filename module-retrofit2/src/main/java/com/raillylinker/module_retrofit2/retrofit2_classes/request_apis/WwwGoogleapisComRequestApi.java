@@ -8,7 +8,6 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 
-
 // (한 주소에 대한 API 요청명세)
 // 사용법은 아래 기본 사용 샘플을 참고하여 추상함수를 작성하여 사용
 public interface WwwGoogleapisComRequestApi {
@@ -24,21 +23,29 @@ public interface WwwGoogleapisComRequestApi {
     );
 
     record GetOauth2V1UserInfoOutputVO(
-            @SerializedName("id") @Expose
+            @SerializedName("id")
+            @Expose
             String id,
-            @SerializedName("email") @Expose
+            @SerializedName("email")
+            @Expose
             String email,
-            @SerializedName("verified_email") @Expose
+            @SerializedName("verified_email")
+            @Expose
             Boolean verifiedEmail,
-            @SerializedName("name") @Expose
+            @SerializedName("name")
+            @Expose
             String name,
-            @SerializedName("given_name") @Expose
+            @SerializedName("given_name")
+            @Expose
             String givenName,
-            @SerializedName("family_name") @Expose
+            @SerializedName("family_name")
+            @Expose
             String familyName,
-            @SerializedName("picture") @Expose
+            @SerializedName("picture")
+            @Expose
             String picture,
-            @SerializedName("locale") @Expose
+            @SerializedName("locale")
+            @Expose
             String locale
     ) {
     }

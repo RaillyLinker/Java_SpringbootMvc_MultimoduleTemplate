@@ -8,7 +8,6 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-
 public interface NidNaverComRequestApi {
     // [Naver Oauth2 AccessToken 요청]
     @GET("/oauth2.0/token")
@@ -43,13 +42,17 @@ public interface NidNaverComRequestApi {
     );
 
     record GetOAuth2Dot0TokenRequestOutputVO(
-            @SerializedName("access_token") @Expose
+            @SerializedName("access_token")
+            @Expose
             String accessToken,
-            @SerializedName("refresh_token") @Expose
+            @SerializedName("refresh_token")
+            @Expose
             String refreshToken,
-            @SerializedName("token_type") @Expose
+            @SerializedName("token_type")
+            @Expose
             String tokenType,
-            @SerializedName("expires_in") @Expose
+            @SerializedName("expires_in")
+            @Expose
             Long expiresIn
     ) {
     }

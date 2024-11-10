@@ -8,7 +8,6 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 
-
 public interface OpenapiNaverComRequestApi {
     // [Naver Oauth2 AccessToken 요청]
     @GET("/v1/nid/me")
@@ -24,37 +23,50 @@ public interface OpenapiNaverComRequestApi {
     // (naver profile 정보 요청 API 응답 객체)
     // https://openapi.naver.com/v1/nid/me
     record GetV1NidMeOutputVO(
-            @SerializedName("resultcode") @Expose
+            @SerializedName("resultcode")
+            @Expose
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String resultCode,
-            @SerializedName("message") @Expose
+            @SerializedName("message")
+            @Expose
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String message,
-            @SerializedName("response") @Expose
+            @SerializedName("response")
+            @Expose
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             ResponseVo response
     ) {
         public record ResponseVo(
-                @SerializedName("id") @Expose
+                @SerializedName("id")
+                @Expose
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
                 String id,
-                @SerializedName("nickname") @Expose
+                @SerializedName("nickname")
+                @Expose
                 String nickname,
-                @SerializedName("name") @Expose
+                @SerializedName("name")
+                @Expose
                 String name,
-                @SerializedName("email") @Expose
+                @SerializedName("email")
+                @Expose
                 String email,
-                @SerializedName("gender") @Expose
+                @SerializedName("gender")
+                @Expose
                 String gender,
-                @SerializedName("age") @Expose
+                @SerializedName("age")
+                @Expose
                 String age,
-                @SerializedName("birthday") @Expose
+                @SerializedName("birthday")
+                @Expose
                 String birthday,
-                @SerializedName("profile_image") @Expose
+                @SerializedName("profile_image")
+                @Expose
                 String profileImage,
-                @SerializedName("birthyear") @Expose
+                @SerializedName("birthyear")
+                @Expose
                 String birthyear,
-                @SerializedName("mobile") @Expose
+                @SerializedName("mobile")
+                @Expose
                 String mobile
         ) {
         }

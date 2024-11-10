@@ -9,7 +9,6 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 
-
 public interface KauthKakaoComRequestApi {
     // [KakaoTalk Oauth2 AccessToken 요청]
     @POST("/oauth/token")
@@ -36,13 +35,17 @@ public interface KauthKakaoComRequestApi {
     );
 
     record PostOOauthTokenOutputVO(
-            @SerializedName("access_token") @Expose
+            @SerializedName("access_token")
+            @Expose
             String accessToken,
-            @SerializedName("expires_in") @Expose
+            @SerializedName("expires_in")
+            @Expose
             Long expiresIn,
-            @SerializedName("scope") @Expose
+            @SerializedName("scope")
+            @Expose
             String scope,
-            @SerializedName("token_type") @Expose
+            @SerializedName("token_type")
+            @Expose
             String tokenType
     ) {
     }

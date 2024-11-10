@@ -9,7 +9,6 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 
-
 // (한 주소에 대한 API 요청명세)
 // 사용법은 아래 기본 사용 샘플을 참고하여 추상함수를 작성하여 사용
 public interface AccountsGoogleComRequestApi {
@@ -44,13 +43,17 @@ public interface AccountsGoogleComRequestApi {
 
     // Record 클래스를 사용하여 데이터 모델 정의
     record PostOOauth2TokenOutputVO(
-            @SerializedName("access_token") @Expose
+            @SerializedName("access_token")
+            @Expose
             String accessToken,
-            @SerializedName("expires_in") @Expose
+            @SerializedName("expires_in")
+            @Expose
             Long expiresIn,
-            @SerializedName("scope") @Expose
+            @SerializedName("scope")
+            @Expose
             String scope,
-            @SerializedName("token_type") @Expose
+            @SerializedName("token_type")
+            @Expose
             String tokenType
     ) {
     }
