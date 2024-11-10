@@ -116,12 +116,5 @@ public class TestWebSocketHandler extends TextWebSocketHandler {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String message
     ) {
-        @Override
-        public String toString() {
-            return "MessagePayloadVo{" +
-                    "sender='" + sender + '\'' +
-                    ", message='" + message + '\'' +
-                    '}';
-        }
     }
 }

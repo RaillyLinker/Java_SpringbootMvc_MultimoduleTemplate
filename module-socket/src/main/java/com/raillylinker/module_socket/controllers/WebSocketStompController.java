@@ -28,6 +28,9 @@ public class WebSocketStompController {
     @MessageMapping("/test")
     // 이 함수의 리턴값 반환 위치(/topic 을 구독중인 유저에게 return 값을 반환)
     @SendTo("/topic")
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     public TopicVo api1SendToTopicTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Api1SendToTopicTestInputVo inputVo

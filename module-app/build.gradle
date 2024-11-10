@@ -10,7 +10,6 @@ dependencies {
     implementation project(":module-socket")
     implementation project(":module-kafka")
     implementation project(":module-redis")
-    implementation project(":module-api-project")
 
     // (Spring Starter Web)
     // : 스프링 부트 웹 개발

@@ -36,7 +36,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     // websocket 관련 설정
     @Bean
-    public @Valid @NotNull @org.jetbrains.annotations.NotNull ServletServerContainerFactoryBean createWebSocketContainer() {
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
+    public ServletServerContainerFactoryBean createWebSocketContainer() {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
         container.setMaxTextMessageBufferSize(8192);
