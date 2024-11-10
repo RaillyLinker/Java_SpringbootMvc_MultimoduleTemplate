@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
 
-
 // [암호화, 복호화 관련 유틸]
 @Component
 public class CryptoUtilImpl implements CryptoUtil {

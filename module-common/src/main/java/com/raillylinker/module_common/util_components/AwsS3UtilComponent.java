@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 
-
 // [AWS S3 유틸]
 public interface AwsS3UtilComponent {
     // (S3 로 업로드하는 함수)

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-
 // [Spring Email 유틸]
 @Component
 public class EmailSenderImpl implements EmailSender {

@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-
 // [지도 좌표계 관련 유틸]
 public interface MapCoordinateUtil {
     // (지도 좌표 1 에서 지도 좌표 2 까지의 거리 (미터) 반환, 하버사인 공식)

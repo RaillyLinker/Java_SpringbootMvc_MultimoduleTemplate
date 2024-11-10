@@ -3,7 +3,6 @@ package com.raillylinker.module_common.util_components;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-
 // [암호화, 복호화 관련 유틸]
 public interface CryptoUtil {
     // [암호화 / 복호화]

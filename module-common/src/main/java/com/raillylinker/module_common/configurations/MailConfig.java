@@ -9,7 +9,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
-
 // [JavaMail 설정]
 @Configuration
 public class MailConfig {

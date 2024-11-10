@@ -10,7 +10,6 @@ import java.util.List;
 
 import static java.lang.Math.*;
 
-
 // [지도 좌표계 관련 유틸]
 @Component
 public class MapCoordinateUtilImpl implements MapCoordinateUtil {

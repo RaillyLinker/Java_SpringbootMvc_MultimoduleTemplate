@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-
 // [SseClient 클래스]
 public class SseClient {
     public SseClient(

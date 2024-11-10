@@ -11,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
-
 // [Spring Email 유틸]
 public interface EmailSender {
     // 이메일 전송 메서드
