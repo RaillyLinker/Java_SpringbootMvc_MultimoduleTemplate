@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class Redis1_Lock_Test extends BasicRedisLock {
     public Redis1_Lock_Test(

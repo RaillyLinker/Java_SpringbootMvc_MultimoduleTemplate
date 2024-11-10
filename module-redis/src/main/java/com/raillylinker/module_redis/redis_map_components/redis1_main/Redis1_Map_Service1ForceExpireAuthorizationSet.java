@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-
 // [RedisMap 컴포넌트]
 // 프로젝트 내부에서 사용할 IP 관련 설정 저장 타입입니다.
 @Component

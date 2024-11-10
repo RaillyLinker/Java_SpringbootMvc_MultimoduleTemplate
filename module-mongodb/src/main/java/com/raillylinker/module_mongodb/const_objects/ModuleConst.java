@@ -3,7 +3,6 @@ package com.raillylinker.module_mongodb.const_objects;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-
 // [프로젝트 전역 상수 모음]
 // 아래 변수들은 절대 런타임에 변경되어서는 안됩니다.
 // 왜냐면, 서버 복제와 같은 Scale out 기법을 사용시 메모리에 저장되는 상태변수가 존재하면 에러가 날 것이기 때문입니다.
@@ -18,5 +17,5 @@ public final class ModuleConst {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    public static final String PACKAGE_NAME = "com.raillylinker.module_mongodb.const_objects";
+    public static final String PACKAGE_NAME = "com.raillylinker.module_mongodb";
 }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-
 // [RedisMap 컴포넌트]
 // 프로젝트 내부에서 사용할 IP 관련 설정 저장 타입입니다.
 @Component

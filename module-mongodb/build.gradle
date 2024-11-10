@@ -1,5 +1,4 @@
 plugins {
-    id 'org.springframework.boot'
 }
 
 version = '0.0.1-SNAPSHOT'
@@ -7,9 +6,9 @@ version = '0.0.1-SNAPSHOT'
 dependencies {
     // (모듈)
 
-    // (AOP)
-    implementation 'org.springframework.boot:spring-boot-starter-aop:3.3.4'
-
     // (MongoDB)
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb:3.3.4'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb:3.3.5'
+
+    // (AOP)
+    implementation 'org.springframework.boot:spring-boot-starter-aop:3.3.5'
 }

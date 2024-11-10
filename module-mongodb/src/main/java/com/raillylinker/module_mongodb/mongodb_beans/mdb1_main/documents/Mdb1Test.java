@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
-
 @Document(collection = "test")
 public class Mdb1Test {
     @Id
