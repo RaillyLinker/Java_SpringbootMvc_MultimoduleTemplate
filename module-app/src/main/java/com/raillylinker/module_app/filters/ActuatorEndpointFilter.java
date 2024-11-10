@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-
 // [민감한 정보를 지닌 actuator 접근 제한 필터]
 // /actuator 로 시작되는 경로에 대한 모든 요청은,
 // ApplicationRuntimeConfigs.runtimeConfigData.actuatorAllowIpList

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
@@ -12,7 +13,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.TimeZone;
-
 
 @EnableMongoAuditing // MongoDB 에서 @CreatedDate, @LastModifiedDate 사용 설정
 @EnableScheduling // 스케쥴러 사용 설정
@@ -23,9 +23,10 @@ import java.util.TimeZone;
                 "com.raillylinker"
         }
 )
-//@EntityScan("com.raillylinker.module_idp_jpa.jpa_beans.entities")
-//@EnableJpaRepositories("com.raillylinker.module_idp_jpa.jpa_beans.repositories")
-@SpringBootApplication
+@SpringBootApplication(
+        // Using generated security password 워닝을 피하기 위해 SpringSecurity 비밀번호 자동 생성 비활성화
+        exclude = {UserDetailsServiceAutoConfiguration.class}
+)
 public class ApplicationMain {
     @Bean
     public CommandLineRunner init() {

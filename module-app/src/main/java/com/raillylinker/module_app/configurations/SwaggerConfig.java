@@ -17,16 +17,21 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.function.Consumer;
 
-
+// [Swagger API 문서 설정]
 @Configuration
 public class SwaggerConfig {
     public SwaggerConfig(
+            // (버전 정보)
             @Value("${custom-config.swagger.document-version}")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String documentVersion,
+
+            // (문서 제목)
             @Value("${custom-config.swagger.document-title}")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String documentTitle,
+
+            // (문서 설명)
             @Value("${custom-config.swagger.document-description}")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String documentDescription
