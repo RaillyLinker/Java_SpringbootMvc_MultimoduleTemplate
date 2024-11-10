@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-
 // Kafka 메시지를 발송하는 프로듀서 컴포넌트
 @Component
 public class Kafka1MainProducer {

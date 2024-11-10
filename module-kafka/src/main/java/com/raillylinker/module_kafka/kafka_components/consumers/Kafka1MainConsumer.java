@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class Kafka1MainConsumer {
     // <멤버 변수 공간>
