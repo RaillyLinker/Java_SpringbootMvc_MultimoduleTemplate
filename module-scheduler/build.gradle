@@ -1,5 +1,4 @@
 plugins {
-    id 'org.springframework.boot'
 }
 
 version = '0.0.1-SNAPSHOT'
