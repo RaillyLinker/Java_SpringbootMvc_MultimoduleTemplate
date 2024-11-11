@@ -11,3 +11,6 @@ include 'module-kafka'
 include 'module-mongodb'
 include 'module-jpa'
 include 'module-common'
+include 'module-api-root'
+include 'module-api-my_service-sc'
+

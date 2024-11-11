@@ -12,6 +12,9 @@ dependencies {
     implementation project(":module-socket")
     implementation project(":module-kafka")
 
+    implementation(project(":module-api-root"))
+    implementation(project(":module-api-my_service-sc"))
+
     // (Spring Starter Web)
     // : 스프링 부트 웹 개발
     implementation 'org.springframework.boot:spring-boot-starter-web:3.3.5'
