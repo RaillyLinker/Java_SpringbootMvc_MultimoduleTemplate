@@ -28,7 +28,7 @@ import java.util.HashMap;
 )
 public class Db1MainConfig {
     public Db1MainConfig(
-            @Value("${datasource." + DATABASE_CONFIG_NAME + ".database-platform}")
+            @Value("${datasource-jpa." + DATABASE_CONFIG_NAME + ".database-platform}")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String databasePlatform
     ) {

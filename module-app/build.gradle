@@ -11,6 +11,7 @@ dependencies {
     implementation project(":module-scheduler")
     implementation project(":module-socket")
     implementation project(":module-kafka")
+    implementation(project(":module-security"))
 
     implementation(project(":module-api-root"))
     implementation(project(":module-api-my_service-sc"))

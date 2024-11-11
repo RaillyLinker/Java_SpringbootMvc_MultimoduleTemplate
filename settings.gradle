@@ -13,4 +13,5 @@ include 'module-jpa'
 include 'module-common'
 include 'module-api-root'
 include 'module-api-my_service-sc'
+include 'module-security'
 
