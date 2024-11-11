@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -141,30 +142,39 @@ public class Redis1MainConfig {
                 .maxRedirects(3)
                 .build();
 
+        // 클러스터인지 단일 서버인지 구분하여 연결 설정
+        if (nodeList.size() > 1) {
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                    .commandTimeout(Duration.ofMillis(1500L))
+                    .clientOptions(clusterClientOptions)
+                    .build();
 
-        // Lettuce Client 옵션
-        /*
-        Lettuce 라이브러리는 지연 연결을 사용하고 있으므로, Command Timeout 값이 Connection Timeout 값보다 커야 합니다.
-        예제에서는 Command Timeout을 1500ms로 설정했으며,
-        앞서 설정한 SocketOptions의 Connection Timeout 값을 1000ms로 설정했습니다.
-         */
-        @Valid @NotNull @org.jetbrains.annotations.NotNull
-        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .commandTimeout(Duration.ofMillis(1500L))
-                .clientOptions(clusterClientOptions)
-                .build();
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            RedisClusterConfiguration clusterConfig = new RedisClusterConfiguration(nodeList);
+            clusterConfig.setMaxRedirects(3);
+            clusterConfig.setPassword("todoPw");
 
-        @Valid @NotNull @org.jetbrains.annotations.NotNull
-        RedisClusterConfiguration clusterConfig = new RedisClusterConfiguration(nodeList);
-        clusterConfig.setMaxRedirects(3);
-        clusterConfig.setPassword("todoPw");
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            LettuceConnectionFactory factory = new LettuceConnectionFactory(clusterConfig, clientConfig);
+            // LettuceConnectionFactory 옵션
+            factory.setValidateConnection(false);
+            return factory;
+        } else {
+            // 단일 Redis 서버 연결 설정
+            // 첫 번째 요소에서 IP와 포트를 분리합니다.
+            String[] hostAndPort = nodeList.getFirst().split(":");
+            String host = hostAndPort[0];
+            int port = Integer.parseInt(hostAndPort[1]);
 
-        @Valid @NotNull @org.jetbrains.annotations.NotNull
-        LettuceConnectionFactory factory = new LettuceConnectionFactory(clusterConfig, clientConfig);
-        // LettuceConnectionFactory 옵션
-        factory.setValidateConnection(false);
+            RedisStandaloneConfiguration standaloneConfig = new RedisStandaloneConfiguration(host, port);
+            standaloneConfig.setPassword("todoPw");
+            LettuceConnectionFactory factory = new LettuceConnectionFactory(standaloneConfig);
 
-        return factory;
+            // LettuceConnectionFactory를 사용하여 Redis 연결을 설정합니다.
+            factory.afterPropertiesSet();  // 연결을 설정한 후, `afterPropertiesSet()`을 호출하여 연결을 초기화합니다.
+            return factory;
+        }
     }
 
     @Bean(REDIS_TEMPLATE_NAME)

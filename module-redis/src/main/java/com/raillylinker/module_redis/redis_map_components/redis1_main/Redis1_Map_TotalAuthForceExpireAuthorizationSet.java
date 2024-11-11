@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 // [RedisMap 컴포넌트]
 // 프로젝트 내부에서 사용할 IP 관련 설정 저장 타입입니다.
 @Component
-public class Redis1_Map_Service1ForceExpireAuthorizationSet extends BasicRedisMap<Redis1_Map_Service1ForceExpireAuthorizationSet.ValueVo> {
-    public Redis1_Map_Service1ForceExpireAuthorizationSet(
+public class Redis1_Map_TotalAuthForceExpireAuthorizationSet extends BasicRedisMap<Redis1_Map_TotalAuthForceExpireAuthorizationSet.ValueVo> {
+    public Redis1_Map_TotalAuthForceExpireAuthorizationSet(
             // !!!RedisConfig 종류 변경!!!
             @Qualifier(Redis1MainConfig.REDIS_TEMPLATE_NAME)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -26,7 +26,7 @@ public class Redis1_Map_Service1ForceExpireAuthorizationSet extends BasicRedisMa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private static final String MAP_NAME = "Redis1_Map_Service1ForceExpireAuthorizationSet";
+    private static final String MAP_NAME = "Redis1_Map_TotalAuthForceExpireAuthorizationSet";
 
     // !!!본 RedisMAP 의 Value 클래스 설정!!!
     public static class ValueVo {
