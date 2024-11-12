@@ -29,6 +29,9 @@ import java.util.TimeZone;
 )
 public class ApplicationMain {
     @Bean
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     public CommandLineRunner init() {
         return args -> {
             // 서버 타임존 명시적 설정 (UTC, Asia/Seoul, ...)

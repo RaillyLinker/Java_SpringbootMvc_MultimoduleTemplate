@@ -60,7 +60,10 @@ public class SwaggerConfig {
     // ---------------------------------------------------------------------------------------------
     // <공개 메소드 공간>
     @Bean
-    public @Valid @NotNull @org.jetbrains.annotations.NotNull OpenAPI openAPI() {
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
+    public OpenAPI openAPI() {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
         Components components = new Components().addSecuritySchemes(
                 "JWT",
@@ -88,7 +91,10 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public @Valid @NotNull @org.jetbrains.annotations.NotNull OpenApiCustomizer openApiCustomizer() {
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
+    public OpenApiCustomizer openApiCustomizer() {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
         Consumer<Operation> pathItemConsumer = operation -> operation.getResponses()
                 .addApiResponse("400", new ApiResponse()

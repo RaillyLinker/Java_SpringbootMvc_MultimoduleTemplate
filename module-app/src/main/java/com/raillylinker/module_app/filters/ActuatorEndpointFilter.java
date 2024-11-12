@@ -59,7 +59,6 @@ public class ActuatorEndpointFilter implements Filter {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
         String clientAddressIp = httpServletRequest.getRemoteAddr();
 
-
         BasicRedisMap.RedisMapDataVo<Redis1_Map_RuntimeConfigIpList.ValueVo> actuatorAllowIpInfo = null;
         try {
             actuatorAllowIpInfo = redis1RuntimeConfigIpList.findKeyValue(Redis1_Map_RuntimeConfigIpList.KeyEnum.ACTUATOR_ALLOW_IP_LIST.name());

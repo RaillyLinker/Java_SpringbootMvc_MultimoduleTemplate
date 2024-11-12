@@ -27,6 +27,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
+// [API 별 Request / Response 로깅 필터]
+// API 호출시마다 Request 와 Response 를 로깅하도록 처리했습니다.
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class LoggingFilter extends OncePerRequestFilter {

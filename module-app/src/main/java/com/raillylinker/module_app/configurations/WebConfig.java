@@ -47,7 +47,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     // [Spring static Resource 경로 설정]
     @Override
-    public void addResourceHandlers(@Valid @NotNull @org.jetbrains.annotations.NotNull ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            ResourceHandlerRegistry registry
+    ) {
         // 실제 경로 addResourceLocations 를 addResourceHandler 로 처리하여,
         // static Resource 에 접근하려면, http://127.0.0.1:8080/images/1.png, http://127.0.0.1:8080/favicon.ico 와 같이 접근 가능
         registry
