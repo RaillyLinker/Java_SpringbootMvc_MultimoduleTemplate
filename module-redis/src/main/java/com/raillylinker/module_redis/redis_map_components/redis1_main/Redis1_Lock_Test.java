@@ -14,7 +14,7 @@ public class Redis1_Lock_Test extends BasicRedisLock {
             // !!!RedisConfig 종류 변경!!!
             @Qualifier(Redis1MainConfig.REDIS_TEMPLATE_NAME)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            RedisTemplate<String, String> redisTemplate
+            RedisTemplate<@Valid @NotNull String, @Valid @NotNull String> redisTemplate
     ) {
         super(redisTemplate, MAP_NAME);
     }

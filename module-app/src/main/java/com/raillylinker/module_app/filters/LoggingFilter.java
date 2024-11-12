@@ -88,7 +88,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 
         boolean loggingDeny = false;
         if (loggingDenyIpInfo != null) {
-            for (Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo loggingDenyIp : loggingDenyIpInfo.value().ipInfoList) {
+            for (Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo loggingDenyIp : loggingDenyIpInfo.value().ipInfoList()) {
                 if (loggingDenyIp.ip().equals(clientAddressIp)) {
                     loggingDeny = true;
                     break;

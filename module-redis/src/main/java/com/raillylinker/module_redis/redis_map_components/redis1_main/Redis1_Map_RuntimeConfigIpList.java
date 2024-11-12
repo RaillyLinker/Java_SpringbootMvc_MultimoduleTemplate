@@ -18,7 +18,7 @@ public class Redis1_Map_RuntimeConfigIpList extends BasicRedisMap<Redis1_Map_Run
             // !!!RedisConfig 종류 변경!!!
             @Qualifier(Redis1MainConfig.REDIS_TEMPLATE_NAME)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            RedisTemplate<String, String> redisTemplate
+            RedisTemplate<@Valid @NotNull String, @Valid @NotNull String> redisTemplate
     ) {
         super(redisTemplate, MAP_NAME, ValueVo.class);
     }
@@ -31,19 +31,10 @@ public class Redis1_Map_RuntimeConfigIpList extends BasicRedisMap<Redis1_Map_Run
     private static final String MAP_NAME = "Redis1_Map_RuntimeConfigIpList";
 
     // !!!본 RedisMAP 의 Value 클래스 설정!!!
-    public static class ValueVo {
-        public ValueVo(
-                @Valid @NotNull @org.jetbrains.annotations.NotNull
-                List<IpDescVo> ipInfoList
-        ) {
-            this.ipInfoList = ipInfoList;
-        }
-
-        @Valid
-        @NotNull
-        @org.jetbrains.annotations.NotNull
-        public List<IpDescVo> ipInfoList;
-
+    public record ValueVo(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            List<IpDescVo> ipInfoList
+    ) {
         public record IpDescVo(
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
                 String ip,

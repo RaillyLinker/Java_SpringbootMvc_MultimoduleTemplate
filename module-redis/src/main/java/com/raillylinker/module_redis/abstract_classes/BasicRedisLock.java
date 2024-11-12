@@ -12,7 +12,7 @@ import java.util.UUID;
 public abstract class BasicRedisLock {
     public BasicRedisLock(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            RedisTemplate<String, String> redisTemplateObj,
+            RedisTemplate<@Valid @NotNull String, @Valid @NotNull String> redisTemplateObj,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String mapName
     ) {

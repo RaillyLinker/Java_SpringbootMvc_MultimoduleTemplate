@@ -65,7 +65,7 @@ public class RootServiceImpl implements RootService {
                 redis1RuntimeConfigIpList.findKeyValue(Redis1_Map_RuntimeConfigIpList.KeyEnum.ACTUATOR_ALLOW_IP_LIST.name());
 
         if (keyValue != null) {
-            for (Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo ipInfo : keyValue.value().ipInfoList) {
+            for (Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo ipInfo : keyValue.value().ipInfoList()) {
                 actuatorIpDescVoList.add(
                         new RootController.SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo.KeyValueVo.IpDescVo(
                                 ipInfo.ip(),
@@ -88,7 +88,7 @@ public class RootServiceImpl implements RootService {
 
         if (loggingDenyInfo != null) {
             List<RootController.SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo.KeyValueVo.IpDescVo> ipDescVoList = new ArrayList<>();
-            for (Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo ipInfo : loggingDenyInfo.value().ipInfoList) {
+            for (Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo ipInfo : loggingDenyInfo.value().ipInfoList()) {
                 ipDescVoList.add(
                         new RootController.SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo.KeyValueVo.IpDescVo(
                                 ipInfo.ip(), ipInfo.desc()

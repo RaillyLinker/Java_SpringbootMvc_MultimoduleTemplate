@@ -18,7 +18,7 @@ public class Redis1_Map_Test extends BasicRedisMap<Redis1_Map_Test.ValueVo> {
             // !!!RedisConfig 종류 변경!!!
             @Qualifier(Redis1MainConfig.REDIS_TEMPLATE_NAME)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            RedisTemplate<String, String> redisTemplate
+            RedisTemplate<@Valid @NotNull String, @Valid @NotNull String> redisTemplate
     ) {
         super(redisTemplate, MAP_NAME, ValueVo.class);
     }
@@ -31,36 +31,14 @@ public class Redis1_Map_Test extends BasicRedisMap<Redis1_Map_Test.ValueVo> {
     private static final String MAP_NAME = "Redis1_Map_Test";
 
     // !!!본 RedisMAP 의 Value 클래스 설정!!!
-    public static class ValueVo {
-        public ValueVo(
-                // 기본 변수 타입 String 사용 예시
-                @Valid @NotNull @org.jetbrains.annotations.NotNull
-                String content,
-                // Object 변수 타입 사용 예시
-                @Valid @NotNull @org.jetbrains.annotations.NotNull
-                InnerVo innerVo,
-                // Object List 변수 타입 사용 예시
-                @Valid @NotNull @org.jetbrains.annotations.NotNull
-                List<InnerVo> innerVoList
-        ) {
-            this.content = content;
-            this.innerVo = innerVo;
-            this.innerVoList = innerVoList;
-        }
-
-        @Valid
-        @NotNull
-        @org.jetbrains.annotations.NotNull
-        public String content;
-        @Valid
-        @NotNull
-        @org.jetbrains.annotations.NotNull
-        public InnerVo innerVo;
-        @Valid
-        @NotNull
-        @org.jetbrains.annotations.NotNull
-        public List<InnerVo> innerVoList;
-
+    public record ValueVo(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            String content,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            InnerVo innerVo,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            List<@Valid @NotNull InnerVo> innerVoList
+    ) {
         public record InnerVo(
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
                 String testString,

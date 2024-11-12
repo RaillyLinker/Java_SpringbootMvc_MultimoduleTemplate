@@ -69,7 +69,7 @@ public class ActuatorEndpointFilter implements Filter {
 
         boolean actuatorAllow = false;
         if (actuatorAllowIpInfo != null) {
-            for (Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo actuatorAllowIp : actuatorAllowIpInfo.value().ipInfoList) {
+            for (Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo actuatorAllowIp : actuatorAllowIpInfo.value().ipInfoList()) {
                 if (clientAddressIp.equals(actuatorAllowIp.ip())) {
                     actuatorAllow = true;
                     break;

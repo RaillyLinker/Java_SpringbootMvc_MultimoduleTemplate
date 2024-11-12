@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class BasicRedisMap<ValueVo> {
     public BasicRedisMap(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            RedisTemplate<String, String> redisTemplateObj,
+            RedisTemplate<@Valid @NotNull String, @Valid @NotNull String> redisTemplateObj,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String mapName,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -31,7 +31,7 @@ public abstract class BasicRedisMap<ValueVo> {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private final RedisTemplate<String, String> redisTemplateObj;
+    private final RedisTemplate<@Valid @NotNull String, @Valid @NotNull String> redisTemplateObj;
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
@@ -72,11 +72,11 @@ public abstract class BasicRedisMap<ValueVo> {
     }
 
     // (RedisMap 의 모든 Key-Value 리스트 반환)
-    public @Valid @NotNull @org.jetbrains.annotations.NotNull List<RedisMapDataVo<ValueVo>> findAllKeyValues() {
+    public @Valid @NotNull @org.jetbrains.annotations.NotNull List<@Valid @NotNull RedisMapDataVo<ValueVo>> findAllKeyValues() {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
-        List<RedisMapDataVo<ValueVo>> resultList = new ArrayList<>();
+        List<@Valid @NotNull RedisMapDataVo<ValueVo>> resultList = new ArrayList<>();
 
-        Set<String> keySet = redisTemplateObj.keys(mapName + ":*");
+        Set<@Valid @NotNull String> keySet = redisTemplateObj.keys(mapName + ":*");
 
         if (keySet == null) {
             return resultList;

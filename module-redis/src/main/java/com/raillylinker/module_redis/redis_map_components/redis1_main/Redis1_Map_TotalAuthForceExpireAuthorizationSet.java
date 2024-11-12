@@ -16,7 +16,7 @@ public class Redis1_Map_TotalAuthForceExpireAuthorizationSet extends BasicRedisM
             // !!!RedisConfig 종류 변경!!!
             @Qualifier(Redis1MainConfig.REDIS_TEMPLATE_NAME)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            RedisTemplate<String, String> redisTemplate
+            RedisTemplate<@Valid @NotNull String, @Valid @NotNull String> redisTemplate
     ) {
         super(redisTemplate, MAP_NAME, ValueVo.class);
     }
@@ -29,6 +29,6 @@ public class Redis1_Map_TotalAuthForceExpireAuthorizationSet extends BasicRedisM
     private static final String MAP_NAME = "Redis1_Map_TotalAuthForceExpireAuthorizationSet";
 
     // !!!본 RedisMAP 의 Value 클래스 설정!!!
-    public static class ValueVo {
+    public record ValueVo() {
     }
 }

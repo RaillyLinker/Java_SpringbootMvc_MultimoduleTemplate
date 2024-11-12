@@ -26,7 +26,7 @@ public class Redis1MainConfig {
     public Redis1MainConfig(
             @Value("${datasource-redis." + REDIS_CONFIG_NAME + ".node-list:#{T(java.util.Collections).emptyList()}}")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            List<String> nodeList
+            List<@Valid @NotNull String> nodeList
     ) {
         this.nodeList = nodeList;
     }
@@ -34,7 +34,7 @@ public class Redis1MainConfig {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private final List<String> nodeList;
+    private final List<@Valid @NotNull String> nodeList;
 
     // <멤버 변수 공간>
     // !!!application.yml 의 datasource-redis 안에 작성된 이름 할당하기!!!
@@ -163,12 +163,17 @@ public class Redis1MainConfig {
         } else {
             // 단일 Redis 서버 연결 설정
             // 첫 번째 요소에서 IP와 포트를 분리합니다.
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
             String[] hostAndPort = nodeList.getFirst().split(":");
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
             String host = hostAndPort[0];
-            int port = Integer.parseInt(hostAndPort[1]);
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Integer port = Integer.parseInt(hostAndPort[1]);
 
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
             RedisStandaloneConfiguration standaloneConfig = new RedisStandaloneConfiguration(host, port);
             standaloneConfig.setPassword("todoPw");
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
             LettuceConnectionFactory factory = new LettuceConnectionFactory(standaloneConfig);
 
             // LettuceConnectionFactory를 사용하여 Redis 연결을 설정합니다.
@@ -178,7 +183,10 @@ public class Redis1MainConfig {
     }
 
     @Bean(REDIS_TEMPLATE_NAME)
-    public @Valid @NotNull @org.jetbrains.annotations.NotNull RedisTemplate<String, String> redisRedisTemplate() {
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
+    public RedisTemplate<@Valid @NotNull String, @Valid @NotNull String> redisRedisTemplate() {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
