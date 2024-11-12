@@ -23,6 +23,9 @@ public class Mdb1Test {
     @Field("row_update_date")
     private LocalDateTime rowUpdateDate;
 
+
+    // ---------------------------------------------------------------------------------------------
+    // [입력값 수동 입력 변수들]
     public Mdb1Test(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String content,
@@ -52,9 +55,6 @@ public class Mdb1Test {
     private Integer randomNum;
 
     @Field("nullable_value")
-    @Valid
-    @NotNull
-    @org.jetbrains.annotations.NotNull
     private String nullableValue;
 
     @Field("row_activate")

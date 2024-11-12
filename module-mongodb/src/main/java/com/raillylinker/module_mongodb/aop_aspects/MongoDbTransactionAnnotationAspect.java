@@ -55,7 +55,8 @@ public class MongoDbTransactionAnnotationAspect {
 
         // transactionManager and transactionStatus 리스트
         @Valid @NotNull @org.jetbrains.annotations.NotNull
-        List<Pair<PlatformTransactionManager, TransactionStatus>> transactionManagerAndTransactionStatusList = new ArrayList<>();
+        List<@Valid @NotNull Pair<@Valid @NotNull PlatformTransactionManager, @Valid @NotNull TransactionStatus>> transactionManagerAndTransactionStatusList =
+                new ArrayList<>();
 
         try {
             // annotation 에 설정된 transaction 순차 실행 및 저장
