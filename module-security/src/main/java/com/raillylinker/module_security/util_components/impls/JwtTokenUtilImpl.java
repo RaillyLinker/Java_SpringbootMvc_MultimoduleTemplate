@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.raillylinker.module_common.util_components.CryptoUtil;
 import com.raillylinker.module_security.util_components.JwtTokenUtil;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -239,6 +239,9 @@ public class JwtTokenUtilImpl implements JwtTokenUtil {
     // ---------------------------------------------------------------------------------------------
     // <비공개 메소드 공간>
     // (JWT 토큰 생성)
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     private String doGenerateToken(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long memberUid,
@@ -256,13 +259,16 @@ public class JwtTokenUtilImpl implements JwtTokenUtil {
             String jwtSecretKeyString,
             List<@Valid @NotNull String> roleList
     ) {
-        var jwtBuilder = Jwts.builder();
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
+        JwtBuilder jwtBuilder = Jwts.builder();
 
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         Map<String, Object> headersMap = new HashMap<>();
         headersMap.put("typ", "JWT");
 
         jwtBuilder.header().empty().add(headersMap);
 
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         Map<String, Object> claimsMap = new HashMap<>();
 
         // member uid
@@ -310,18 +316,26 @@ public class JwtTokenUtilImpl implements JwtTokenUtil {
     }
 
     // (base64 로 인코딩된 Header, Payload 를 base64 로 디코딩)
-    private Map<String, Object> parseJwtForHeader(
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
+    private Map<@Valid @NotNull String, @Valid @NotNull Object> parseJwtForHeader(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String jwt
     ) {
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         String header = cryptoUtil.base64Decode(jwt.split("\\.")[0]);
         return new BasicJsonParser().parseMap(header);
     }
 
-    private Map<String, Object> parseJwtForPayload(
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
+    private Map<@Valid @NotNull String, @Valid @NotNull Object> parseJwtForPayload(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String jwt
     ) {
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         String payload = cryptoUtil.base64Decode(jwt.split("\\.")[1]);
         return new BasicJsonParser().parseMap(payload);
     }

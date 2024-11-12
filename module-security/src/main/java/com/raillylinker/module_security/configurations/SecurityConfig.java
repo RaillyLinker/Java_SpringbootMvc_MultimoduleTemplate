@@ -61,7 +61,7 @@ public class SecurityConfig {
     @NotNull
     @org.jetbrains.annotations.NotNull
     public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOriginPatterns(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
@@ -69,7 +69,13 @@ public class SecurityConfig {
         corsConfiguration.setExposedHeaders(List.of("*"));
         corsConfiguration.setMaxAge(3600L);
         corsConfiguration.setAllowCredentials(true);
-        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(
+                "/**", // 설정을 적용할 컨트롤러 패턴
+                corsConfiguration
+        );
         return source;
     }
 
@@ -82,7 +88,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order()
+    @Order
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
@@ -139,10 +145,12 @@ public class SecurityConfig {
     ) throws Exception {
         // !!!시큐리티 필터 추가시 수정!!!
         // 본 시큐리티 필터가 관리할 주소 체계
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         List<String> securityUrlList = List.of(
                 "/my-service/tk/**"
         );
 
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         HttpSecurity securityMatcher = http.securityMatcher(securityUrlList.toArray(new String[0]));
 
         securityMatcher.headers(headers ->
@@ -322,6 +330,7 @@ public class SecurityConfig {
             }
 
             // 타입과 토큰을 분리
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
             String[] authorizationSplit = authorization.split(" "); // ex : ["Bearer", "qwer1234"]
             if (authorizationSplit.length < 2) {
                 // 다음 필터 실행
@@ -331,7 +340,9 @@ public class SecurityConfig {
 
             // 타입으로 추정되는 문장이 존재할 때
             // 타입 분리
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
             String tokenType = authorizationSplit[0].trim(); // 첫번째 단어는 토큰 타입
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
             String accessToken = authorizationSplit[1].trim(); // 앞의 타입을 자르고 남은 토큰
 
             // 강제 토큰 만료 검증
@@ -391,8 +402,9 @@ public class SecurityConfig {
                 }
 
                 // 회원 권한
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
                 List<GrantedAuthority> authorities = new ArrayList<>();
-                for (String memberRole : jwtTokenUtil.getRoleList(
+                for (@Valid @NotNull String memberRole : jwtTokenUtil.getRoleList(
                         accessToken,
                         AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR, AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
                 )) {
@@ -403,6 +415,7 @@ public class SecurityConfig {
 
                 // (검증된 멤버 정보와 권한 정보를 Security Context 에 입력)
                 // authentication 정보가 context 에 존재하는지 여부로 로그인 여부를 확인
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(
                                 null, // 세션을 유지하지 않으니 굳이 입력할 필요가 없음
