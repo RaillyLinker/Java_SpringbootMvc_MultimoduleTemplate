@@ -1,4 +1,4 @@
-package com.raillylinker.module_scheduler;
+package com.raillylinker.module_scheduler.sys_components;
 
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
