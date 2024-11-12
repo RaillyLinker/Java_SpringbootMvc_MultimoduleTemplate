@@ -70,6 +70,7 @@ public class MyServiceScServiceImpl implements MyServiceScService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpSession session
     ) {
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         ModelAndView mv = new ModelAndView();
         mv.setViewName("home_page/home_page");
 

@@ -104,7 +104,7 @@ public class RootController {
                 @Schema(description = "설정 IP 정보 리스트", requiredMode = Schema.RequiredMode.REQUIRED)
                 @JsonProperty("ipInfoList")
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
-                List<IpDescVo> ipInfoList
+                List<@Valid @NotNull IpDescVo> ipInfoList
         ) {
             @Schema(description = "ip 설명 객체")
             public record IpDescVo(
@@ -161,7 +161,7 @@ public class RootController {
             )
             @JsonProperty("ipInfoList")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            List<IpDescVo> ipInfoList
+            List<@Valid @NotNull IpDescVo> ipInfoList
     ) {
         @Schema(description = "ip 설명 객체")
         public record IpDescVo(
@@ -217,7 +217,7 @@ public class RootController {
             )
             @JsonProperty("ipInfoList")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            List<IpDescVo> ipInfoList
+            List<@Valid @NotNull IpDescVo> ipInfoList
     ) {
         @Schema(description = "ip 설명 객체")
         public record IpDescVo(

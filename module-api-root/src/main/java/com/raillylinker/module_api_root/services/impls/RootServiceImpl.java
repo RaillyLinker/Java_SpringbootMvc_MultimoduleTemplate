@@ -56,8 +56,10 @@ public class RootServiceImpl implements RootService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
     ) {
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         List<RootController.SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo.KeyValueVo> testEntityListVoList = new ArrayList<>();
 
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         List<RootController.SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo.KeyValueVo.IpDescVo> actuatorIpDescVoList = new ArrayList<>();
 
         // actuator 저장 정보 가져오기
@@ -87,6 +89,7 @@ public class RootServiceImpl implements RootService {
                 Redis1_Map_RuntimeConfigIpList.KeyEnum.LOGGING_DENY_IP_LIST.name());
 
         if (loggingDenyInfo != null) {
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
             List<RootController.SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo.KeyValueVo.IpDescVo> ipDescVoList = new ArrayList<>();
             for (Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo ipInfo : loggingDenyInfo.value().ipInfoList()) {
                 ipDescVoList.add(
@@ -113,6 +116,7 @@ public class RootServiceImpl implements RootService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             RootController.InsertProjectRuntimeConfigActuatorAllowIpListInputVo inputVo
     ) {
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         List<Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo> ipDescVoList = new ArrayList<>();
 
         for (RootController.InsertProjectRuntimeConfigActuatorAllowIpListInputVo.IpDescVo ipDescInfo : inputVo.ipInfoList()) {
@@ -136,6 +140,7 @@ public class RootServiceImpl implements RootService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             RootController.InsertProjectRuntimeConfigLoggingDenyIpListInputVo inputVo
     ) {
+        @Valid @NotNull @org.jetbrains.annotations.NotNull
         List<Redis1_Map_RuntimeConfigIpList.ValueVo.IpDescVo> ipDescVoList = new ArrayList<>();
 
         for (RootController.InsertProjectRuntimeConfigLoggingDenyIpListInputVo.IpDescVo ipDescInfo : inputVo.ipInfoList()) {
