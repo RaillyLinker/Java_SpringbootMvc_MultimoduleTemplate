@@ -66,13 +66,13 @@ public class RepositoryNetworkRetrofit2 {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    public final AccountsGoogleComRequestApi nidNaverComRequestApi = getRetrofitClient(
+    public final NidNaverComRequestApi nidNaverComRequestApi = getRetrofitClient(
             "https://nid.naver.com",
             7000L,
             7000L,
             7000L,
             false)
-            .create(AccountsGoogleComRequestApi.class
+            .create(NidNaverComRequestApi.class
             );
 
     // (KakaoTalk AccessToken 발급용)

@@ -20,7 +20,7 @@ public interface Db1_RaillyLinkerCompany_TotalAuthMember_Repository extends JpaR
             String rowDeleteDateStr
     );
 
-    Db1_RaillyLinkerCompany_TotalAuthMember findByUidAndRowDeleteDateStr(
+    Optional<Db1_RaillyLinkerCompany_TotalAuthMember> findByUidAndRowDeleteDateStr(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long uid,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
