@@ -12,22 +12,22 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDateTime;
 
 @Document(collection = "test")
-public class Mdb1Test {
+public class Mdb1_Test {
     @Id
-    private String uid;
+    public String uid;
 
     @CreatedDate
     @Field("row_create_date")
-    private LocalDateTime rowCreateDate;
+    public LocalDateTime rowCreateDate;
 
     @LastModifiedDate
     @Field("row_update_date")
-    private LocalDateTime rowUpdateDate;
+    public LocalDateTime rowUpdateDate;
 
 
     // ---------------------------------------------------------------------------------------------
     // [입력값 수동 입력 변수들]
-    public Mdb1Test(
+    public Mdb1_Test(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String content,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -47,22 +47,22 @@ public class Mdb1Test {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private String content;
+    public String content;
 
     @Field("random_num")
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private Integer randomNum;
+    public Integer randomNum;
 
     @Field("nullable_value")
     @Nullable
     @org.jetbrains.annotations.Nullable
-    private String nullableValue;
+    public String nullableValue;
 
     @Field("row_activate")
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private Boolean rowActivate;
+    public Boolean rowActivate;
 }
