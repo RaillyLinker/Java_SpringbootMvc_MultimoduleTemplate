@@ -1,6 +1,7 @@
 package com.raillylinker.module_jpa.jpa_beans.db1_main.repositories;
 
 import com.raillylinker.module_jpa.jpa_beans.db1_main.entities.Db1_Template_TestData;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 // 주의 : NativeRepository 의 반환값으로 기본 Entity 객체는 매핑되지 않으므로 OutputVo Interface 를 작성하여 사용할것.
 // Output Interface 변수에 is 로 시작되는 변수는 매핑이 안되므로 사용하지 말것.
@@ -50,7 +52,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<ForC7N5OutputVo> forC7N5(
+    List<@Valid @NotNull ForC7N5OutputVo> forC7N5(
             @Param("num")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer num
@@ -117,7 +119,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<ForC7N6OutputVo> forC7N6(
+    List<@Valid @NotNull ForC7N6OutputVo> forC7N6(
             @Param("date")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             LocalDateTime date
@@ -192,7 +194,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Page<ForC7N8OutputVo> forC7N8(
+    Page<@Valid @NotNull ForC7N8OutputVo> forC7N8(
             @Param("num")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer num,
@@ -297,7 +299,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Page<ForC7N11OutputVo> forC7N11(
+    Page<@Valid @NotNull ForC7N11OutputVo> forC7N11(
             @Param("searchKeyword")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String searchKeyword,
@@ -433,9 +435,9 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<ForC7N14OutputVo> forC7N14(
+    List<@Valid @NotNull ForC7N14OutputVo> forC7N14(
             @Param("lastItemUid")
-            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            @Nullable @org.jetbrains.annotations.Nullable
             Long lastItemUid,
             @Param("pageElementsCount")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -540,7 +542,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
                     test_data.uid = :testTableUid
                     """
     )
-    ForC7N17OutputVo forC7N17(
+    Optional<ForC7N17OutputVo> forC7N17(
             @Param("testTableUid")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long testTableUid
@@ -604,7 +606,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<ForC7N24Dot1OutputVo> forC7N24Dot1();
+    List<@Valid @NotNull ForC7N24Dot1OutputVo> forC7N24Dot1();
 
     interface ForC7N24Dot1OutputVo {
         @Valid
@@ -845,7 +847,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<ForC7N27OutputVo> forC7N27();
+    List<@Valid @NotNull ForC7N27OutputVo> forC7N27();
 
     interface ForC7N27OutputVo {
         @Valid
@@ -868,12 +870,20 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
         @org.jetbrains.annotations.NotNull
         LocalDateTime getParentUpdateDate();
 
+        @Nullable
+        @org.jetbrains.annotations.Nullable
         Long getChildUid();
 
+        @Nullable
+        @org.jetbrains.annotations.Nullable
         String getChildName();
 
+        @Nullable
+        @org.jetbrains.annotations.Nullable
         LocalDateTime getChildCreateDate();
 
+        @Nullable
+        @org.jetbrains.annotations.Nullable
         LocalDateTime getChildUpdateDate();
     }
 
@@ -1071,6 +1081,8 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
         @org.jetbrains.annotations.NotNull
         LocalDateTime getLockStart();
 
+        @Nullable
+        @org.jetbrains.annotations.Nullable
         LocalDateTime getLockBefore();
 
         @Valid

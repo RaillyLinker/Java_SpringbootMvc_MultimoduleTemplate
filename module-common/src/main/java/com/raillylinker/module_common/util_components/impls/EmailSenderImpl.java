@@ -2,6 +2,7 @@ package com.raillylinker.module_common.util_components.impls;
 
 import com.raillylinker.module_common.util_components.CustomUtil;
 import com.raillylinker.module_common.util_components.EmailSender;
+import jakarta.annotation.Nullable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -59,6 +60,7 @@ public class EmailSenderImpl implements EmailSender {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String[] receiverEmailAddressArray,
             // 참조자 이메일 배열
+            @Nullable @org.jetbrains.annotations.Nullable
             String[] carbonCopyEmailAddressArray,
             // 이메일 제목
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -67,8 +69,10 @@ public class EmailSenderImpl implements EmailSender {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String message,
             // 첨부파일 리스트
+            @Nullable @org.jetbrains.annotations.Nullable
             List<File> sendFileList,
             // 첨부파일 리스트 (멀티파트)
+            @Nullable @org.jetbrains.annotations.Nullable
             List<MultipartFile> sendMultipartFileList
     ) throws MessagingException, UnsupportedEncodingException {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -113,6 +117,7 @@ public class EmailSenderImpl implements EmailSender {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String[] receiverEmailAddressArray,
             // 참조자 이메일 배열
+            @Nullable @org.jetbrains.annotations.Nullable
             String[] carbonCopyEmailAddressArray,
             // 이메일 제목
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -121,6 +126,7 @@ public class EmailSenderImpl implements EmailSender {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String thymeLeafTemplateName,
             // thymeLeaf 템플릿에 제공할 정보 맵
+            @Nullable @org.jetbrains.annotations.Nullable
             Map<String, Object> thymeLeafDataVariables,
             // thymeLeaf 내에 사용할 cid 파일 리스트
             /*
@@ -129,11 +135,15 @@ public class EmailSenderImpl implements EmailSender {
                  thymeLeafCidFileClassPathResourceMap 은 ("image2", ClassPathResource("static/images/image-2.jpeg")) 이렇게 입력하고,
                  img 테그의 src 에는 'cid:image1' 혹은 'cid:image2' 이렇게 표시
              */
+            @Nullable @org.jetbrains.annotations.Nullable
             Map<String, File> thymeLeafCidFileMap,
+            @Nullable @org.jetbrains.annotations.Nullable
             Map<String, ClassPathResource> thymeLeafCidFileClassPathResourceMap,
             // 첨부파일 리스트
+            @Nullable @org.jetbrains.annotations.Nullable
             List<File> sendFileList,
             // 첨부파일 리스트 (멀티파트)
+            @Nullable @org.jetbrains.annotations.Nullable
             List<MultipartFile> sendMultipartFileList
     ) throws MessagingException, UnsupportedEncodingException {
         @Valid @NotNull @org.jetbrains.annotations.NotNull

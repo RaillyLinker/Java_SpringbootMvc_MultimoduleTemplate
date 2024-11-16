@@ -6,9 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification_Repository extends JpaRepository<Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification, Long> {
-    Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification findByUidAndRowDeleteDateStr(
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
+    Optional<Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification> findByUidAndRowDeleteDateStr(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long uid,
             @Valid @NotNull @org.jetbrains.annotations.NotNull

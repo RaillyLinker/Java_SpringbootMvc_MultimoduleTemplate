@@ -93,7 +93,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory_Repository db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Db1_RaillyLinkerCompany_TotalAuthMemberLockHistory_Repository db1RaillyLinkerCompanyTotalAuthMemberLockHistoryRepository
-    ) {
+    ) throws InterruptedException {
         this.activeProfile = activeProfile;
         this.passwordEncoder = passwordEncoder;
         this.emailSender = emailSender;

@@ -1,5 +1,6 @@
 package com.raillylinker.module_common.classes;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -69,10 +70,13 @@ public class SseEmitterWrapper {
     @org.jetbrains.annotations.NotNull
     public SseEmitter getSseEmitter(
             // 멤버고유번호(비회원은 null)
+            @Nullable @org.jetbrains.annotations.Nullable
             Long memberUid,
             // 마지막으로 클라이언트가 수신했던 이벤트 아이디 ({EmitterId}/{발송시간})
+            @Nullable @org.jetbrains.annotations.Nullable
             String lastSseEventId
     ) {
+        @Nullable @org.jetbrains.annotations.Nullable
         List<String> lastSseEventIdSplit;
 
         // SSE Emitter ID 결정
@@ -252,6 +256,7 @@ public class SseEmitterWrapper {
             String eventName,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String eventMessage,
+            @Nullable @org.jetbrains.annotations.Nullable
             Long memberUid
     ) {
         for (var emitter : emitterMap.entrySet()) { // 저장된 모든 emitter 에 발송 (필터링 하려면 emitter.key 에 저장된 정보로 필터링 가능)

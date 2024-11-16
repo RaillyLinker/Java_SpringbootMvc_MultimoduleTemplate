@@ -6,9 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification_Repository extends JpaRepository<Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification, Long> {
-    Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification findByUidAndRowDeleteDateStr(
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
+    Optional<Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification> findByUidAndRowDeleteDateStr(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long uid,
             @Valid @NotNull @org.jetbrains.annotations.NotNull

@@ -158,7 +158,7 @@ public class CustomUtilImpl implements CustomUtil {
     // (byteArray 를 Hex String 으로 반환)
     @Override
     public @Valid @NotNull @org.jetbrains.annotations.NotNull String bytesToHex(
-            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            @Valid @NotNull
             byte[] bytes
     ) {
         StringBuilder builder = new StringBuilder();

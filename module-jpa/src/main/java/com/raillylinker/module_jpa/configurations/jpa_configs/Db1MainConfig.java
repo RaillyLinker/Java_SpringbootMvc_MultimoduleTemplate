@@ -1,6 +1,7 @@
 package com.raillylinker.module_jpa.configurations.jpa_configs;
 
 import com.raillylinker.module_jpa.const_objects.ModuleConst;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,7 +72,7 @@ public class Db1MainConfig {
         em.setJpaVendorAdapter(vendorAdapter);
 
         @Valid @NotNull @org.jetbrains.annotations.NotNull
-        HashMap<String, Object> properties = new HashMap<>();
+        HashMap<@Valid @NotNull String, @org.jetbrains.annotations.Nullable Object> properties = new HashMap<>();
 //        ********* 주의 : ddl-auto 설정을 바꿀 때는 극도로 주의할 것!!!!!! *********
 //        ********* 주의 : ddl-auto 설정을 바꿀 때는 극도로 주의할 것!!!!!! *********
 //        데이터베이스 초기화 전략

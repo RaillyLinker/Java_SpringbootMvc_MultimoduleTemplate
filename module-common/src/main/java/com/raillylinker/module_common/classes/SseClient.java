@@ -1,5 +1,6 @@
 package com.raillylinker.module_common.classes;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import okhttp3.*;
@@ -22,8 +23,14 @@ public class SseClient {
     @NotNull
     @org.jetbrains.annotations.NotNull
     private final String requestUrl;
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     private Request originalRequest;
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     private Call callObject;
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     private String lastEventId;
     @Valid
     @NotNull
@@ -33,6 +40,8 @@ public class SseClient {
     @NotNull
     @org.jetbrains.annotations.NotNull
     private String eventName = "message";
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     private BufferedSource bufferedSource;
 
 
@@ -128,7 +137,18 @@ public class SseClient {
 
     // ---------------------------------------------------------------------------------------------
     // <비공개 메소드 공간>
-    private boolean retry(long readTimeoutMsMbr, OkHttpClient clientMbr, ListenerCallback listenerCallback, Throwable throwable, Response response) {
+    private boolean retry(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Long readTimeoutMsMbr,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            OkHttpClient clientMbr,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            ListenerCallback listenerCallback,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Throwable throwable,
+            @Nullable @org.jetbrains.annotations.Nullable
+            Response response
+    ) {
         if (!Thread.currentThread().isInterrupted() &&
                 !callObject.isCanceled() &&
                 listenerCallback.onPreRetry(this, originalRequest, throwable, response)) {
@@ -236,21 +256,57 @@ public class SseClient {
     // <중첩 클래스 공간>
     public interface ListenerCallback {
         // 처음 SSE 구독시 request 객체가 처음 생성 되었을 때(connectAsync 메소드 실행시) 한번 실행
-        void onConnectRequestFirstTime(SseClient sse, Request originalRequest);
+        void onConnectRequestFirstTime(
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                SseClient sse,
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Request originalRequest
+        );
 
         // SSE 연결, 재연결 되었을 때마다
-        void onConnect(SseClient sse, Response response);
+        void onConnect(
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                SseClient sse,
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Response response
+        );
 
         // SSE 메세지 수신시
-        void onMessageReceive(SseClient sse, String eventId, String event, String message);
+        void onMessageReceive(
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                SseClient sse,
+                @Nullable @org.jetbrains.annotations.Nullable
+                String eventId,
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String event,
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String message
+        );
 
         // SSE Comment 수신시
-        void onCommentReceive(SseClient sse, String comment);
+        void onCommentReceive(
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                SseClient sse,
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String comment
+        );
 
         // 재 연결을 신청할 때마다 실행 (반환 값으로 재연결 여부를 반환)
-        boolean onPreRetry(SseClient sse, Request originalRequest, Throwable throwable, Response response);
+        boolean onPreRetry(
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                SseClient sse,
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Request originalRequest,
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Throwable throwable,
+                @Nullable @org.jetbrains.annotations.Nullable
+                Response response
+        );
 
         // SSE 구독 연결이 끊겼을 때
-        void onDisconnected(SseClient sse);
+        void onDisconnected(
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                SseClient sse
+        );
     }
 }
