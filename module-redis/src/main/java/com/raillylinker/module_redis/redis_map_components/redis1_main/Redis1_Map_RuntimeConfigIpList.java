@@ -28,7 +28,7 @@ public class Redis1_Map_RuntimeConfigIpList extends BasicRedisMap<Redis1_Map_Run
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private static final String MAP_NAME = "Redis1_Map_RuntimeConfigIpList";
+    public static final String MAP_NAME = "Redis1_Map_RuntimeConfigIpList";
 
     // !!!본 RedisMAP 의 Value 클래스 설정!!!
     public record ValueVo(

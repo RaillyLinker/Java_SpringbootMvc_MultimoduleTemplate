@@ -28,7 +28,7 @@ public class Redis1_Map_Test extends BasicRedisMap<Redis1_Map_Test.ValueVo> {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private static final String MAP_NAME = "Redis1_Map_Test";
+    public static final String MAP_NAME = "Redis1_Map_Test";
 
     // !!!본 RedisMAP 의 Value 클래스 설정!!!
     public record ValueVo(

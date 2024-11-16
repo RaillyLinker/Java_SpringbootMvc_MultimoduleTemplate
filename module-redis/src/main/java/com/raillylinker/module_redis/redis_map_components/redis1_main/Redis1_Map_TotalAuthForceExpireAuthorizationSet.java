@@ -26,7 +26,7 @@ public class Redis1_Map_TotalAuthForceExpireAuthorizationSet extends BasicRedisM
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private static final String MAP_NAME = "Redis1_Map_TotalAuthForceExpireAuthorizationSet";
+    public static final String MAP_NAME = "Redis1_Map_TotalAuthForceExpireAuthorizationSet";
 
     // !!!본 RedisMAP 의 Value 클래스 설정!!!
     public record ValueVo() {

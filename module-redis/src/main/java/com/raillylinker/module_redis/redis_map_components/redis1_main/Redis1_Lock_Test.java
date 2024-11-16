@@ -23,5 +23,5 @@ public class Redis1_Lock_Test extends BasicRedisLock {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private static final String MAP_NAME = "Redis1_Lock_Test";
+    public static final String MAP_NAME = "Redis1_Lock_Test";
 }
