@@ -30,10 +30,14 @@ import java.util.List;
 @Controller
 @RequestMapping("/my-service/tk/sample/request-test")
 public class MyServiceTkSampleRequestTestController {
-    public MyServiceTkSampleRequestTestController(MyServiceTkSampleRequestTestService service) {
+    public MyServiceTkSampleRequestTestController(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            MyServiceTkSampleRequestTestService service
+    ) {
         this.service = service;
     }
 
+    @Valid @NotNull @org.jetbrains.annotations.NotNull
     private final MyServiceTkSampleRequestTestService service;
 
 
