@@ -1,6 +1,7 @@
 package com.raillylinker.module_redis.abstract_classes;
 
 import com.google.gson.Gson;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -53,6 +54,7 @@ public abstract class BasicRedisMap<ValueVo> {
             String key,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             ValueVo value,
+            @Nullable @org.jetbrains.annotations.Nullable
             Long expireTimeMs
     ) {
         // 입력 키 검증
@@ -106,6 +108,7 @@ public abstract class BasicRedisMap<ValueVo> {
     }
 
     // (RedisMap 의 key-Value 를 반환)
+    @Nullable @org.jetbrains.annotations.Nullable
     public RedisMapDataVo<ValueVo> findKeyValue(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String key

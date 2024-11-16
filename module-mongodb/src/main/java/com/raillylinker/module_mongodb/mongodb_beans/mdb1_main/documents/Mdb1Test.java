@@ -1,5 +1,6 @@
 package com.raillylinker.module_mongodb.mongodb_beans.mdb1_main.documents;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
@@ -31,7 +32,7 @@ public class Mdb1Test {
             String content,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer randomNum,
-            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            @Nullable @org.jetbrains.annotations.Nullable
             String nullableValue,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Boolean rowActivate
@@ -55,6 +56,8 @@ public class Mdb1Test {
     private Integer randomNum;
 
     @Field("nullable_value")
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     private String nullableValue;
 
     @Field("row_activate")

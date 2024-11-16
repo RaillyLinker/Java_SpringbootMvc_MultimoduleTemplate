@@ -7,6 +7,7 @@ import com.raillylinker.module_security.util_components.JwtTokenUtil;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.json.BasicJsonParser;
@@ -236,6 +237,7 @@ public class JwtTokenUtilImpl implements JwtTokenUtil {
         return parseJwtForHeader(token).get("typ").toString();
     }
 
+
     // ---------------------------------------------------------------------------------------------
     // <비공개 메소드 공간>
     // (JWT 토큰 생성)
@@ -257,6 +259,7 @@ public class JwtTokenUtilImpl implements JwtTokenUtil {
             String issuer,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String jwtSecretKeyString,
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> roleList
     ) {
         @Valid @NotNull @org.jetbrains.annotations.NotNull

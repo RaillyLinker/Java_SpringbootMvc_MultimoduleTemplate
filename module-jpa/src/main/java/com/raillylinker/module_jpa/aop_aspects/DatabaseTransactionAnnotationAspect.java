@@ -2,6 +2,7 @@ package com.raillylinker.module_jpa.aop_aspects;
 
 import com.raillylinker.module_jpa.annotations.CustomTransactional;
 import com.raillylinker.module_jpa.const_objects.ModuleConst;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -46,11 +47,13 @@ public class DatabaseTransactionAnnotationAspect {
     // <AOP 작성 공간>
     // (@CustomTransactional 를 입력한 함수 실행 전후에 JPA 트랜젝션 적용)
     @Around(TRANSACTION_ANNOTATION_PATH)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public Object aroundTransactionAnnotationFunction(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             ProceedingJoinPoint joinPoint
     ) throws Throwable {
-        @Valid @NotNull @org.jetbrains.annotations.NotNull
+        @Nullable @org.jetbrains.annotations.Nullable
         Object proceed;
 
         // transactionManager and transactionStatus 리스트

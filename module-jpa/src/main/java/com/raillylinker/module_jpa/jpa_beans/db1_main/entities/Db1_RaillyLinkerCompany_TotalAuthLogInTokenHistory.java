@@ -63,6 +63,7 @@ public class Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory {
             String refreshToken,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             LocalDateTime refreshTokenExpireWhen,
+            @org.jetbrains.annotations.Nullable
             LocalDateTime logoutDate
     ) {
         this.totalAuthMember = totalAuthMember;

@@ -2,6 +2,7 @@ package com.raillylinker.module_common.util_components.impls;
 
 import com.raillylinker.module_common.util_components.NaverSmsSenderComponent;
 import com.raillylinker.module_retrofit2.retrofit2_classes.RepositoryNetworkRetrofit2;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,7 @@ public class NaverSmsSenderComponentImpl implements NaverSmsSenderComponent {
             @Value("${custom-config.naverSms.alim-talk-service-id}")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String alimTalkServiceId
-    ) {
+    ) throws InterruptedException {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.serviceId = serviceId;
@@ -79,6 +80,8 @@ public class NaverSmsSenderComponentImpl implements NaverSmsSenderComponent {
 
     // (알림톡 보내기)
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public SendAlimTalkOutputVo sendAlimTalk(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendAlimTalkInputVo inputVo

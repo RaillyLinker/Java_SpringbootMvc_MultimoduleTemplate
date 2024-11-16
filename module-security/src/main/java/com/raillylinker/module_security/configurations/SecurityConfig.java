@@ -2,6 +2,7 @@ package com.raillylinker.module_security.configurations;
 
 import com.raillylinker.module_redis.redis_map_components.redis1_main.Redis1_Map_TotalAuthForceExpireAuthorizationSet;
 import com.raillylinker.module_security.util_components.JwtTokenUtil;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -367,6 +368,7 @@ public class SecurityConfig {
 
             if ("bearer".equalsIgnoreCase(tokenType)) { // 타입 검증
                 // 토큰 문자열 해석 가능여부 확인
+                @Nullable @org.jetbrains.annotations.Nullable
                 String accessTokenType = null;
                 try {
                     accessTokenType = jwtTokenUtil.getTokenType(accessToken);

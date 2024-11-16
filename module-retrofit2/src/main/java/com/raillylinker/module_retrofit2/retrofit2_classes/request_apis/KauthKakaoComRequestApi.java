@@ -2,6 +2,7 @@ package com.raillylinker.module_retrofit2.retrofit2_classes.request_apis;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import retrofit2.Call;
@@ -16,7 +17,7 @@ public interface KauthKakaoComRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<PostOOauthTokenOutputVO> postOOauthToken(
+    Call<@org.jetbrains.annotations.Nullable PostOOauthTokenOutputVO> postOOauthToken(
             @Field("grant_type")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String grantType, // 무조건 "authorization_code" 입력
@@ -37,15 +38,19 @@ public interface KauthKakaoComRequestApi {
     record PostOOauthTokenOutputVO(
             @SerializedName("access_token")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String accessToken,
             @SerializedName("expires_in")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Long expiresIn,
             @SerializedName("scope")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String scope,
             @SerializedName("token_type")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String tokenType
     ) {
     }

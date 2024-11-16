@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -53,6 +54,8 @@ public class MyServiceScController {
             consumes = MediaType.ALL_VALUE,
             produces = MediaType.TEXT_HTML_VALUE
     )
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public ModelAndView homePage(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull

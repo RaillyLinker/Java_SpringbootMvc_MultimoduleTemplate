@@ -2,6 +2,7 @@ package com.raillylinker.module_retrofit2.retrofit2_classes;
 
 import com.google.gson.Gson;
 import com.raillylinker.module_retrofit2.retrofit2_classes.request_apis.*;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import okhttp3.HttpUrl;
@@ -148,19 +149,19 @@ public class RepositoryNetworkRetrofit2 {
     @NotNull
     @org.jetbrains.annotations.NotNull
     private static final Semaphore singletonSemaphore = new Semaphore(1);
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     private static RepositoryNetworkRetrofit2 instance;
 
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    public static RepositoryNetworkRetrofit2 getInstance() {
+    public static RepositoryNetworkRetrofit2 getInstance() throws InterruptedException {
         try {
             singletonSemaphore.acquire();
             if (instance == null) {
                 instance = new RepositoryNetworkRetrofit2();
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         } finally {
             singletonSemaphore.release();
         }

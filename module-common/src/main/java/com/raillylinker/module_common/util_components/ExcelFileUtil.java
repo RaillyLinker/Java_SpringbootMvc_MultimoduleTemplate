@@ -1,5 +1,6 @@
 package com.raillylinker.module_common.util_components;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
@@ -24,6 +25,8 @@ public interface ExcelFileUtil {
 
     // 시트, 행열 제한
     // 반환값 : [행번호][컬럼번호] == 셀값, 없는 시트번호라면 null 반환
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     List<@Valid @NotNull List<@Valid @NotNull String>> readExcel(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             InputStream excelFile,
@@ -31,8 +34,11 @@ public interface ExcelFileUtil {
             Integer sheetIdx,          // 가져올 시트 인덱스 (0부터 시작)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer rowRangeStartIdx,   // 가져올 행 범위 시작 인덱스 (0부터 시작)
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer rowRangeEndIdx, // 가져올 행 범위 끝 인덱스 null 이라면 전부 (0부터 시작)
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull Integer> columnRangeIdxList, // 가져올 열 범위 인덱스 리스트 null 이라면 전부 (0부터 시작)
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer minColumnLength // 결과 컬럼의 최소 길이 (길이를 넘으면 그대로, 미만이라면 "" 로 채움)
     ) throws IOException, OpenXML4JException, SAXException, ParserConfigurationException;
 

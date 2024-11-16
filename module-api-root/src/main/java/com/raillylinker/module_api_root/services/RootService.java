@@ -1,6 +1,7 @@
 package com.raillylinker.module_api_root.services;
 
 import com.raillylinker.module_api_root.controllers.RootController;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 public interface RootService {
     // (루트 홈페이지 반환 함수)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     ModelAndView getRootHomePage(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
@@ -16,6 +19,8 @@ public interface RootService {
 
     ////
     // (Project Runtime Config Redis Key-Value 모두 조회)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     RootController.SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo selectAllProjectRuntimeConfigsRedisKeyValue(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse

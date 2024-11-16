@@ -2,6 +2,7 @@ package com.raillylinker.module_retrofit2.retrofit2_classes.request_apis;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import retrofit2.Call;
@@ -14,7 +15,7 @@ public interface NidNaverComRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<GetOAuth2Dot0TokenRequestOutputVO> getOAuth2Dot0Token(
+    Call<@org.jetbrains.annotations.Nullable GetOAuth2Dot0TokenRequestOutputVO> getOAuth2Dot0Token(
             // 무조건 "authorization_code" 입력
             @Query("grant_type")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -44,15 +45,19 @@ public interface NidNaverComRequestApi {
     record GetOAuth2Dot0TokenRequestOutputVO(
             @SerializedName("access_token")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String accessToken,
             @SerializedName("refresh_token")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String refreshToken,
             @SerializedName("token_type")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String tokenType,
             @SerializedName("expires_in")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Long expiresIn
     ) {
     }

@@ -2,6 +2,7 @@ package com.raillylinker.module_retrofit2.retrofit2_classes.request_apis;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import retrofit2.Call;
@@ -14,7 +15,7 @@ public interface OpenapiNaverComRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<GetV1NidMeOutputVO> getV1NidMe(
+    Call<@org.jetbrains.annotations.Nullable GetV1NidMeOutputVO> getV1NidMe(
             @Header("Authorization")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String authorization
@@ -43,30 +44,39 @@ public interface OpenapiNaverComRequestApi {
                 String id,
                 @SerializedName("nickname")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String nickname,
                 @SerializedName("name")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String name,
                 @SerializedName("email")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String email,
                 @SerializedName("gender")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String gender,
                 @SerializedName("age")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String age,
                 @SerializedName("birthday")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String birthday,
                 @SerializedName("profile_image")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String profileImage,
                 @SerializedName("birthyear")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String birthyear,
                 @SerializedName("mobile")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String mobile
         ) {
         }

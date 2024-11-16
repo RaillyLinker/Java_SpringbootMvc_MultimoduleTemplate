@@ -4,6 +4,7 @@ import com.raillylinker.module_api_root.controllers.RootController;
 import com.raillylinker.module_api_root.services.RootService;
 import com.raillylinker.module_redis.abstract_classes.BasicRedisMap;
 import com.raillylinker.module_redis.redis_map_components.redis1_main.Redis1_Map_RuntimeConfigIpList;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -39,6 +40,8 @@ public class RootServiceImpl implements RootService {
     // ---------------------------------------------------------------------------------------------
     // <공개 메소드 공간>
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public ModelAndView getRootHomePage(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
@@ -52,6 +55,8 @@ public class RootServiceImpl implements RootService {
 
     ////
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public RootController.SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo selectAllProjectRuntimeConfigsRedisKeyValue(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -53,6 +54,8 @@ public class RootController {
             consumes = MediaType.ALL_VALUE,
             produces = MediaType.TEXT_HTML_VALUE
     )
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public ModelAndView getRootHomePage(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -81,6 +84,8 @@ public class RootController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public SelectAllProjectRuntimeConfigsRedisKeyValueOutputVo selectAllProjectRuntimeConfigsRedisKeyValue(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull

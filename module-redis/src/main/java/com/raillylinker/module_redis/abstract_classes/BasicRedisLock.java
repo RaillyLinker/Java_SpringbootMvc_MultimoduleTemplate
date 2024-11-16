@@ -1,5 +1,6 @@
 package com.raillylinker.module_redis.abstract_classes;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,6 +31,8 @@ public abstract class BasicRedisLock {
     private final String mapName;
 
     // 락 획득 메소드 - Lua 스크립트 적용
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public String tryLock(@Valid @NotNull @org.jetbrains.annotations.NotNull Long expireTimeMs) {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
         String uuid = UUID.randomUUID().toString();

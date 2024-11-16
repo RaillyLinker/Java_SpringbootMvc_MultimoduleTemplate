@@ -50,11 +50,13 @@ public class Db1_RaillyLinkerCompany_TotalAuthMemberLockHistory {
             Db1_RaillyLinkerCompany_TotalAuthMember totalAuthMember,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             LocalDateTime lockStart,
+            @org.jetbrains.annotations.Nullable
             LocalDateTime lockBefore,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Byte lockReasonCode,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String lockReason,
+            @org.jetbrains.annotations.Nullable
             LocalDateTime earlyRelease
     ) {
         this.totalAuthMember = totalAuthMember;
@@ -86,7 +88,7 @@ public class Db1_RaillyLinkerCompany_TotalAuthMemberLockHistory {
     @Comment("계정 정지 이유 상세(시스템 악용 패널티, 1년 이상 미접속 휴면계정 등...)")
     public String lockReason;
 
-    @Column(name = "early_release", nullable = true, columnDefinition = "DATETIME(3)")
+    @Column(name = "early_release", columnDefinition = "DATETIME(3)")
     @Comment("수동으로 계정 정지를 해제한 시간 (이 값이 null 이 아니라면 계정 정지 헤제로 봅니다.)")
     public LocalDateTime earlyRelease;
 

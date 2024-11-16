@@ -3,6 +3,7 @@ package com.raillylinker.module_retrofit2.retrofit2_classes.request_apis;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import okhttp3.MultipartBody;
@@ -18,7 +19,7 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<String> getMyServiceTkSampleRequestTest();
+    Call<@org.jetbrains.annotations.Nullable String> getMyServiceTkSampleRequestTest();
 
     // [요청 Redirect 테스트 API]
     // 이 API 를 요청하면 /my-service/tk/sample/request-test 로 Redirect 됩니다.
@@ -26,7 +27,7 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<String> getMyServiceTkSampleRequestTestRedirectToBlank();
+    Call<@org.jetbrains.annotations.Nullable String> getMyServiceTkSampleRequestTestRedirectToBlank();
 
     // [요청 Forward 테스트 API]
     // 이 API 를 요청하면 /my-service/tk/sample/request-test 로 Forward 됩니다.
@@ -34,7 +35,7 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<String> getMyServiceTkSampleRequestTestForwardToBlank();
+    Call<@org.jetbrains.annotations.Nullable String> getMyServiceTkSampleRequestTestForwardToBlank();
 
     // [Get 요청(Query Parameter) 테스트 API]
     // Query Parameter 를 받는 Get 메소드 요청 테스트
@@ -42,31 +43,36 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<GetMyServiceTkSampleRequestTestGetRequestOutputVO> getMyServiceTkSampleRequestTestGetRequest(
+    Call<@org.jetbrains.annotations.Nullable GetMyServiceTkSampleRequestTestGetRequestOutputVO> getMyServiceTkSampleRequestTestGetRequest(
             @Query("queryParamString")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String queryParamString,
             @Query("queryParamStringNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             String queryParamStringNullable,
             @Query("queryParamInt")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer queryParamInt,
             @Query("queryParamIntNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer queryParamIntNullable,
             @Query("queryParamDouble")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Double queryParamDouble,
             @Query("queryParamDoubleNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             Double queryParamDoubleNullable,
             @Query("queryParamBoolean")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Boolean queryParamBoolean,
             @Query("queryParamBooleanNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean queryParamBooleanNullable,
             @Query("queryParamStringList")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             List<@Valid @NotNull String> queryParamStringList,
             @Query("queryParamStringListNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> queryParamStringListNullable
     );
 
@@ -77,6 +83,7 @@ public interface LocalHostRequestApi {
             String queryParamString,
             @SerializedName("queryParamStringNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String queryParamStringNullable,
             @SerializedName("queryParamInt")
             @Expose
@@ -84,6 +91,7 @@ public interface LocalHostRequestApi {
             Integer queryParamInt,
             @SerializedName("queryParamIntNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer queryParamIntNullable,
             @SerializedName("queryParamDouble")
             @Expose
@@ -91,6 +99,7 @@ public interface LocalHostRequestApi {
             Double queryParamDouble,
             @SerializedName("queryParamDoubleNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Double queryParamDoubleNullable,
             @SerializedName("queryParamBoolean")
             @Expose
@@ -98,6 +107,7 @@ public interface LocalHostRequestApi {
             Boolean queryParamBoolean,
             @SerializedName("queryParamBooleanNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean queryParamBooleanNullable,
             @SerializedName("queryParamStringList")
             @Expose
@@ -105,6 +115,7 @@ public interface LocalHostRequestApi {
             List<@Valid @NotNull String> queryParamStringList,
             @SerializedName("queryParamStringListNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> queryParamStringListNullable
     ) {
     }
@@ -115,7 +126,7 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<GetMyServiceTkSampleRequestTestGetRequestPathParamIntOutputVO> getMyServiceTkSampleRequestTestGetRequestPathParamInt(
+    Call<@org.jetbrains.annotations.Nullable GetMyServiceTkSampleRequestTestGetRequestPathParamIntOutputVO> getMyServiceTkSampleRequestTestGetRequestPathParamInt(
             @Path("pathParamInt")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer pathParamInt
@@ -135,7 +146,7 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<PostMyServiceTkSampleRequestTestPostRequestApplicationJsonOutputVO> postMyServiceTkSampleRequestTestPostRequestApplicationJson(
+    Call<@org.jetbrains.annotations.Nullable PostMyServiceTkSampleRequestTestPostRequestApplicationJsonOutputVO> postMyServiceTkSampleRequestTestPostRequestApplicationJson(
             @Body
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             PostMyServiceTkSampleRequestTestPostRequestApplicationJsonInputVO inputVo
@@ -148,6 +159,7 @@ public interface LocalHostRequestApi {
             String requestBodyString,
             @SerializedName("requestBodyStringNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String requestBodyStringNullable,
             @SerializedName("requestBodyInt")
             @Expose
@@ -155,6 +167,7 @@ public interface LocalHostRequestApi {
             Integer requestBodyInt,
             @SerializedName("requestBodyIntNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer requestBodyIntNullable,
             @SerializedName("requestBodyDouble")
             @Expose
@@ -162,6 +175,7 @@ public interface LocalHostRequestApi {
             Double requestBodyDouble,
             @SerializedName("requestBodyDoubleNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Double requestBodyDoubleNullable,
             @SerializedName("requestBodyBoolean")
             @Expose
@@ -169,6 +183,7 @@ public interface LocalHostRequestApi {
             Boolean requestBodyBoolean,
             @SerializedName("requestBodyBooleanNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean requestBodyBooleanNullable,
             @SerializedName("requestBodyStringList")
             @Expose
@@ -176,6 +191,7 @@ public interface LocalHostRequestApi {
             List<@Valid @NotNull String> requestBodyStringList,
             @SerializedName("requestBodyStringListNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> requestBodyStringListNullable
     ) {
     }
@@ -187,6 +203,7 @@ public interface LocalHostRequestApi {
             String requestBodyString,
             @SerializedName("requestBodyStringNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String requestBodyStringNullable,
             @SerializedName("requestBodyInt")
             @Expose
@@ -194,6 +211,7 @@ public interface LocalHostRequestApi {
             Integer requestBodyInt,
             @SerializedName("requestBodyIntNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer requestBodyIntNullable,
             @SerializedName("requestBodyDouble")
             @Expose
@@ -201,6 +219,7 @@ public interface LocalHostRequestApi {
             Double requestBodyDouble,
             @SerializedName("requestBodyDoubleNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Double requestBodyDoubleNullable,
             @SerializedName("requestBodyBoolean")
             @Expose
@@ -208,6 +227,7 @@ public interface LocalHostRequestApi {
             Boolean requestBodyBoolean,
             @SerializedName("requestBodyBooleanNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean requestBodyBooleanNullable,
             @SerializedName("requestBodyStringList")
             @Expose
@@ -215,6 +235,7 @@ public interface LocalHostRequestApi {
             List<@Valid @NotNull String> requestBodyStringList,
             @SerializedName("requestBodyStringListNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> requestBodyStringListNullable
     ) {
     }
@@ -226,31 +247,36 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<PostMyServiceTkSampleRequestTestPostRequestXWwwFormUrlencodedOutputVO> postMyServiceTkSampleRequestTestPostRequestXWwwFormUrlencoded(
+    Call<@org.jetbrains.annotations.Nullable PostMyServiceTkSampleRequestTestPostRequestXWwwFormUrlencodedOutputVO> postMyServiceTkSampleRequestTestPostRequestXWwwFormUrlencoded(
             @Field("requestFormString")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String requestFormString,
             @Field("requestFormStringNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             String requestFormStringNullable,
             @Field("requestFormInt")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer requestFormInt,
             @Field("requestFormIntNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer requestFormIntNullable,
             @Field("requestFormDouble")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Double requestFormDouble,
             @Field("requestFormDoubleNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             Double requestFormDoubleNullable,
             @Field("requestFormBoolean")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Boolean requestFormBoolean,
             @Field("requestFormBooleanNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean requestFormBooleanNullable,
             @Field("requestFormStringList")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             List<@Valid @NotNull String> requestFormStringList,
             @Field("requestFormStringListNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> requestFormStringListNullable
     );
 
@@ -261,6 +287,7 @@ public interface LocalHostRequestApi {
             String requestFormString,
             @SerializedName("requestFormStringNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String requestFormStringNullable,
             @SerializedName("requestFormInt")
             @Expose
@@ -268,6 +295,7 @@ public interface LocalHostRequestApi {
             Integer requestFormInt,
             @SerializedName("requestFormIntNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer requestFormIntNullable,
             @SerializedName("requestFormDouble")
             @Expose
@@ -275,6 +303,7 @@ public interface LocalHostRequestApi {
             Double requestFormDouble,
             @SerializedName("requestFormDoubleNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Double requestFormDoubleNullable,
             @SerializedName("requestFormBoolean")
             @Expose
@@ -282,6 +311,7 @@ public interface LocalHostRequestApi {
             Boolean requestFormBoolean,
             @SerializedName("requestFormBooleanNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean requestFormBooleanNullable,
             @SerializedName("requestFormStringList")
             @Expose
@@ -289,6 +319,7 @@ public interface LocalHostRequestApi {
             List<@Valid @NotNull String> requestFormStringList,
             @SerializedName("requestFormStringListNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> requestFormStringListNullable
     ) {
     }
@@ -298,36 +329,42 @@ public interface LocalHostRequestApi {
     // MultipartFile 파라미터가 null 이 아니라면 저장
     @POST("/my-service/tk/sample/request-test/post-request-multipart-form-data")
     @Multipart
-    Call<PostMyServiceTkSampleRequestTestPostRequestMultipartFormDataOutputVO> postMyServiceTkSampleRequestTestPostRequestMultipartFormData(
+    Call<@org.jetbrains.annotations.Nullable PostMyServiceTkSampleRequestTestPostRequestMultipartFormDataOutputVO> postMyServiceTkSampleRequestTestPostRequestMultipartFormData(
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part requestFormString,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part requestFormStringNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part requestFormInt,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part requestFormIntNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part requestFormDouble,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part requestFormDoubleNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part requestFormBoolean,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part requestFormBooleanNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             List<MultipartBody.Part> requestFormStringList,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             List<MultipartBody.Part> requestFormStringListNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part multipartFile,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part multipartFileNullable
     );
 
@@ -338,6 +375,7 @@ public interface LocalHostRequestApi {
             String requestFormString,
             @SerializedName("requestFormStringNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String requestFormStringNullable,
             @SerializedName("requestFormInt")
             @Expose
@@ -345,6 +383,7 @@ public interface LocalHostRequestApi {
             Integer requestFormInt,
             @SerializedName("requestFormIntNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer requestFormIntNullable,
             @SerializedName("requestFormDouble")
             @Expose
@@ -352,6 +391,7 @@ public interface LocalHostRequestApi {
             Double requestFormDouble,
             @SerializedName("requestFormDoubleNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Double requestFormDoubleNullable,
             @SerializedName("requestFormBoolean")
             @Expose
@@ -359,6 +399,7 @@ public interface LocalHostRequestApi {
             Boolean requestFormBoolean,
             @SerializedName("requestFormBooleanNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean requestFormBooleanNullable,
             @SerializedName("requestFormStringList")
             @Expose
@@ -366,6 +407,7 @@ public interface LocalHostRequestApi {
             List<@Valid @NotNull String> requestFormStringList,
             @SerializedName("requestFormStringListNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> requestFormStringListNullable
     ) {
     }
@@ -378,36 +420,42 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<PostMyServiceTkSampleRequestTestPostRequestMultipartFormData2VO> postMyServiceTkSampleRequestTestPostRequestMultipartFormData2(
+    Call<@org.jetbrains.annotations.Nullable PostMyServiceTkSampleRequestTestPostRequestMultipartFormData2VO> postMyServiceTkSampleRequestTestPostRequestMultipartFormData2(
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part requestFormString,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part requestFormStringNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part requestFormInt,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part requestFormIntNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part requestFormDouble,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part requestFormDoubleNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part requestFormBoolean,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part requestFormBooleanNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             List<MultipartBody.Part> requestFormStringList,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             List<MultipartBody.Part> requestFormStringListNullable,
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             List<MultipartBody.Part> multipartFileList,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             List<MultipartBody.Part> multipartFileNullableList
     );
 
@@ -418,6 +466,7 @@ public interface LocalHostRequestApi {
             String requestFormString,
             @SerializedName("requestFormStringNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String requestFormStringNullable,
             @SerializedName("requestFormInt")
             @Expose
@@ -425,6 +474,7 @@ public interface LocalHostRequestApi {
             Integer requestFormInt,
             @SerializedName("requestFormIntNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer requestFormIntNullable,
             @SerializedName("requestFormDouble")
             @Expose
@@ -432,6 +482,7 @@ public interface LocalHostRequestApi {
             Double requestFormDouble,
             @SerializedName("requestFormDoubleNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Double requestFormDoubleNullable,
             @SerializedName("requestFormBoolean")
             @Expose
@@ -439,6 +490,7 @@ public interface LocalHostRequestApi {
             Boolean requestFormBoolean,
             @SerializedName("requestFormBooleanNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean requestFormBooleanNullable,
             @SerializedName("requestFormStringList")
             @Expose
@@ -446,6 +498,7 @@ public interface LocalHostRequestApi {
             List<@Valid @NotNull String> requestFormStringList,
             @SerializedName("requestFormStringListNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> requestFormStringListNullable
     ) {
     }
@@ -455,7 +508,7 @@ public interface LocalHostRequestApi {
     // 파일 리스트가 null 이 아니라면 저장
     @POST("/my-service/tk/sample/request-test/post-request-multipart-form-data-json")
     @Multipart
-    Call<PostMyServiceTkSampleRequestTestPostRequestMultipartFormDataJsonOutputVO> postMyServiceTkSampleRequestTestPostRequestMultipartFormDataJson(
+    Call<@org.jetbrains.annotations.Nullable PostMyServiceTkSampleRequestTestPostRequestMultipartFormDataJsonOutputVO> postMyServiceTkSampleRequestTestPostRequestMultipartFormDataJson(
             @Part
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part jsonString,
@@ -463,6 +516,7 @@ public interface LocalHostRequestApi {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MultipartBody.Part multipartFile,
             @Part
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartBody.Part multipartFileNullable
     );
 
@@ -471,27 +525,32 @@ public interface LocalHostRequestApi {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String requestFormString,
             @JsonProperty("requestFormStringNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             String requestFormStringNullable,
             @JsonProperty("requestFormInt")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer requestFormInt,
             @JsonProperty("requestFormIntNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer requestFormIntNullable,
             @JsonProperty("requestFormDouble")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Double requestFormDouble,
             @JsonProperty("requestFormDoubleNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             Double requestFormDoubleNullable,
             @JsonProperty("requestFormBoolean")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Boolean requestFormBoolean,
             @JsonProperty("requestFormBooleanNullable")
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean requestFormBooleanNullable,
             @JsonProperty("requestFormStringList")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            List<String> requestFormStringList,
+            List<@Valid @NotNull String> requestFormStringList,
             @JsonProperty("requestFormStringListNullable")
-            List<String> requestFormStringListNullable
+            @Nullable @org.jetbrains.annotations.Nullable
+            List<@Valid @NotNull String> requestFormStringListNullable
     ) {
     }
 
@@ -502,6 +561,7 @@ public interface LocalHostRequestApi {
             String requestFormString,
             @SerializedName("requestFormStringNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String requestFormStringNullable,
             @SerializedName("requestFormInt")
             @Expose
@@ -509,6 +569,7 @@ public interface LocalHostRequestApi {
             Integer requestFormInt,
             @SerializedName("requestFormIntNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Integer requestFormIntNullable,
             @SerializedName("requestFormDouble")
             @Expose
@@ -516,6 +577,7 @@ public interface LocalHostRequestApi {
             Double requestFormDouble,
             @SerializedName("requestFormDoubleNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Double requestFormDoubleNullable,
             @SerializedName("requestFormBoolean")
             @Expose
@@ -523,6 +585,7 @@ public interface LocalHostRequestApi {
             Boolean requestFormBoolean,
             @SerializedName("requestFormBooleanNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean requestFormBooleanNullable,
             @SerializedName("requestFormStringList")
             @Expose
@@ -530,6 +593,7 @@ public interface LocalHostRequestApi {
             List<@Valid @NotNull String> requestFormStringList,
             @SerializedName("requestFormStringListNullable")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull String> requestFormStringListNullable
     ) {
     }
@@ -540,7 +604,7 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<Void> postMyServiceTkSampleRequestTestGenerateError();
+    Call<@org.jetbrains.annotations.Nullable Void> postMyServiceTkSampleRequestTestGenerateError();
 
     // [결과 코드 발생 테스트 API]
     // Response Header 에 api-result-code 를 반환하는 테스트 API
@@ -552,7 +616,7 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<Void> postMyServiceTkSampleRequestTestApiResultCodeTest(
+    Call<@org.jetbrains.annotations.Nullable Void> postMyServiceTkSampleRequestTestApiResultCodeTest(
             @Query("errorType")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             PostMyServiceTkSampleRequestTestApiResultCodeTestErrorTypeEnum errorType
@@ -570,7 +634,7 @@ public interface LocalHostRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<Void> postMyServiceTkSampleRequestTestGenerateTimeOutError(
+    Call<@org.jetbrains.annotations.Nullable Void> postMyServiceTkSampleRequestTestGenerateTimeOutError(
             @Query("delayTimeSec")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long delayTimeSec

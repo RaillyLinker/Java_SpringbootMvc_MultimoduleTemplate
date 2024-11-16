@@ -2,6 +2,7 @@ package com.raillylinker.module_retrofit2.retrofit2_classes.request_apis;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import retrofit2.Call;
@@ -18,7 +19,7 @@ public interface AccountsGoogleComRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<PostOOauth2TokenOutputVO> postOOauth2Token(
+    Call<@org.jetbrains.annotations.Nullable PostOOauth2TokenOutputVO> postOOauth2Token(
             // OAuth2 로그인으로 발급받은 코드
             @Field("code")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -45,15 +46,19 @@ public interface AccountsGoogleComRequestApi {
     record PostOOauth2TokenOutputVO(
             @SerializedName("access_token")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String accessToken,
             @SerializedName("expires_in")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Long expiresIn,
             @SerializedName("scope")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String scope,
             @SerializedName("token_type")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String tokenType
     ) {
     }

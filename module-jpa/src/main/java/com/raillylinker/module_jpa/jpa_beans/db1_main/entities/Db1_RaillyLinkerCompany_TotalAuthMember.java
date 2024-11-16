@@ -52,9 +52,13 @@ public class Db1_RaillyLinkerCompany_TotalAuthMember {
     public Db1_RaillyLinkerCompany_TotalAuthMember(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String accountId,
+            @org.jetbrains.annotations.Nullable
             String accountPassword,
+            @org.jetbrains.annotations.Nullable
             Db1_RaillyLinkerCompany_TotalAuthMemberProfile frontTotalAuthMemberProfile,
+            @org.jetbrains.annotations.Nullable
             Db1_RaillyLinkerCompany_TotalAuthMemberEmail frontTotalAuthMemberEmail,
+            @org.jetbrains.annotations.Nullable
             Db1_RaillyLinkerCompany_TotalAuthMemberPhone frontTotalAuthMemberPhone
     ) {
         this.accountId = accountId;

@@ -2,6 +2,7 @@ package com.raillylinker.module_retrofit2.retrofit2_classes.request_apis;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import retrofit2.Call;
@@ -16,7 +17,7 @@ public interface WwwGoogleapisComRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<GetOauth2V1UserInfoOutputVO> getOauth2V1UserInfo(
+    Call<@org.jetbrains.annotations.Nullable GetOauth2V1UserInfoOutputVO> getOauth2V1UserInfo(
             @Header("Authorization")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String authorization
@@ -25,27 +26,35 @@ public interface WwwGoogleapisComRequestApi {
     record GetOauth2V1UserInfoOutputVO(
             @SerializedName("id")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String id,
             @SerializedName("email")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String email,
             @SerializedName("verified_email")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             Boolean verifiedEmail,
             @SerializedName("name")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String name,
             @SerializedName("given_name")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String givenName,
             @SerializedName("family_name")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String familyName,
             @SerializedName("picture")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String picture,
             @SerializedName("locale")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String locale
     ) {
     }

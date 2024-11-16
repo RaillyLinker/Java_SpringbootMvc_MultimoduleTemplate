@@ -2,6 +2,7 @@ package com.raillylinker.module_mongodb.aop_aspects;
 
 import com.raillylinker.module_mongodb.annotations.CustomMongoDbTransactional;
 import com.raillylinker.module_mongodb.const_objects.ModuleConst;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -47,10 +48,13 @@ public class MongoDbTransactionAnnotationAspect {
     // <AOP 작성 공간>
     // (@CustomMongoDbTransactional 를 입력한 함수 실행 전후에 MongoDB 트랜젝션 적용)
     @Around(MONGO_DB_TRANSACTION_ANNOTATION_PATH)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public Object aroundMongoDbTransactionAnnotationFunction(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             ProceedingJoinPoint joinPoint
     ) throws Throwable {
+        @Nullable @org.jetbrains.annotations.Nullable
         Object proceed;
 
         // transactionManager and transactionStatus 리스트

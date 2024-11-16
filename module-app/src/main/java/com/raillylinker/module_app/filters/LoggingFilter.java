@@ -2,6 +2,7 @@ package com.raillylinker.module_app.filters;
 
 import com.raillylinker.module_redis.abstract_classes.BasicRedisMap;
 import com.raillylinker.module_redis.redis_map_components.redis1_main.Redis1_Map_RuntimeConfigIpList;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.AsyncEvent;
 import jakarta.servlet.AsyncListener;
 import jakarta.servlet.FilterChain;
@@ -213,20 +214,32 @@ public class LoggingFilter extends OncePerRequestFilter {
             if (httpServletRequest.isAsyncStarted()) { // DeferredResult 처리
                 httpServletRequest.getAsyncContext().addListener(new AsyncListener() {
                     @Override
-                    public void onComplete(AsyncEvent event) throws IOException {
+                    public void onComplete(
+                            @Nullable @org.jetbrains.annotations.Nullable
+                            AsyncEvent event
+                    ) throws IOException {
                         httpServletResponse.copyBodyToResponse();
                     }
 
                     @Override
-                    public void onTimeout(AsyncEvent event) {
+                    public void onTimeout(
+                            @Nullable @org.jetbrains.annotations.Nullable
+                            AsyncEvent event
+                    ) {
                     }
 
                     @Override
-                    public void onError(AsyncEvent event) {
+                    public void onError(
+                            @Nullable @org.jetbrains.annotations.Nullable
+                            AsyncEvent event
+                    ) {
                     }
 
                     @Override
-                    public void onStartAsync(AsyncEvent event) {
+                    public void onStartAsync(
+                            @Nullable @org.jetbrains.annotations.Nullable
+                            AsyncEvent event
+                    ) {
                     }
                 });
             } else {

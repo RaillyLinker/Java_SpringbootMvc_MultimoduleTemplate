@@ -65,7 +65,7 @@ public interface CustomUtil {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String justHtmlFileNameWithOutSuffix,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            Map<String, Object> variableDataMap
+            Map<@Valid @NotNull String, @org.jetbrains.annotations.Nullable Object> variableDataMap
     );
 
     // (byteArray 를 Hex String 으로 반환)

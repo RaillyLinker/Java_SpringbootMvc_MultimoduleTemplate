@@ -2,6 +2,7 @@ package com.raillylinker.module_retrofit2.retrofit2_classes.request_apis;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import retrofit2.Call;
@@ -17,7 +18,7 @@ public interface SensApigwNtrussComRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<PostSmsV2ServicesNaverSmsServiceIdMessagesOutputVO> postSmsV2ServicesNaverSmsServiceIdMessages(
+    Call<@org.jetbrains.annotations.Nullable PostSmsV2ServicesNaverSmsServiceIdMessagesOutputVO> postSmsV2ServicesNaverSmsServiceIdMessages(
             // 프로젝트 등록 시 발급받은 서비스 아이디
             @Path("naverSmsServiceId")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -49,11 +50,13 @@ public interface SensApigwNtrussComRequestApi {
             // 메시지 Type, COMM: 일반메시지 default, AD: 광고메시지
             @SerializedName("contentType")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String contentType,
             // 국가 번호, SENS에서 제공하는 국가로의 발송만 가능, default: 82
             // https://guide.ncloud-docs.com/docs/sens-smspolicy
             @SerializedName("countryCode")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String countryCode,
             // 발신번호, 사전 등록된 발신번호만 사용 가능
             @SerializedName("from")
@@ -63,6 +66,7 @@ public interface SensApigwNtrussComRequestApi {
             // 기본 메시지 제목, LMS, MMS에서만 사용 가능(최대 40byte)
             @SerializedName("subject")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String subject,
             // 기본 메시지 내용, SMS: 최대 90byte, LMS, MMS: 최대 2000byte
             @SerializedName("content")
@@ -77,14 +81,17 @@ public interface SensApigwNtrussComRequestApi {
             // 파일 전송
             @SerializedName("files")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull FileVo> files,
             // 메시지 발송 예약 일시 (yyyy-MM-dd HH:mm)
             @SerializedName("reserveTime")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String reserveTime,
             // 예약 일시 타임존 (기본: Asia/Seoul) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
             @SerializedName("reserveTimeZone")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String reserveTimeZone
     ) {
         public record MessageVo(
@@ -96,10 +103,12 @@ public interface SensApigwNtrussComRequestApi {
                 // 개별 메시지 제목, LMS, MMS에서만 사용 가능(최대 40byte)
                 @SerializedName("subject")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String subject,
                 // 개별 메시지 내용, SMS: 최대 90byte, LMS, MMS: 최대 2000byte
                 @SerializedName("content")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String content
         ) {
         }
@@ -148,7 +157,7 @@ public interface SensApigwNtrussComRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<PostSmsV2ServicesNaverSmsServiceIdFilesOutputVO> postSmsV2ServicesNaverSmsServiceIdFiles(
+    Call<@org.jetbrains.annotations.Nullable PostSmsV2ServicesNaverSmsServiceIdFilesOutputVO> postSmsV2ServicesNaverSmsServiceIdFiles(
             // 프로젝트 등록 시 발급받은 서비스 아이디
             @Path("naverSmsServiceId")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -212,7 +221,7 @@ public interface SensApigwNtrussComRequestApi {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Call<PostAlimtalkV2ServicesNaverSmsServiceIdMessagesOutputVO> postAlimtalkV2ServicesNaverSmsServiceIdMessages(
+    Call<@org.jetbrains.annotations.Nullable PostAlimtalkV2ServicesNaverSmsServiceIdMessagesOutputVO> postAlimtalkV2ServicesNaverSmsServiceIdMessages(
             // 프로젝트 등록 시 발급받은 서비스 아이디
             @Path("naverSmsServiceId")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -254,16 +263,19 @@ public interface SensApigwNtrussComRequestApi {
             // 메시지 발송 예약 일시 (yyyy-MM-dd HH:mm)
             @SerializedName("reserveTime")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String reserveTime,
             // 예약 일시 타임존 (기본: Asia/Seoul) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
             @SerializedName("reserveTimeZone")
             @Expose
+            @Nullable @org.jetbrains.annotations.Nullable
             String reserveTimeZone
     ) {
         public record MessageVo(
                 // 수신자 국가번호, default: 82
                 @SerializedName("countryCode")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String countryCode,
                 // 수신자번호
                 @SerializedName("to")
@@ -273,6 +285,7 @@ public interface SensApigwNtrussComRequestApi {
                 // 알림톡 강조표시 내용, 강조 표기 유형의 템플릿에서만 사용 가능
                 @SerializedName("title")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String title,
                 // 알림톡 메시지 내용
                 @SerializedName("content")
@@ -282,26 +295,32 @@ public interface SensApigwNtrussComRequestApi {
                 // 알림톡 헤더 내용, 아이템 리스트 유형의 템플릿에서만 사용 가능, 16 bytes 미만 까지 입력 가능
                 @SerializedName("headerContent")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String headerContent,
                 // 아이템 하이라이트, 아이템 리스트 유형의 템플릿에서만 사용 가능
                 @SerializedName("itemHighlight")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 ItemHighlightVo itemHighlight,
                 // 아이템 리스트, 아이템리스트 유형의 템플릿에서만 사용 가능
                 @SerializedName("item")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 ItemVo item,
                 // 알림톡 메시지 버튼
                 @SerializedName("buttons")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 List<@Valid @NotNull ButtonVo> buttons,
                 // SMS Failover 사용 여부, Failover가 설정된 카카오톡 채널에서만 사용 가능, 기본: 카카오톡 채널의 Failover 설정 여부를 따름
                 @SerializedName("useSmsFailover")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 Boolean useSmsFailover,
                 // Failover 설정
                 @SerializedName("failoverConfig")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 FailOverConfigVo failoverConfig
         ) {
             public record ItemHighlightVo(
@@ -331,6 +350,7 @@ public interface SensApigwNtrussComRequestApi {
                     // 아이템 요약 정보, 아이템리스트 유형의 템플릿에서만 사용 가능
                     @SerializedName("summary")
                     @Expose
+                    @Nullable @org.jetbrains.annotations.Nullable
                     SummaryVo summary
             ) {
                 public record ListItemVo(
@@ -386,15 +406,19 @@ public interface SensApigwNtrussComRequestApi {
                     String name,
                     @SerializedName("linkMobile")
                     @Expose
+                    @Nullable @org.jetbrains.annotations.Nullable
                     String linkMobile,
                     @SerializedName("linkPc")
                     @Expose
+                    @Nullable @org.jetbrains.annotations.Nullable
                     String linkPc,
                     @SerializedName("schemeIos")
                     @Expose
+                    @Nullable @org.jetbrains.annotations.Nullable
                     String schemeIos,
                     @SerializedName("schemeAndroid")
                     @Expose
+                    @Nullable @org.jetbrains.annotations.Nullable
                     String schemeAndroid
             ) {
             }
@@ -403,18 +427,22 @@ public interface SensApigwNtrussComRequestApi {
                     // Failover SMS 메시지 Type, SMS 또는 LMS, 기본: content 길이에 따라 자동 적용(90 bytes 이하 SMS, 초과 LMS)
                     @SerializedName("type")
                     @Expose
+                    @Nullable @org.jetbrains.annotations.Nullable
                     String type,
                     // Failover SMS 발신번호, 기본: Failover 설정 시 선택한 발신번호, 승인되지 않은 발신번호 사용시 Failover 동작 안함
                     @SerializedName("from")
                     @Expose
+                    @Nullable @org.jetbrains.annotations.Nullable
                     String from,
                     // Failover SMS 제목, LMS type으로 동작할 때 사용, 기본: 카카오톡 채널명
                     @SerializedName("subject")
                     @Expose
+                    @Nullable @org.jetbrains.annotations.Nullable
                     String subject,
                     // Failover SMS 내용, 기본: 알림톡 메시지 내용 (버튼 제외)
                     @SerializedName("content")
                     @Expose
+                    @Nullable @org.jetbrains.annotations.Nullable
                     String content
             ) {
             }
@@ -457,6 +485,7 @@ public interface SensApigwNtrussComRequestApi {
                 // 수신자 국가번호, default: 82
                 @SerializedName("countryCode")
                 @Expose
+                @Nullable @org.jetbrains.annotations.Nullable
                 String countryCode,
                 // 수신자 번호
                 @SerializedName("to")
