@@ -44,7 +44,10 @@ public class MyServiceTkSampleDatabaseTestController {
             description = "테스트 테이블에 Row 를 입력합니다.\n\n"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정상 동작")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "정상 동작"
+            )
     })
     @PostMapping(
             path = "/row",
@@ -66,12 +69,20 @@ public class MyServiceTkSampleDatabaseTestController {
     }
 
     public record InsertDataSampleInputVo(
-            @Schema(description = "글 본문", requiredMode = Schema.RequiredMode.REQUIRED, example = "테스트 텍스트입니다.")
+            @Schema(
+                    description = "글 본문",
+                    requiredMode = Schema.RequiredMode.REQUIRED,
+                    example = "테스트 텍스트입니다."
+            )
             @JsonProperty("content")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String content,
 
-            @Schema(description = "원하는 날짜(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+            @Schema(
+                    description = "원하는 날짜(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)",
+                    requiredMode = Schema.RequiredMode.REQUIRED,
+                    example = "2024_05_02_T_15_14_49_552_KST"
+            )
             @JsonProperty("dateString")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String dateString
@@ -79,37 +90,65 @@ public class MyServiceTkSampleDatabaseTestController {
     }
 
     public record InsertDataSampleOutputVo(
-            @Schema(description = "글 고유번호", requiredMode = Schema.RequiredMode.REQUIRED, example = "1234")
+            @Schema(
+                    description = "글 고유번호",
+                    requiredMode = Schema.RequiredMode.REQUIRED,
+                    example = "1234"
+            )
             @JsonProperty("uid")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long uid,
 
-            @Schema(description = "글 본문", requiredMode = Schema.RequiredMode.REQUIRED, example = "테스트 텍스트입니다.")
+            @Schema(
+                    description = "글 본문",
+                    requiredMode = Schema.RequiredMode.REQUIRED,
+                    example = "테스트 텍스트입니다."
+            )
             @JsonProperty("content")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String content,
 
-            @Schema(description = "자동 생성 숫자", requiredMode = Schema.RequiredMode.REQUIRED, example = "21345")
+            @Schema(
+                    description = "자동 생성 숫자",
+                    requiredMode = Schema.RequiredMode.REQUIRED,
+                    example = "21345"
+            )
             @JsonProperty("randomNum")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer randomNum,
 
-            @Schema(description = "테스트용 일시 데이터(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+            @Schema(
+                    description = "테스트용 일시 데이터(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)",
+                    requiredMode = Schema.RequiredMode.REQUIRED,
+                    example = "2024_05_02_T_15_14_49_552_KST"
+            )
             @JsonProperty("testDatetime")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String testDatetime,
 
-            @Schema(description = "글 작성일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+            @Schema(
+                    description = "글 작성일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)",
+                    requiredMode = Schema.RequiredMode.REQUIRED,
+                    example = "2024_05_02_T_15_14_49_552_KST"
+            )
             @JsonProperty("createDate")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String createDate,
 
-            @Schema(description = "글 수정일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+            @Schema(
+                    description = "글 수정일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)",
+                    requiredMode = Schema.RequiredMode.REQUIRED,
+                    example = "2024_05_02_T_15_14_49_552_KST"
+            )
             @JsonProperty("updateDate")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String updateDate,
 
-            @Schema(description = "글 삭제일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z, Null 이면 /)", requiredMode = Schema.RequiredMode.REQUIRED, example = "/")
+            @Schema(
+                    description = "글 삭제일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z, Null 이면 /)",
+                    requiredMode = Schema.RequiredMode.REQUIRED,
+                    example = "/"
+            )
             @JsonProperty("deleteDate")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String deleteDate
@@ -123,7 +162,10 @@ public class MyServiceTkSampleDatabaseTestController {
             description = "테스트 테이블의 모든 Row 를 모두 삭제합니다.\n\n"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정상 동작")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "정상 동작"
+            )
     })
     @DeleteMapping(
             path = "/rows",
@@ -191,9 +233,16 @@ public class MyServiceTkSampleDatabaseTestController {
             description = "테스트 테이블의 모든 Rows 를 반환합니다.\n\n"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정상 동작")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "정상 동작"
+            )
     })
-    @GetMapping(path = "/rows", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(
+            path = "/rows",
+            consumes = MediaType.ALL_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseBody
     @Nullable
     @org.jetbrains.annotations.Nullable
