@@ -2670,7 +2670,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendEmailVerificationForAddNewEmailInputVo inputVo
-    ) {
+    ) throws Exception {
         return service.sendEmailVerificationForAddNewEmail(httpServletResponse, inputVo, Objects.requireNonNull(authorization));
     }
 

@@ -435,7 +435,7 @@ public interface MyServiceTkAuthService {
             MyServiceTkAuthController.SendEmailVerificationForAddNewEmailInputVo inputVo,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String authorization
-    );
+    ) throws Exception;
 
 
     ////

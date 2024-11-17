@@ -3097,7 +3097,6 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
 
-    // todo
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
@@ -3110,8 +3109,62 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             MyServiceTkAuthController.SendEmailVerificationForAddNewEmailInputVo inputVo,
             @org.jetbrains.annotations.NotNull
             String authorization
-    ) {
-        return null;
+    ) throws Exception {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        // 입력 데이터 검증
+        boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberEmailRepository
+                .existsByEmailAddressAndRowDeleteDateStr(inputVo.email(), "/");
+
+        if (memberExists) {
+            // 기존 회원 존재
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        // 정보 저장 후 이메일 발송
+        long verificationTimeSec = 60 * 10;
+        String verificationCode = String.format("%06d", new Random().nextInt(999999)); // 랜덤 6자리 숫자
+        Db1_RaillyLinkerCompany_TotalAuthAddEmailVerification memberRegisterEmailVerificationData =
+                db1RaillyLinkerCompanyTotalAuthAddEmailVerificationRepository.save(
+                        new Db1_RaillyLinkerCompany_TotalAuthAddEmailVerification(
+                                memberData,
+                                inputVo.email(),
+                                verificationCode,
+                                LocalDateTime.now().plusSeconds(verificationTimeSec)
+                        )
+                );
+
+        emailSender.sendThymeLeafHtmlMail(
+                "Springboot Mvc Project Template",
+                new String[]{inputVo.email()},
+                null,
+                "Springboot Mvc Project Template 이메일 추가 - 본인 계정 확인용 이메일입니다.",
+                "send_email_verification_for_add_new_email/add_email_verification_email",
+                new HashMap<String, Object>() {{
+                    put("verificationCode", verificationCode);
+                }},
+                null,
+                null,
+                null,
+                null
+        );
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.SendEmailVerificationForAddNewEmailOutputVo(
+                memberRegisterEmailVerificationData.uid,
+                memberRegisterEmailVerificationData.verificationExpireWhen
+                        .atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+        );
     }
 
 
@@ -3129,7 +3182,50 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Optional<Db1_RaillyLinkerCompany_TotalAuthAddEmailVerification> emailVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthAddEmailVerificationRepository
+                        .findByUidAndRowDeleteDateStr(verificationUid, "/");
+
+        if (emailVerificationOpt.isEmpty()) {
+            // 해당 이메일 검증을 요청한 적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthAddEmailVerification emailVerification = emailVerificationOpt.get();
+
+        if (!emailVerification.totalAuthMember.uid.equals(memberUid) ||
+                !emailVerification.emailAddress.equals(email)) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(emailVerification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        boolean codeMatched = emailVerification.verificationSecret.equals(verificationCode);
+
+        if (codeMatched) {
+            // 코드 일치
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
@@ -3146,10 +3242,83 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        Optional<Db1_RaillyLinkerCompany_TotalAuthAddEmailVerification> emailVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthAddEmailVerificationRepository
+                        .findByUidAndRowDeleteDateStr(inputVo.verificationUid(), "/");
+
+        if (emailVerificationOpt.isEmpty()) {
+            // 해당 이메일 검증을 요청한 적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthAddEmailVerification emailVerification = emailVerificationOpt.get();
+
+        if (!emailVerification.totalAuthMember.uid.equals(memberUid) ||
+                !emailVerification.emailAddress.equals(inputVo.email())) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        if (LocalDateTime.now().isAfter(emailVerification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return null;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        if (emailVerification.verificationSecret.equals(inputVo.verificationCode())) {
+            // 코드 일치
+            boolean isUserExists = db1RaillyLinkerCompanyTotalAuthMemberEmailRepository
+                    .existsByEmailAddressAndRowDeleteDateStr(inputVo.email(), "/");
+            if (isUserExists) {
+                // 기존 회원이 있을 때
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "4");
+                return null;
+            }
+
+            // 이메일 추가
+            Db1_RaillyLinkerCompany_TotalAuthMemberEmail memberEmailData =
+                    db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.save(
+                            new Db1_RaillyLinkerCompany_TotalAuthMemberEmail(memberData, inputVo.email())
+                    );
+
+            // 확인 완료된 검증 요청 정보 삭제
+            emailVerification.rowDeleteDateStr =
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            db1RaillyLinkerCompanyTotalAuthAddEmailVerificationRepository.save(emailVerification);
+
+            if (inputVo.frontEmail()) {
+                // 대표 이메일로 설정
+                memberData.frontTotalAuthMemberEmail = memberEmailData;
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+            }
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+            return new MyServiceTkAuthController.AddNewEmailOutputVo(memberEmailData.uid);
+        } else {
+            // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+            return null;
+        }
     }
 
 
+    // todo
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
