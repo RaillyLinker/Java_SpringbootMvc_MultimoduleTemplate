@@ -25,16 +25,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.raillylinker.module_security.configurations.SecurityConfig.AuthTokenFilterTotalAuth.*;
 
@@ -336,7 +337,6 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
         } else {
             Db1_RaillyLinkerCompany_TotalAuthMember memberEntity = memberEntityOpt.get();
 
-            // Get all tokens that are still valid
             List<Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory> tokenEntityList = db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository
                     .findAllByTotalAuthMemberAndAccessTokenExpireWhenAfterAndRowDeleteDateStr(
                             memberEntity, LocalDateTime.now(), "/");
@@ -353,7 +353,6 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
                     accessTokenExpireRemainSeconds = jwtTokenUtil.getRemainSeconds(accessToken);
                 }
 
-                // Save to Redis with forced expiration
                 if (accessTokenExpireRemainSeconds != null) {
                     try {
                         redis1MapTotalAuthForceExpireAuthorizationSet.saveKeyValue(
@@ -1255,7 +1254,6 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
 
-    // todo Authorization 입력 안했을 시 400 이 뜨는 현상 해결 및 아래 코드 완성하기
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
@@ -1265,7 +1263,51 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        // loginAccessToken 의 Iterable 가져오기
+        List<Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory> tokenInfoList =
+                db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository.findAllByTotalAuthMemberAndLogoutDateAndRowDeleteDateStr(
+                        memberData,
+                        null,
+                        "/"
+                );
+
+        // 발행되었던 모든 액세스 토큰 무효화 (다른 디바이스에선 사용중 로그아웃된 것과 동일한 효과)
+        for (Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory tokenInfo : tokenInfoList) {
+            tokenInfo.logoutDate = LocalDateTime.now();
+            db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository.save(tokenInfo);
+
+            // 토큰 만료처리
+            String tokenType = tokenInfo.tokenType;
+            String accessToken = tokenInfo.accessToken;
+
+            Long accessTokenExpireRemainSeconds = null;
+            if ("Bearer".equals(tokenType)) {
+                accessTokenExpireRemainSeconds = jwtTokenUtil.getRemainSeconds(accessToken);
+            }
+
+            try {
+                if (accessTokenExpireRemainSeconds != null) {
+                    redis1MapTotalAuthForceExpireAuthorizationSet.saveKeyValue(
+                            tokenType + "_" + accessToken,
+                            new Redis1_Map_TotalAuthForceExpireAuthorizationSet.ValueVo(),
+                            accessTokenExpireRemainSeconds * 1000
+                    );
+                }
+            } catch (Exception e) {
+                classLogger.error("error : ", e);
+            }
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -1279,7 +1321,78 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        // 멤버의 권한 리스트를 조회 후 반환
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberRole> memberRoleList =
+                db1RaillyLinkerCompanyTotalAuthMemberRoleRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        List<String> roleList = new ArrayList<>();
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberRole userRole : memberRoleList) {
+            roleList.add(userRole.role);
+        }
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberProfile> profileData =
+                db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+        List<MyServiceTkAuthController.GetMemberInfoOutputVo.ProfileInfo> myProfileList = new ArrayList<>();
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberProfile profile : profileData) {
+            myProfileList.add(new MyServiceTkAuthController.GetMemberInfoOutputVo.ProfileInfo(
+                    profile.uid,
+                    profile.imageFullUrl,
+                    profile.uid.equals(memberData.frontTotalAuthMemberProfile.uid)
+            ));
+        }
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberEmail> emailEntityList =
+                db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+        List<MyServiceTkAuthController.GetMemberInfoOutputVo.EmailInfo> myEmailList = new ArrayList<>();
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberEmail emailEntity : emailEntityList) {
+            myEmailList.add(new MyServiceTkAuthController.GetMemberInfoOutputVo.EmailInfo(
+                    emailEntity.uid,
+                    emailEntity.emailAddress,
+                    emailEntity.uid.equals(memberData.frontTotalAuthMemberEmail.uid)
+            ));
+        }
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberPhone> phoneEntityList =
+                db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+        List<MyServiceTkAuthController.GetMemberInfoOutputVo.PhoneNumberInfo> myPhoneNumberList = new ArrayList<>();
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberPhone phoneEntity : phoneEntityList) {
+            myPhoneNumberList.add(new MyServiceTkAuthController.GetMemberInfoOutputVo.PhoneNumberInfo(
+                    phoneEntity.uid,
+                    phoneEntity.phoneNumber,
+                    phoneEntity.uid.equals(memberData.frontTotalAuthMemberPhone.uid)
+            ));
+        }
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login> oAuth2EntityList =
+                db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+        List<MyServiceTkAuthController.GetMemberInfoOutputVo.OAuth2Info> myOAuth2List = new ArrayList<>();
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login oAuth2Entity : oAuth2EntityList) {
+            myOAuth2List.add(new MyServiceTkAuthController.GetMemberInfoOutputVo.OAuth2Info(
+                    oAuth2Entity.uid,
+                    (int) oAuth2Entity.oauth2TypeCode,
+                    oAuth2Entity.oauth2Id
+            ));
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.GetMemberInfoOutputVo(
+                memberData.accountId,
+                roleList,
+                myOAuth2List,
+                myProfileList,
+                myEmailList,
+                myPhoneNumberList,
+                memberData.accountPassword == null
+        );
     }
 
 
@@ -1293,7 +1406,9 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String id
     ) {
-        return null;
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        boolean isDuplicate = db1RaillyLinkerCompanyTotalAuthMemberRepository.existsByAccountIdAndRowDeleteDateStr(id.trim(), "/");
+        return new MyServiceTkAuthController.CheckIdDuplicateOutputVo(isDuplicate);
     }
 
 
@@ -1308,7 +1423,25 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String id
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        if (db1RaillyLinkerCompanyTotalAuthMemberRepository.existsByAccountIdAndRowDeleteDateStr(id, "/")) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        memberData.accountId = id;
+        db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -1320,11 +1453,107 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.JoinTheMembershipForTestInputVo inputVo
-    ) {
+    ) throws IOException {
+        if (!"aadke234!@".equals(inputVo.apiSecret())) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
 
+        if (db1RaillyLinkerCompanyTotalAuthMemberRepository.existsByAccountIdAndRowDeleteDateStr(inputVo.id().trim(), "/")) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        if (inputVo.email() != null) {
+            boolean isUserExists = db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.existsByEmailAddressAndRowDeleteDateStr(inputVo.email(), "/");
+            if (isUserExists) {
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "3");
+                return;
+            }
+        }
+
+        if (inputVo.phoneNumber() != null) {
+            boolean isUserExists = db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.existsByPhoneNumberAndRowDeleteDateStr(inputVo.phoneNumber(), "/");
+            if (isUserExists) {
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "4");
+                return;
+            }
+        }
+
+        String password = passwordEncoder.encode(inputVo.password()); // 비밀번호 암호화
+
+        // 회원가입
+        Db1_RaillyLinkerCompany_TotalAuthMember memberEntity = new Db1_RaillyLinkerCompany_TotalAuthMember(
+                inputVo.id(),
+                password,
+                null,
+                null,
+                null
+        );
+        memberEntity = db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberEntity);
+
+        if (inputVo.profileImageFile() != null) {
+            // 저장된 프로필 이미지 파일을 다운로드 할 수 있는 URL
+
+            //----------------------------------------------------------------------------------------------------------
+            // 프로필 이미지를 서버 스토리지에 저장할 때 사용하는 방식
+            Path saveDirectoryPath = Paths.get("./by_product_files/member/profile").toAbsolutePath().normalize();
+            Files.createDirectories(saveDirectoryPath);
+
+            String multiPartFileNameString = StringUtils.cleanPath(Objects.requireNonNull(inputVo.profileImageFile().getOriginalFilename()));
+            int fileExtensionSplitIdx = multiPartFileNameString.lastIndexOf('.');
+
+            String fileNameWithOutExtension;
+            String fileExtension;
+
+            if (fileExtensionSplitIdx == -1) {
+                fileNameWithOutExtension = multiPartFileNameString;
+                fileExtension = "";
+            } else {
+                fileNameWithOutExtension = multiPartFileNameString.substring(0, fileExtensionSplitIdx);
+                fileExtension = multiPartFileNameString.substring(fileExtensionSplitIdx + 1);
+            }
+
+            String savedFileName = String.format("%s(%s).%s",
+                    fileNameWithOutExtension,
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    fileExtension);
+
+            inputVo.profileImageFile().transferTo(saveDirectoryPath.resolve(savedFileName).normalize());
+
+            String savedProfileImageUrl = externalAccessAddress + "/my-service/tk/auth/member-profile/" + savedFileName;
+            //----------------------------------------------------------------------------------------------------------
+
+            Db1_RaillyLinkerCompany_TotalAuthMemberProfile memberProfileData = new Db1_RaillyLinkerCompany_TotalAuthMemberProfile(memberEntity, savedProfileImageUrl);
+            memberProfileData = db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.save(memberProfileData);
+            memberEntity.frontTotalAuthMemberProfile = memberProfileData;
+        }
+
+        if (inputVo.email() != null) {
+            // 이메일 저장
+            Db1_RaillyLinkerCompany_TotalAuthMemberEmail memberEmailData = new Db1_RaillyLinkerCompany_TotalAuthMemberEmail(memberEntity, inputVo.email());
+            memberEmailData = db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.save(memberEmailData);
+            memberEntity.frontTotalAuthMemberEmail = memberEmailData;
+        }
+
+        if (inputVo.phoneNumber() != null) {
+            // 전화번호 저장
+            Db1_RaillyLinkerCompany_TotalAuthMemberPhone memberPhoneData = new Db1_RaillyLinkerCompany_TotalAuthMemberPhone(memberEntity, inputVo.phoneNumber());
+            memberPhoneData = db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.save(memberPhoneData);
+            memberEntity.frontTotalAuthMemberPhone = memberPhoneData;
+        }
+
+        db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberEntity);
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
+    // todo
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override

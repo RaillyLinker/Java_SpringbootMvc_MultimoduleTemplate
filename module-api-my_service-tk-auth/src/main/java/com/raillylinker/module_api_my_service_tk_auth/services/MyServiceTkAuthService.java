@@ -196,7 +196,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.JoinTheMembershipForTestInputVo inputVo
-    );
+    ) throws IOException;
 
 
     ////
