@@ -1928,7 +1928,6 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
 
-    // todo
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
@@ -1937,8 +1936,107 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.JoinTheMembershipWithPhoneNumberInputVo inputVo
-    ) {
+    ) throws IOException {
+        Optional<Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithPhoneVerification> phoneNumberVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithPhoneVerificationRepository.findByUidAndRowDeleteDateStr(inputVo.verificationUid(), "/");
 
+        if (phoneNumberVerificationOpt.isEmpty()) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithPhoneVerification phoneNumberVerification = phoneNumberVerificationOpt.get();
+
+        if (!phoneNumberVerification.phoneNumber.equals(inputVo.phoneNumber())) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(phoneNumberVerification.verificationExpireWhen)) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        if (phoneNumberVerification.verificationSecret.equals(inputVo.verificationCode())) {
+
+            boolean isUserExists = db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.existsByPhoneNumberAndRowDeleteDateStr(inputVo.phoneNumber(), "/");
+            if (isUserExists) {
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "4");
+                return;
+            }
+
+            if (db1RaillyLinkerCompanyTotalAuthMemberRepository.existsByAccountIdAndRowDeleteDateStr(inputVo.id().trim(), "/")) {
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "5");
+                return;
+            }
+
+            // Encrypt password
+            String password = passwordEncoder.encode(inputVo.password());
+
+            // Save member data
+            Db1_RaillyLinkerCompany_TotalAuthMember memberUser = db1RaillyLinkerCompanyTotalAuthMemberRepository.save(
+                    new Db1_RaillyLinkerCompany_TotalAuthMember(inputVo.id(), password, null, null, null));
+
+            // Save phone number
+            Db1_RaillyLinkerCompany_TotalAuthMemberPhone memberPhoneData = db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.save(
+                    new Db1_RaillyLinkerCompany_TotalAuthMemberPhone(memberUser, inputVo.phoneNumber()));
+
+            memberUser.frontTotalAuthMemberPhone = memberPhoneData;
+
+            // Save profile image if available
+            if (inputVo.profileImageFile() != null) {
+                // File storage directory
+                Path saveDirectoryPath = Paths.get("./by_product_files/member/profile").toAbsolutePath().normalize();
+                Files.createDirectories(saveDirectoryPath);
+
+                // 원본 파일명(with suffix)
+                String multiPartFileNameString = StringUtils.cleanPath(Objects.requireNonNull(inputVo.profileImageFile().getOriginalFilename()));
+
+                // 파일 확장자 구분 위치
+                int fileExtensionSplitIdx = multiPartFileNameString.lastIndexOf('.');
+
+                // 확장자가 없는 파일명
+                String fileNameWithOutExtension;
+                // 확장자
+                String fileExtension;
+
+                if (fileExtensionSplitIdx == -1) {
+                    fileNameWithOutExtension = multiPartFileNameString;
+                    fileExtension = "";
+                } else {
+                    fileNameWithOutExtension = multiPartFileNameString.substring(0, fileExtensionSplitIdx);
+                    fileExtension = multiPartFileNameString.substring(fileExtensionSplitIdx + 1);
+                }
+
+                String savedFileName = fileNameWithOutExtension + "(" + LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")) + ")." + fileExtension;
+
+                // Save the profile image file
+                inputVo.profileImageFile().transferTo(saveDirectoryPath.resolve(savedFileName).normalize());
+
+                String savedProfileImageUrl = externalAccessAddress + "/my-service/tk/auth/member-profile/" + savedFileName;
+
+                Db1_RaillyLinkerCompany_TotalAuthMemberProfile memberProfileData = db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.save(
+                        new Db1_RaillyLinkerCompany_TotalAuthMemberProfile(memberUser, savedProfileImageUrl));
+
+                memberUser.frontTotalAuthMemberProfile = memberProfileData;
+            }
+
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberUser);
+
+            // Delete phone verification data after successful membership
+            phoneNumberVerification.rowDeleteDateStr = LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithPhoneVerificationRepository.save(phoneNumberVerification);
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
@@ -1952,8 +2050,139 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.CheckOauth2AccessTokenVerificationForJoinInputVo inputVo
-    ) {
-        return null;
+    ) throws IOException {
+        Long verificationUid;
+        String verificationCode;
+        String expireWhen;
+        String loginId;
+
+        long verificationTimeSec = 60 * 10;
+
+        switch (inputVo.oauth2TypeCode()) {
+            case 1: { // GOOGLE
+                // 클라이언트에서 받은 access 토큰으로 멤버 정보 요청
+                Response<WwwGoogleapisComRequestApi.GetOauth2V1UserInfoOutputVO> response =
+                        networkRetrofit2.wwwGoogleapisComRequestApi.getOauth2V1UserInfo(inputVo.oauth2AccessToken()).execute();
+
+                // 액세스 토큰 정상 동작 확인
+                if (response.code() != 200 || response.body() == null) {
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "1");
+                    return null;
+                }
+
+                loginId = response.body().id();
+
+                boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.existsByOauth2TypeCodeAndOauth2IdAndRowDeleteDateStr(
+                        (byte) 1, Objects.requireNonNull(loginId), "/"
+                );
+
+                if (memberExists) { // 기존 회원 존재
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "2");
+                    return null;
+                }
+
+                verificationCode = String.format("%06d", new Random().nextInt(999999)); // 랜덤 6자리 숫자
+                Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification memberRegisterOauth2VerificationData =
+                        db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithOauth2VerificationRepository.save(
+                                new Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification(
+                                        (byte) 1, loginId, verificationCode, LocalDateTime.now().plusSeconds(verificationTimeSec)
+                                )
+                        );
+
+                verificationUid = memberRegisterOauth2VerificationData.uid;
+
+                expireWhen = memberRegisterOauth2VerificationData.verificationExpireWhen.atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+                break;
+            }
+            case 2: { // NAVER
+                // 클라이언트에서 받은 access 토큰으로 멤버 정보 요청
+                Response<OpenapiNaverComRequestApi.GetV1NidMeOutputVO> response =
+                        networkRetrofit2.openapiNaverComRequestApi.getV1NidMe(inputVo.oauth2AccessToken()).execute();
+
+                // 액세스 토큰 정상 동작 확인
+                if (response.code() != 200 || response.body() == null) {
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "1");
+                    return null;
+                }
+
+                loginId = response.body().response().id();
+
+                boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.existsByOauth2TypeCodeAndOauth2IdAndRowDeleteDateStr(
+                        (byte) 2, loginId, "/"
+                );
+
+                if (memberExists) { // 기존 회원 존재
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "2");
+                    return null;
+                }
+
+                verificationCode = String.format("%06d", new Random().nextInt(999999)); // 랜덤 6자리 숫자
+                Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification memberRegisterOauth2VerificationData =
+                        db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithOauth2VerificationRepository.save(
+                                new Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification(
+                                        (byte) 2, loginId, verificationCode, LocalDateTime.now().plusSeconds(verificationTimeSec)
+                                )
+                        );
+
+                verificationUid = memberRegisterOauth2VerificationData.uid;
+
+                expireWhen = memberRegisterOauth2VerificationData.verificationExpireWhen.atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+                break;
+            }
+            case 3: { // KAKAO TALK
+                // 클라이언트에서 받은 access 토큰으로 멤버 정보 요청
+                Response<KapiKakaoComRequestApi.GetV2UserMeOutputVO> response =
+                        networkRetrofit2.kapiKakaoComRequestApi.getV2UserMe(inputVo.oauth2AccessToken()).execute();
+
+                // 액세스 토큰 정상 동작 확인
+                if (response.code() != 200 || response.body() == null) {
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "1");
+                    return null;
+                }
+
+                loginId = String.valueOf(response.body().id());
+
+                boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.existsByOauth2TypeCodeAndOauth2IdAndRowDeleteDateStr(
+                        (byte) 3, loginId, "/"
+                );
+
+                if (memberExists) { // 기존 회원 존재
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "2");
+                    return null;
+                }
+
+                verificationCode = String.format("%06d", new Random().nextInt(999999)); // 랜덤 6자리 숫자
+                Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification memberRegisterOauth2VerificationData =
+                        db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithOauth2VerificationRepository.save(
+                                new Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification(
+                                        (byte) 3, loginId, verificationCode, LocalDateTime.now().plusSeconds(verificationTimeSec)
+                                )
+                        );
+
+                verificationUid = memberRegisterOauth2VerificationData.uid;
+
+                expireWhen = memberRegisterOauth2VerificationData.verificationExpireWhen.atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+                break;
+            }
+            default:
+                classLogger.info("SNS Login Type {} Not Supported", inputVo.oauth2TypeCode());
+                httpServletResponse.setStatus(400);
+                return null;
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.CheckOauth2AccessTokenVerificationForJoinOutputVo(
+                verificationUid, verificationCode, loginId, expireWhen
+        );
     }
 
 
@@ -1968,7 +2197,69 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.CheckOauth2IdTokenVerificationForJoinInputVo inputVo
     ) {
-        return null;
+        long verificationUid;
+        String verificationCode;
+        String expireWhen;
+        String loginId;
+
+        long verificationTimeSec = 60 * 10;
+
+        switch (inputVo.oauth2TypeCode()) {
+            case 4: { // Apple
+                AppleOAuthHelperUtil.AppleProfileData appleInfo = appleOAuthHelperUtil.getAppleMemberData(inputVo.oauth2IdToken());
+
+                if (appleInfo != null) {
+                    loginId = appleInfo.snsId();
+                } else {
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "1");
+                    return null;
+                }
+
+                boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.existsByOauth2TypeCodeAndOauth2IdAndRowDeleteDateStr(
+                        (byte) 4,
+                        loginId,
+                        "/"
+                );
+
+                if (memberExists) { // Existing member
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "2");
+                    return null;
+                }
+
+                verificationCode = String.format("%06d", new Random().nextInt(999999)); // Random 6-digit number
+                Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification memberRegisterOauth2VerificationData =
+                        db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithOauth2VerificationRepository.save(
+                                new Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification(
+                                        (byte) 4,
+                                        loginId,
+                                        verificationCode,
+                                        LocalDateTime.now().plusSeconds(verificationTimeSec)
+                                )
+                        );
+
+                verificationUid = memberRegisterOauth2VerificationData.uid;
+
+                expireWhen = memberRegisterOauth2VerificationData.verificationExpireWhen
+                        .atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+                break;
+            }
+
+            default:
+                classLogger.info("SNS Login Type " + inputVo.oauth2TypeCode() + " Not Supported");
+                httpServletResponse.setStatus(400);
+                return null;
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.CheckOauth2IdTokenVerificationForJoinOutputVo(
+                verificationUid,
+                verificationCode,
+                loginId,
+                expireWhen
+        );
     }
 
 
@@ -1980,8 +2271,150 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.JoinTheMembershipWithOauth2InputVo inputVo
-    ) {
+    ) throws IOException {
+        // oauth2 종류 (1 : GOOGLE, 2 : NAVER, 3 : KAKAO)
+        int oauth2TypeCode;
 
+        switch (inputVo.oauth2TypeCode()) {
+            case 1:
+                oauth2TypeCode = 1;
+                break;
+            case 2:
+                oauth2TypeCode = 2;
+                break;
+            case 3:
+                oauth2TypeCode = 3;
+                break;
+            case 4:
+                oauth2TypeCode = 4;
+                break;
+            default:
+                httpServletResponse.setStatus(400);
+                return;
+        }
+
+        Optional<Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification> oauth2VerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithOauth2VerificationRepository
+                        .findByUidAndRowDeleteDateStr(inputVo.verificationUid(), "/");
+
+        if (oauth2VerificationOpt.isEmpty()) { // 해당 검증을 요청한적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithOauth2Verification oauth2Verification = oauth2VerificationOpt.get();
+
+        if (oauth2Verification.oauth2TypeCode != (byte) oauth2TypeCode ||
+                !oauth2Verification.oauth2Id.equals(inputVo.oauth2Id())) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(oauth2Verification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        if (oauth2Verification.verificationSecret.equals(inputVo.verificationCode())) { // 코드 일치
+            boolean isUserExists = db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository
+                    .existsByOauth2TypeCodeAndOauth2IdAndRowDeleteDateStr(
+                            inputVo.oauth2TypeCode().byteValue(),
+                            inputVo.oauth2Id(),
+                            "/"
+                    );
+
+            if (isUserExists) { // 기존 회원이 있을 때
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "4");
+                return;
+            }
+
+            if (db1RaillyLinkerCompanyTotalAuthMemberRepository
+                    .existsByAccountIdAndRowDeleteDateStr(inputVo.id().trim(), "/")) {
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "5");
+                return;
+            }
+
+            // 회원가입
+            Db1_RaillyLinkerCompany_TotalAuthMember memberEntity = db1RaillyLinkerCompanyTotalAuthMemberRepository.save(
+                    new Db1_RaillyLinkerCompany_TotalAuthMember(
+                            inputVo.id(),
+                            null, null, null, null
+                    )
+            );
+
+            // SNS OAuth2 저장
+            db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.save(
+                    new Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login(
+                            memberEntity,
+                            inputVo.oauth2TypeCode().byteValue(),
+                            inputVo.oauth2Id()
+                    )
+            );
+
+            if (inputVo.profileImageFile() != null) {
+                // 저장된 프로필 이미지 파일을 다운로드 할 수 있는 URL
+                String savedProfileImageUrl;
+
+                // 프로필 이미지 파일 저장
+                Path saveDirectoryPath = Paths.get("./by_product_files/member/profile").toAbsolutePath().normalize();
+
+                // 파일 저장 디렉토리 생성
+                Files.createDirectories(saveDirectoryPath);
+
+                String multiPartFileNameString = StringUtils.cleanPath(Objects.requireNonNull(inputVo.profileImageFile().getOriginalFilename()));
+                int fileExtensionSplitIdx = multiPartFileNameString.lastIndexOf('.');
+                String fileNameWithOutExtension;
+                String fileExtension;
+
+                if (fileExtensionSplitIdx == -1) {
+                    fileNameWithOutExtension = multiPartFileNameString;
+                    fileExtension = "";
+                } else {
+                    fileNameWithOutExtension = multiPartFileNameString.substring(0, fileExtensionSplitIdx);
+                    fileExtension = multiPartFileNameString.substring(fileExtensionSplitIdx + 1);
+                }
+
+                String savedFileName = fileNameWithOutExtension + "(" +
+                        LocalDateTime.now().atZone(ZoneId.systemDefault())
+                                .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+                        + ")." + fileExtension;
+
+                inputVo.profileImageFile().transferTo(
+                        saveDirectoryPath.resolve(savedFileName).normalize()
+                );
+
+                savedProfileImageUrl = externalAccessAddress + "/my-service/tk/auth/member-profile/" + savedFileName;
+
+                Db1_RaillyLinkerCompany_TotalAuthMemberProfile memberProfileData =
+                        db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.save(
+                                new Db1_RaillyLinkerCompany_TotalAuthMemberProfile(
+                                        memberEntity,
+                                        savedProfileImageUrl
+                                )
+                        );
+
+                memberEntity.frontTotalAuthMemberProfile = memberProfileData;
+            }
+
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberEntity);
+
+            // 확인 완료된 검증 요청 정보 삭제
+            oauth2Verification.rowDeleteDateStr =
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithOauth2VerificationRepository.save(oauth2Verification);
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else { // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
@@ -1996,7 +2429,81 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.UpdateAccountPasswordInputVo inputVo
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        if (memberData.accountPassword == null) { // 기존 비밀번호가 존재하지 않음
+            if (inputVo.oldPassword() != null) { // 비밀번호 불일치
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "1");
+                return;
+            }
+        } else { // 기존 비밀번호 존재
+            if (inputVo.oldPassword() == null || !passwordEncoder.matches(inputVo.oldPassword(), memberData.accountPassword)) { // 비밀번호 불일치
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "1");
+                return;
+            }
+        }
+
+        if (inputVo.newPassword() == null) {
+            List<Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login> oAuth2EntityList =
+                    db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+            if (oAuth2EntityList.isEmpty()) {
+                // null로 만들려 할 때 account 외의 OAuth2 인증이 없다면 제거 불가
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "2");
+                return;
+            }
+
+            memberData.accountPassword = null;
+        } else {
+            memberData.accountPassword = passwordEncoder.encode(inputVo.newPassword()); // 비밀번호는 암호화
+        }
+
+        db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+        // 모든 토큰 비활성화 처리
+        List<Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory> tokenInfoList =
+                db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository.findAllByTotalAuthMemberAndLogoutDateAndRowDeleteDateStr(
+                        memberData, null, "/"
+                );
+
+        // 발행되었던 모든 액세스 토큰 무효화 (다른 디바이스에선 사용 중 로그아웃된 것과 동일한 효과)
+        for (Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory tokenInfo : tokenInfoList) {
+            tokenInfo.logoutDate = LocalDateTime.now();
+            db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository.save(tokenInfo);
+
+            // 토큰 만료 처리
+            String tokenType = tokenInfo.tokenType;
+            String accessToken = tokenInfo.accessToken;
+
+            Long accessTokenExpireRemainSeconds = null;
+            if ("Bearer".equals(tokenType)) {
+                accessTokenExpireRemainSeconds = jwtTokenUtil.getRemainSeconds(accessToken);
+            }
+
+            try {
+                if (accessTokenExpireRemainSeconds != null) {
+                    redis1MapTotalAuthForceExpireAuthorizationSet.saveKeyValue(
+                            tokenType + "_" + accessToken,
+                            new Redis1_Map_TotalAuthForceExpireAuthorizationSet.ValueVo(),
+                            accessTokenExpireRemainSeconds * 1000
+                    );
+                }
+            } catch (Exception e) {
+                classLogger.error("error ", e);
+            }
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -2010,8 +2517,53 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendEmailVerificationForFindPasswordInputVo inputVo
-    ) {
-        return null;
+    ) throws Exception {
+        // 입력 데이터 검증
+        boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.existsByEmailAddressAndRowDeleteDateStr(
+                inputVo.email(),
+                "/"
+        );
+
+        if (!memberExists) { // 회원 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        // 정보 저장 후 이메일 발송
+        long verificationTimeSec = 60 * 10;
+        String verificationCode = String.format("%06d", new Random().nextInt(999999)); // 랜덤 6자리 숫자
+
+        Db1_RaillyLinkerCompany_TotalAuthFindPwWithEmailVerification memberFindPasswordEmailVerificationData =
+                db1RaillyLinkerCompanyTotalAuthFindPwWithEmailVerificationRepository.save(
+                        new Db1_RaillyLinkerCompany_TotalAuthFindPwWithEmailVerification(
+                                inputVo.email(),
+                                verificationCode,
+                                LocalDateTime.now().plusSeconds(verificationTimeSec)
+                        )
+                );
+
+        emailSender.sendThymeLeafHtmlMail(
+                "Springboot Mvc Project Template",
+                new String[]{inputVo.email()},
+                null,
+                "Springboot Mvc Project Template 비밀번호 찾기 - 본인 계정 확인용 이메일입니다.",
+                "send_email_verification_for_find_password/find_password_email_verification_email",
+                new HashMap<String, Object>() {{
+                    put("verificationCode", verificationCode);
+                }},
+                null,
+                null,
+                null,
+                null
+        );
+
+        return new MyServiceTkAuthController.SendEmailVerificationForFindPasswordOutputVo(
+                memberFindPasswordEmailVerificationData.uid,
+                memberFindPasswordEmailVerificationData.verificationExpireWhen
+                        .atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+        );
     }
 
 
@@ -2027,7 +2579,44 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String verificationCode
     ) {
+        Optional<Db1_RaillyLinkerCompany_TotalAuthFindPwWithEmailVerification> emailVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthFindPwWithEmailVerificationRepository.findByUidAndRowDeleteDateStr(
+                        verificationUid,
+                        "/"
+                );
 
+        if (emailVerificationOpt.isEmpty()) { // 해당 이메일 검증을 요청한 적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthFindPwWithEmailVerification emailVerification = emailVerificationOpt.get();
+
+        if (!emailVerification.emailAddress.equals(email)) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(emailVerification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        boolean codeMatched = emailVerification.verificationSecret.equals(verificationCode);
+
+        if (codeMatched) {
+            // 코드 일치
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
@@ -2039,183 +2628,535 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.FindPasswordWithEmailInputVo inputVo
+    ) throws Exception {
+        Optional<Db1_RaillyLinkerCompany_TotalAuthFindPwWithEmailVerification> emailVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthFindPwWithEmailVerificationRepository.findByUidAndRowDeleteDateStr(
+                        inputVo.verificationUid(),
+                        "/"
+                );
+
+        if (emailVerificationOpt.isEmpty()) { // 해당 이메일 검증을 요청한 적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthFindPwWithEmailVerification emailVerification = emailVerificationOpt.get();
+
+        if (!emailVerification.emailAddress.equals(inputVo.email())) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(emailVerification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        if (emailVerification.verificationSecret.equals(inputVo.verificationCode())) { // 코드 일치
+            // 입력 데이터 검증
+            Optional<Db1_RaillyLinkerCompany_TotalAuthMemberEmail> memberEmailOpt =
+                    db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.findByEmailAddressAndRowDeleteDateStr(
+                            inputVo.email(),
+                            "/"
+                    );
+
+            if (memberEmailOpt.isEmpty()) {
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "4");
+                return;
+            }
+
+            Db1_RaillyLinkerCompany_TotalAuthMemberEmail memberEmail = memberEmailOpt.get();
+
+            // 랜덤 비번 생성 후 세팅
+            String newPassword = String.format("%09d", new Random().nextInt(999999999)); // 랜덤 9자리 숫자
+            memberEmail.totalAuthMember.accountPassword = passwordEncoder.encode(newPassword); // 비밀번호는 암호화
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberEmail.totalAuthMember);
+
+            // 생성된 비번 이메일 전송
+            emailSender.sendThymeLeafHtmlMail(
+                    "Springboot Mvc Project Template",
+                    new String[]{inputVo.email()},
+                    null,
+                    "Springboot Mvc Project Template 새 비밀번호 발급",
+                    "find_password_with_email/find_password_new_password_email",
+                    new HashMap<String, Object>() {{
+                        put("newPassword", newPassword);
+                    }},
+                    null,
+                    null,
+                    null,
+                    null
+            );
+
+            // 확인 완료된 검증 요청 정보 삭제
+            emailVerification.rowDeleteDateStr =
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            db1RaillyLinkerCompanyTotalAuthFindPwWithEmailVerificationRepository.save(emailVerification);
+
+            // 모든 토큰 비활성화 처리
+            // loginAccessToken 의 Iterable 가져오기
+            Iterable<Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory> tokenInfoList =
+                    db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository.findAllByTotalAuthMemberAndLogoutDateAndRowDeleteDateStr(
+                            memberEmail.totalAuthMember,
+                            null,
+                            "/"
+                    );
+
+            // 발행되었던 모든 액세스 토큰 무효화 (다른 디바이스에선 사용중 로그아웃된 것과 동일한 효과)
+            for (Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory tokenInfo : tokenInfoList) {
+                tokenInfo.logoutDate = LocalDateTime.now();
+                db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository.save(tokenInfo);
+
+                // 토큰 만료처리
+                String tokenType = tokenInfo.tokenType;
+                String accessToken = tokenInfo.accessToken;
+
+                Long accessTokenExpireRemainSeconds = null;
+                if ("Bearer".equals(tokenType)) {
+                    accessTokenExpireRemainSeconds = jwtTokenUtil.getRemainSeconds(accessToken);
+                }
+
+                try {
+                    redis1MapTotalAuthForceExpireAuthorizationSet.saveKeyValue(
+                            tokenType + "_" + accessToken,
+                            new Redis1_Map_TotalAuthForceExpireAuthorizationSet.ValueVo(),
+                            accessTokenExpireRemainSeconds != null ? accessTokenExpireRemainSeconds * 1000 : 0
+                    );
+                } catch (Exception e) {
+                    classLogger.error("error ", e);
+                    e.printStackTrace();
+                }
+            }
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else { // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
+    }
+
+
+    // todo
+    ////
+    @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    public MyServiceTkAuthController.SendPhoneVerificationForFindPasswordOutputVo sendPhoneVerificationForFindPassword(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            MyServiceTkAuthController.SendPhoneVerificationForFindPasswordInputVo inputVo
+    ) {
+        return null;
+    }
+
+
+    ////
+    @Override
+    public void checkPhoneVerificationForFindPassword(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            Long verificationUid,
+            @org.jetbrains.annotations.NotNull
+            String phoneNumber,
+            @org.jetbrains.annotations.NotNull
+            String verificationCode
     ) {
 
     }
 
+
+    ////
+    @Override
+    public void findPasswordWithPhoneNumber(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            MyServiceTkAuthController.FindPasswordWithPhoneNumberInputVo inputVo
+    ) {
+
+    }
+
+
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.SendPhoneVerificationForFindPasswordOutputVo sendPhoneVerificationForFindPassword(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull SendPhoneVerificationForFindPasswordInputVo inputVo) {
+    public MyServiceTkAuthController.GetMyEmailListOutputVo getMyEmailList(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
-    @Override
-    public void checkPhoneVerificationForFindPassword(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull Long verificationUid, @org.jetbrains.annotations.NotNull String phoneNumber, @org.jetbrains.annotations.NotNull String verificationCode) {
 
-    }
-
-    @Override
-    public void findPasswordWithPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull FindPasswordWithPhoneNumberInputVo inputVo) {
-
-    }
-
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.GetMyEmailListOutputVo getMyEmailList(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
+    public MyServiceTkAuthController.GetMyPhoneNumberListOutputVo getMyPhoneNumberList(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
+
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.GetMyPhoneNumberListOutputVo getMyPhoneNumberList(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
+    public MyServiceTkAuthController.GetMyOauth2ListOutputVo getMyOauth2List(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse HttpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
+
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.GetMyOauth2ListOutputVo getMyOauth2List(@org.jetbrains.annotations.NotNull HttpServletResponse HttpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
+    public MyServiceTkAuthController.SendEmailVerificationForAddNewEmailOutputVo sendEmailVerificationForAddNewEmail(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            MyServiceTkAuthController.SendEmailVerificationForAddNewEmailInputVo inputVo,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
+
+    ////
+    @Override
+    public void checkEmailVerificationForAddNewEmail(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            Long verificationUid,
+            @org.jetbrains.annotations.NotNull
+            String email,
+            @org.jetbrains.annotations.NotNull
+            String verificationCode,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
+
+    }
+
+
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.SendEmailVerificationForAddNewEmailOutputVo sendEmailVerificationForAddNewEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull SendEmailVerificationForAddNewEmailInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
+    public MyServiceTkAuthController.AddNewEmailOutputVo addNewEmail(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            MyServiceTkAuthController.AddNewEmailInputVo inputVo,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
+
+    ////
     @Override
-    public void checkEmailVerificationForAddNewEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull Long verificationUid, @org.jetbrains.annotations.NotNull String email, @org.jetbrains.annotations.NotNull String verificationCode, @org.jetbrains.annotations.NotNull String authorization) {
+    public void deleteMyEmail(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            Long emailUid,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
 
     }
 
+
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.AddNewEmailOutputVo addNewEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull AddNewEmailInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
+    public MyServiceTkAuthController.SendPhoneVerificationForAddNewPhoneNumberOutputVo sendPhoneVerificationForAddNewPhoneNumber(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            MyServiceTkAuthController.SendPhoneVerificationForAddNewPhoneNumberInputVo inputVo,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
+
+    ////
     @Override
-    public void deleteMyEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull Long emailUid, @org.jetbrains.annotations.NotNull String authorization) {
+    public void checkPhoneVerificationForAddNewPhoneNumber(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            Long verificationUid,
+            @org.jetbrains.annotations.NotNull
+            String phoneNumber,
+            @org.jetbrains.annotations.NotNull
+            String verificationCode,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
 
     }
 
+
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.SendPhoneVerificationForAddNewPhoneNumberOutputVo sendPhoneVerificationForAddNewPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull SendPhoneVerificationForAddNewPhoneNumberInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
+    public MyServiceTkAuthController.AddNewPhoneNumberOutputVo addNewPhoneNumber(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            MyServiceTkAuthController.AddNewPhoneNumberInputVo inputVo,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
+
+    ////
     @Override
-    public void checkPhoneVerificationForAddNewPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull Long verificationUid, @org.jetbrains.annotations.NotNull String phoneNumber, @org.jetbrains.annotations.NotNull String verificationCode, @org.jetbrains.annotations.NotNull String authorization) {
+    public void deleteMyPhoneNumber(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            Long phoneUid,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
 
     }
 
+
+    ////
+    @Override
+    public void addNewOauth2WithAccessToken(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            MyServiceTkAuthController.AddNewOauth2WithAccessTokenInputVo inputVo,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
+
+    }
+
+
+    ////
+    @Override
+    public void addNewOauth2WithIdToken(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            MyServiceTkAuthController.AddNewOauth2WithIdTokenInputVo inputVo,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
+
+    }
+
+
+    ////
+    @Override
+    public void deleteMyOauth2(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            Long oAuth2Uid,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
+
+    }
+
+
+    ////
+    @Override
+    public void withdrawalMembership(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
+
+    }
+
+
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.AddNewPhoneNumberOutputVo addNewPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull AddNewPhoneNumberInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
+    public MyServiceTkAuthController.GetMyProfileListOutputVo getMyProfileList(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
-    @Override
-    public void deleteMyPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull Long phoneUid, @org.jetbrains.annotations.NotNull String authorization) {
 
-    }
-
-    @Override
-    public void addNewOauth2WithAccessToken(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull AddNewOauth2WithAccessTokenInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
-
-    }
-
-    @Override
-    public void addNewOauth2WithIdToken(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull AddNewOauth2WithIdTokenInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
-
-    }
-
-    @Override
-    public void deleteMyOauth2(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull Long oAuth2Uid, @org.jetbrains.annotations.NotNull String authorization) {
-
-    }
-
-    @Override
-    public void withdrawalMembership(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
-
-    }
-
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.GetMyProfileListOutputVo getMyProfileList(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
+    public MyServiceTkAuthController.GetMyFrontProfileOutputVo getMyFrontProfile(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
+
+    ////
+    @Override
+    public void setMyFrontProfile(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization,
+            @Nullable @org.jetbrains.annotations.Nullable
+            Long profileUid
+    ) {
+
+    }
+
+
+    ////
+    @Override
+    public void deleteMyProfile(
+            @org.jetbrains.annotations.NotNull
+            String authorization,
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            Long profileUid
+    ) {
+
+    }
+
+
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.GetMyFrontProfileOutputVo getMyFrontProfile(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
+    public MyServiceTkAuthController.AddNewProfileOutputVo addNewProfile(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization,
+            @org.jetbrains.annotations.NotNull
+            MyServiceTkAuthController.AddNewProfileInputVo inputVo
+    ) {
         return null;
     }
 
-    @Override
-    public void setMyFrontProfile(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization,
-                                  @Nullable @org.jetbrains.annotations.Nullable Long profileUid) {
 
-    }
-
-    @Override
-    public void deleteMyProfile(@org.jetbrains.annotations.NotNull String authorization, @org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull Long profileUid) {
-
-    }
-
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.AddNewProfileOutputVo addNewProfile(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull AddNewProfileInputVo inputVo) {
+    public ResponseEntity<Resource> downloadProfileFile(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String fileName
+    ) {
         return null;
     }
 
+
+    ////
+    @Override
+    public MyServiceTkAuthController.GetMyFrontEmailOutputVo getMyFrontEmail(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
+        return null;
+    }
+
+
+    ////
+    @Override
+    public void setMyFrontEmail(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization,
+            @Nullable @org.jetbrains.annotations.Nullable
+            Long emailUid
+    ) {
+
+    }
+
+
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public ResponseEntity<Resource> downloadProfileFile(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String fileName) {
+    public MyServiceTkAuthController.GetMyFrontPhoneNumberOutputVo getMyFrontPhoneNumber(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization
+    ) {
         return null;
     }
 
+
+    ////
     @Override
-    public MyServiceTkAuthController.GetMyFrontEmailOutputVo getMyFrontEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
-        return null;
+    public void setMyFrontPhoneNumber(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String authorization,
+            @Nullable @org.jetbrains.annotations.Nullable
+            Long phoneNumberUid
+    ) {
+
     }
 
-    @Override
-    public void setMyFrontEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization,
-                                @Nullable @org.jetbrains.annotations.Nullable Long emailUid) {
 
-    }
-
+    ////
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.GetMyFrontPhoneNumberOutputVo getMyFrontPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
-        return null;
-    }
-
-    @Override
-    public void setMyFrontPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization,
-                                      @Nullable @org.jetbrains.annotations.Nullable Long phoneNumberUid) {
-
-    }
-
-    @Override
-    @Nullable
-    @org.jetbrains.annotations.Nullable
-    public MyServiceTkAuthController.SelectAllRedisKeyValueSampleOutputVo selectAllRedisKeyValueSample(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse) {
+    public MyServiceTkAuthController.SelectAllRedisKeyValueSampleOutputVo selectAllRedisKeyValueSample(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse
+    ) {
         return null;
     }
 }

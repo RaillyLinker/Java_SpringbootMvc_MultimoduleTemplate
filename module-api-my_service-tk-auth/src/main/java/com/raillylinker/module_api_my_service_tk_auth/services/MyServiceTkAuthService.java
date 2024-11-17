@@ -269,7 +269,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.JoinTheMembershipWithPhoneNumberInputVo inputVo
-    );
+    ) throws IOException;
 
 
     ////
@@ -281,7 +281,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.CheckOauth2AccessTokenVerificationForJoinInputVo inputVo
-    );
+    ) throws IOException;
 
 
     ////
@@ -302,7 +302,7 @@ public interface MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            MyServiceTkAuthController.JoinTheMembershipWithOauth2InputVo inputVo);
+            MyServiceTkAuthController.JoinTheMembershipWithOauth2InputVo inputVo) throws IOException;
 
 
     ////
@@ -326,7 +326,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendEmailVerificationForFindPasswordInputVo inputVo
-    );
+    ) throws Exception;
 
 
     ////
@@ -350,7 +350,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.FindPasswordWithEmailInputVo inputVo
-    );
+    ) throws Exception;
 
 
     ////
