@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 public interface MyServiceTkAuthService {
     // (비 로그인 접속 테스트)
@@ -208,7 +209,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendEmailVerificationForJoinInputVo inputVo
-    );
+    ) throws MessagingException, Exception, MessagingException;
 
 
     ////
@@ -232,7 +233,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse HttpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.JoinTheMembershipWithEmailInputVo inputVo
-    );
+    ) throws IOException;
 
 
     ////

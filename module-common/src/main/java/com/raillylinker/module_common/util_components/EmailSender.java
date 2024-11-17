@@ -30,7 +30,7 @@ public interface EmailSender {
             List<@Valid @NotNull File> sendFileList, // 첨부파일 리스트
             @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull MultipartFile> sendMultipartFileList // 첨부파일 리스트 (멀티파트)
-    ) throws MessagingException, UnsupportedEncodingException;
+    ) throws Exception;
 
     // (ThymeLeaf 로 랜더링 한 HTML 이메일 발송)
     void sendThymeLeafHtmlMail(
@@ -54,5 +54,5 @@ public interface EmailSender {
             List<@Valid @NotNull File> sendFileList, // 첨부파일 리스트
             @Nullable @org.jetbrains.annotations.Nullable
             List<@Valid @NotNull MultipartFile> sendMultipartFileList // 첨부파일 리스트 (멀티파트)
-    ) throws MessagingException, UnsupportedEncodingException;
+    ) throws Exception;
 }

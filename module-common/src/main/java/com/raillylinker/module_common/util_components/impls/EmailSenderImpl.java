@@ -74,7 +74,7 @@ public class EmailSenderImpl implements EmailSender {
             // 첨부파일 리스트 (멀티파트)
             @Nullable @org.jetbrains.annotations.Nullable
             List<MultipartFile> sendMultipartFileList
-    ) throws MessagingException, UnsupportedEncodingException {
+    ) throws Exception {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -145,7 +145,7 @@ public class EmailSenderImpl implements EmailSender {
             // 첨부파일 리스트 (멀티파트)
             @Nullable @org.jetbrains.annotations.Nullable
             List<MultipartFile> sendMultipartFileList
-    ) throws MessagingException, UnsupportedEncodingException {
+    ) throws Exception {
         @Valid @NotNull @org.jetbrains.annotations.NotNull
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         @Valid @NotNull @org.jetbrains.annotations.NotNull

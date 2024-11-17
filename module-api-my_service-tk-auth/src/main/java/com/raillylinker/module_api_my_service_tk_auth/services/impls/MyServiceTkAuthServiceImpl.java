@@ -1553,7 +1553,6 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
 
-    // todo
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
@@ -1564,8 +1563,52 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendEmailVerificationForJoinInputVo inputVo
-    ) {
-        return null;
+    ) throws Exception {
+        // 입력 데이터 검증
+        boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.existsByEmailAddressAndRowDeleteDateStr(
+                inputVo.email(),
+                "/"
+        );
+
+        if (memberExists) { // 기존 회원 존재
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        // 정보 저장 후 이메일 발송
+        long verificationTimeSec = 60 * 10;
+        String verificationCode = String.format("%06d", new Random().nextInt(999999)); // 랜덤 6자리 숫자
+        Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification memberRegisterEmailVerificationData =
+                db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithEmailVerificationRepository.save(
+                        new Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification(
+                                inputVo.email(),
+                                verificationCode,
+                                LocalDateTime.now().plusSeconds(verificationTimeSec)
+                        )
+                );
+
+        emailSender.sendThymeLeafHtmlMail(
+                "Springboot Mvc Project Template",
+                new String[]{inputVo.email()},
+                null,
+                "Springboot Mvc Project Template 회원가입 - 본인 계정 확인용 이메일입니다.",
+                "send_email_verification_for_join/email_verification_email",
+                Map.of("verificationCode", verificationCode),
+                null,
+                null,
+                null,
+                null
+        );
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+
+        return new MyServiceTkAuthController.SendEmailVerificationForJoinOutputVo(
+                memberRegisterEmailVerificationData.uid,
+                memberRegisterEmailVerificationData.verificationExpireWhen
+                        .atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+        );
     }
 
 
@@ -1581,7 +1624,42 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String verificationCode
     ) {
+        Optional<Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification> emailVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithEmailVerificationRepository.findByUidAndRowDeleteDateStr(
+                        verificationUid,
+                        "/"
+                );
 
+        if (emailVerificationOpt.isEmpty()) { // 해당 이메일 검증을 요청한적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification emailVerification = emailVerificationOpt.get();
+
+        if (!emailVerification.emailAddress.equals(email)) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(emailVerification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        if (emailVerification.verificationSecret.equals(verificationCode)) {
+            // 코드 일치
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
@@ -1590,11 +1668,148 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     @Override
     public void joinTheMembershipWithEmail(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
-            HttpServletResponse HttpServletResponse,
+            HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.JoinTheMembershipWithEmailInputVo inputVo
-    ) {
+    ) throws IOException {
+        Optional<Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification> emailVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithEmailVerificationRepository.findByUidAndRowDeleteDateStr(
+                        inputVo.verificationUid(),
+                        "/"
+                );
 
+        if (emailVerificationOpt.isEmpty()) { // 해당 이메일 검증을 요청한적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithEmailVerification emailVerification = emailVerificationOpt.get();
+
+        if (!emailVerification.emailAddress.equals(inputVo.email())) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(emailVerification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        if (emailVerification.verificationSecret.equals(inputVo.verificationCode())) { // 코드 일치
+            boolean isUserExists =
+                    db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.existsByEmailAddressAndRowDeleteDateStr(
+                            inputVo.email(),
+                            "/"
+                    );
+            if (isUserExists) { // 기존 회원이 있을 때
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "4");
+                return;
+            }
+
+            if (db1RaillyLinkerCompanyTotalAuthMemberRepository.existsByAccountIdAndRowDeleteDateStr(
+                    inputVo.id().trim(),
+                    "/"
+            )
+            ) {
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "5");
+                return;
+            }
+
+            String password = passwordEncoder.encode(inputVo.password()); // 비밀번호 암호화
+
+            // 회원가입
+            Db1_RaillyLinkerCompany_TotalAuthMember memberData = db1RaillyLinkerCompanyTotalAuthMemberRepository.save(
+                    new Db1_RaillyLinkerCompany_TotalAuthMember(
+                            inputVo.id(),
+                            password,
+                            null,
+                            null,
+                            null
+                    )
+            );
+
+            // 이메일 저장
+            Db1_RaillyLinkerCompany_TotalAuthMemberEmail memberEmailData = db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.save(
+                    new Db1_RaillyLinkerCompany_TotalAuthMemberEmail(
+                            memberData,
+                            inputVo.email()
+                    )
+            );
+
+            memberData.frontTotalAuthMemberEmail = memberEmailData;
+
+            if (inputVo.profileImageFile() != null) {
+                // 저장된 프로필 이미지 파일을 다운로드 할 수 있는 URL
+                String savedProfileImageUrl;
+
+                // 프로필 이미지 파일 저장
+
+                //----------------------------------------------------------------------------------------------------------
+                // 프로필 이미지를 서버 스토리지에 저장할 때 사용하는 방식
+                // 파일 저장 기본 디렉토리 경로
+                Path saveDirectoryPath = Paths.get("./by_product_files/member/profile").toAbsolutePath().normalize();
+
+                // 파일 저장 기본 디렉토리 생성
+                Files.createDirectories(saveDirectoryPath);
+
+                // 원본 파일명(with suffix)
+                String multiPartFileNameString = StringUtils.cleanPath(Objects.requireNonNull(inputVo.profileImageFile().getOriginalFilename()));
+
+                // 파일 확장자 구분 위치
+                int fileExtensionSplitIdx = multiPartFileNameString.lastIndexOf('.');
+
+                // 확장자가 없는 파일명
+                String fileNameWithOutExtension;
+                // 확장자
+                String fileExtension;
+
+                if (fileExtensionSplitIdx == -1) {
+                    fileNameWithOutExtension = multiPartFileNameString;
+                    fileExtension = "";
+                } else {
+                    fileNameWithOutExtension = multiPartFileNameString.substring(0, fileExtensionSplitIdx);
+                    fileExtension = multiPartFileNameString.substring(fileExtensionSplitIdx + 1);
+                }
+
+                String savedFileName = String.format("%s(%s).%s", fileNameWithOutExtension,
+                        LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                        fileExtension);
+
+                // multipartFile 을 targetPath 에 저장
+                inputVo.profileImageFile().transferTo(saveDirectoryPath.resolve(savedFileName).normalize());
+
+                savedProfileImageUrl = externalAccessAddress + "/my-service/tk/auth/member-profile/" + savedFileName;
+                //----------------------------------------------------------------------------------------------------------
+
+                Db1_RaillyLinkerCompany_TotalAuthMemberProfile memberProfileData = db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.save(
+                        new Db1_RaillyLinkerCompany_TotalAuthMemberProfile(
+                                memberData,
+                                savedProfileImageUrl
+                        )
+                );
+
+                memberData.frontTotalAuthMemberProfile = memberProfileData;
+            }
+
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+            // 확인 완료된 검증 요청 정보 삭제
+            emailVerification.rowDeleteDateStr =
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithEmailVerificationRepository.save(emailVerification);
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else { // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
@@ -1609,7 +1824,57 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendPhoneVerificationForJoinInputVo inputVo
     ) {
-        return null;
+        // 입력 데이터 검증
+        boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.existsByPhoneNumberAndRowDeleteDateStr(
+                inputVo.phoneNumber(), "/"
+        );
+
+        if (memberExists) { // 기존 회원 존재
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        // 정보 저장 후 발송
+        long verificationTimeSec = 60 * 10;
+        String verificationCode = String.format("%06d", new Random().nextInt(999999)); // 랜덤 6자리 숫자
+        Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithPhoneVerification memberRegisterPhoneNumberVerificationData =
+                db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithPhoneVerificationRepository.save(
+                        new Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithPhoneVerification(
+                                inputVo.phoneNumber(),
+                                verificationCode,
+                                LocalDateTime.now().plusSeconds(verificationTimeSec)
+                        )
+                );
+
+        String[] phoneNumberSplit = inputVo.phoneNumber().split("\\)"); // ["82", "010-0000-0000"]
+
+        // 국가 코드 (ex : 82)
+        String countryCode = phoneNumberSplit[0];
+
+        // 전화번호 (ex : "01000000000")
+        String phoneNumber = phoneNumberSplit[1].replace("-", "").replace(" ", "");
+
+        boolean sendSmsResult = naverSmsSenderComponent.sendSms(
+                new NaverSmsSenderComponent.SendSmsInputVo(
+                        "SMS",
+                        countryCode,
+                        phoneNumber,
+                        "[Springboot Mvc Project Template - 회원가입] 인증번호 [" + verificationCode + "]"
+                )
+        );
+
+        if (!sendSmsResult) {
+            throw new RuntimeException();
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.SendPhoneVerificationForJoinOutputVo(
+                memberRegisterPhoneNumberVerificationData.uid,
+                memberRegisterPhoneNumberVerificationData.verificationExpireWhen
+                        .atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+        );
     }
 
 
@@ -1625,10 +1890,45 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String verificationCode
     ) {
+        Optional<Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithPhoneVerification> phoneNumberVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthJoinTheMembershipWithPhoneVerificationRepository.findByUidAndRowDeleteDateStr(
+                        verificationUid, "/"
+                );
 
+        if (phoneNumberVerificationOpt.isEmpty()) { // 해당 이메일 검증을 요청한적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthJoinTheMembershipWithPhoneVerification phoneNumberVerification = phoneNumberVerificationOpt.get();
+
+        if (!phoneNumberVerification.phoneNumber.equals(phoneNumber)) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(phoneNumberVerification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        if (phoneNumberVerification.verificationSecret.equals(verificationCode)) {
+            // 코드 일치
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
+    // todo
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
