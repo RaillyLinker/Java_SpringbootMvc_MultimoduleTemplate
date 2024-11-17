@@ -2742,7 +2742,6 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
 
-    // todo
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
@@ -2754,7 +2753,54 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendPhoneVerificationForFindPasswordInputVo inputVo
     ) {
-        return null;
+        // 입력 데이터 검증
+        boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository
+                .existsByPhoneNumberAndRowDeleteDateStr(inputVo.phoneNumber(), "/");
+        if (!memberExists) { // 회원 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        // 정보 저장 후 발송
+        long verificationTimeSec = 60 * 10;
+        String verificationCode = String.format("%06d", new Random().nextInt(999999)); // 랜덤 6자리 숫자
+        Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification memberFindPasswordPhoneNumberVerificationData =
+                db1RaillyLinkerCompanyTotalAuthFindPwWithPhoneVerificationRepository.save(
+                        new Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification(
+                                inputVo.phoneNumber(),
+                                verificationCode,
+                                LocalDateTime.now().plusSeconds(verificationTimeSec)
+                        )
+                );
+
+        String[] phoneNumberSplit = inputVo.phoneNumber().split("\\)"); // ["82", "010-0000-0000"]
+
+        // 국가 코드 (ex : 82)
+        String countryCode = phoneNumberSplit[0];
+
+        // 전화번호 (ex : "01000000000")
+        String phoneNumber = phoneNumberSplit[1].replace("-", "").replace(" ", "");
+
+        boolean sendSmsResult = naverSmsSenderComponent.sendSms(
+                new NaverSmsSenderComponent.SendSmsInputVo(
+                        "SMS",
+                        countryCode,
+                        phoneNumber,
+                        "[Springboot Mvc Project Template - 비밀번호 찾기] 인증번호 [" + verificationCode + "]"
+                )
+        );
+
+        if (!sendSmsResult) {
+            throw new RuntimeException();
+        }
+
+        return new MyServiceTkAuthController.SendPhoneVerificationForFindPasswordOutputVo(
+                memberFindPasswordPhoneNumberVerificationData.uid,
+                memberFindPasswordPhoneNumberVerificationData.verificationExpireWhen
+                        .atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+        );
     }
 
 
@@ -2770,7 +2816,42 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String verificationCode
     ) {
+        Optional<Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification> phoneNumberVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthFindPwWithPhoneVerificationRepository
+                        .findByUidAndRowDeleteDateStr(verificationUid, "/");
 
+        if (phoneNumberVerificationOpt.isEmpty()) { // 해당 이메일 검증을 요청한적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification phoneNumberVerification = phoneNumberVerificationOpt.get();
+
+        if (!phoneNumberVerification.phoneNumber.equals(phoneNumber)) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(phoneNumberVerification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        boolean codeMatched = phoneNumberVerification.verificationSecret.equals(verificationCode);
+
+        if (codeMatched) {
+            // 코드 일치
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
@@ -2783,7 +2864,114 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.FindPasswordWithPhoneNumberInputVo inputVo
     ) {
+        Optional<Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification> phoneNumberVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthFindPwWithPhoneVerificationRepository
+                        .findByUidAndRowDeleteDateStr(inputVo.verificationUid(), "/");
 
+        if (phoneNumberVerificationOpt.isEmpty()) { // 해당 이메일 검증을 요청한적이 없음
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification phoneNumberVerification = phoneNumberVerificationOpt.get();
+
+        if (!phoneNumberVerification.phoneNumber.equals(inputVo.phoneNumber())) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(phoneNumberVerification.verificationExpireWhen)) {
+            // 만료됨
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // 입력 코드와 발급된 코드와의 매칭
+        if (phoneNumberVerification.verificationSecret.equals(inputVo.verificationCode())) { // 코드 일치
+            Optional<Db1_RaillyLinkerCompany_TotalAuthMemberPhone> memberPhoneOpt =
+                    db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository
+                            .findByPhoneNumberAndRowDeleteDateStr(inputVo.phoneNumber(), "/");
+
+            if (memberPhoneOpt.isEmpty()) {
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "4");
+                return;
+            }
+
+            Db1_RaillyLinkerCompany_TotalAuthMemberPhone memberPhone = memberPhoneOpt.get();
+
+            // 랜덤 비번 생성 후 세팅
+            String newPassword = String.format("%09d", new Random().nextInt(999999999)); // 랜덤 9자리 숫자
+            memberPhone.totalAuthMember.accountPassword = passwordEncoder.encode(newPassword); // 비밀번호 암호화
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberPhone.totalAuthMember);
+
+            String[] phoneNumberSplit = inputVo.phoneNumber().split("\\)"); // ["82", "010-0000-0000"]
+
+            // 국가 코드 (ex : 82)
+            String countryCode = phoneNumberSplit[0];
+
+            // 전화번호 (ex : "01000000000")
+            String phoneNumber = phoneNumberSplit[1].replace("-", "").replace(" ", "");
+
+            boolean sendSmsResult = naverSmsSenderComponent.sendSms(
+                    new NaverSmsSenderComponent.SendSmsInputVo(
+                            "SMS",
+                            countryCode,
+                            phoneNumber,
+                            "[Springboot Mvc Project Template - 새 비밀번호] " + newPassword
+                    )
+            );
+
+            if (!sendSmsResult) {
+                throw new RuntimeException();
+            }
+
+            // 확인 완료된 검증 요청 정보 삭제
+            phoneNumberVerification.rowDeleteDateStr =
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            db1RaillyLinkerCompanyTotalAuthFindPwWithPhoneVerificationRepository.save(phoneNumberVerification);
+
+            // 모든 토큰 비활성화 처리
+            Iterable<Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory> tokenInfoList =
+                    db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository
+                            .findAllByTotalAuthMemberAndLogoutDateAndRowDeleteDateStr(
+                                    memberPhone.totalAuthMember,
+                                    null,
+                                    "/"
+                            );
+
+            for (Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory tokenInfo : tokenInfoList) {
+                tokenInfo.logoutDate = LocalDateTime.now();
+                db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository.save(tokenInfo);
+
+                // 토큰 만료처리
+                String tokenType = tokenInfo.tokenType;
+                String accessToken = tokenInfo.accessToken;
+
+                Long accessTokenExpireRemainSeconds = null;
+                if ("Bearer".equals(tokenType)) {
+                    accessTokenExpireRemainSeconds = jwtTokenUtil.getRemainSeconds(accessToken);
+                }
+
+                try {
+                    redis1MapTotalAuthForceExpireAuthorizationSet.saveKeyValue(
+                            tokenType + "_" + accessToken,
+                            new Redis1_Map_TotalAuthForceExpireAuthorizationSet.ValueVo(),
+                            accessTokenExpireRemainSeconds != null ? accessTokenExpireRemainSeconds * 1000 : null
+                    );
+                } catch (Exception e) {
+                    classLogger.error("error ", e);
+                }
+            }
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else { // 코드 불일치
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
@@ -2797,7 +2985,35 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberEmail> emailEntityList =
+                db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(
+                        memberData,
+                        "/"
+                );
+        List<MyServiceTkAuthController.GetMyEmailListOutputVo.EmailInfo> emailList = new ArrayList<>();
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberEmail emailEntity : emailEntityList) {
+            emailList.add(new MyServiceTkAuthController.GetMyEmailListOutputVo.EmailInfo(
+                    emailEntity.uid,
+                    emailEntity.emailAddress,
+                    emailEntity.uid.equals(
+                            memberData.frontTotalAuthMemberEmail != null
+                                    ? memberData.frontTotalAuthMemberEmail.uid
+                                    : null
+                    )
+            ));
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.GetMyEmailListOutputVo(emailList);
     }
 
 
@@ -2811,7 +3027,35 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberPhone> phoneEntityList =
+                db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(
+                        memberData,
+                        "/"
+                );
+        List<MyServiceTkAuthController.GetMyPhoneNumberListOutputVo.PhoneInfo> phoneNumberList = new ArrayList<>();
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberPhone phoneEntity : phoneEntityList) {
+            phoneNumberList.add(new MyServiceTkAuthController.GetMyPhoneNumberListOutputVo.PhoneInfo(
+                    phoneEntity.uid,
+                    phoneEntity.phoneNumber,
+                    phoneEntity.uid.equals(
+                            memberData.frontTotalAuthMemberPhone != null
+                                    ? memberData.frontTotalAuthMemberPhone.uid
+                                    : null
+                    )
+            ));
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.GetMyPhoneNumberListOutputVo(phoneNumberList);
     }
 
 
@@ -2821,14 +3065,39 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.GetMyOauth2ListOutputVo getMyOauth2List(
             @org.jetbrains.annotations.NotNull
-            HttpServletResponse HttpServletResponse,
+            HttpServletResponse httpServletResponse,
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login> oAuth2EntityList =
+                db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(
+                        memberData,
+                        "/"
+                );
+        List<MyServiceTkAuthController.GetMyOauth2ListOutputVo.OAuth2Info> myOAuth2List = new ArrayList<>();
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login oAuth2Entity : oAuth2EntityList) {
+            myOAuth2List.add(new MyServiceTkAuthController.GetMyOauth2ListOutputVo.OAuth2Info(
+                    oAuth2Entity.uid,
+                    oAuth2Entity.oauth2TypeCode.intValue(),
+                    oAuth2Entity.oauth2Id
+            ));
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.GetMyOauth2ListOutputVo(myOAuth2List);
     }
 
 
+    // todo
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
