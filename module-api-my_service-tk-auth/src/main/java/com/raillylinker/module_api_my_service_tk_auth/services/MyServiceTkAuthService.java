@@ -2,6 +2,7 @@ package com.raillylinker.module_api_my_service_tk_auth.services;
 
 
 import com.raillylinker.module_api_my_service_tk_auth.controllers.MyServiceTkAuthController;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,8 @@ import java.io.IOException;
 
 public interface MyServiceTkAuthService {
     // (비 로그인 접속 테스트)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     String noLoggedInAccessTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
@@ -20,6 +23,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (로그인 진입 테스트 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     String loggedInAccessTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -30,6 +35,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (ADMIN 권한 진입 테스트 <'ADMIN'>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     String adminAccessTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -40,6 +47,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (Developer 권한 진입 테스트 <'ADMIN' or 'Developer'>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     String developerAccessTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -62,6 +71,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (계정 비밀번호 로그인)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.LoginOutputVo loginWithPassword(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -72,6 +83,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (OAuth2 Code 로 OAuth2 AccessToken 발급)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.GetOAuth2AccessTokenOutputVo getOAuth2AccessToken(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse var1,
@@ -84,6 +97,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (OAuth2 로그인 (Access Token))
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.LoginOutputVo loginWithOAuth2AccessToken(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -94,6 +109,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (OAuth2 로그인 (ID Token))
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.LoginOutputVo loginWithOAuth2IdToken(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -114,7 +131,10 @@ public interface MyServiceTkAuthService {
 
     ////
     // (토큰 재발급 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.LoginOutputVo reissueJwt(
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.ReissueJwtInputVo inputVo,
@@ -135,6 +155,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (회원 정보 가져오기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.GetMemberInfoOutputVo getMemberInfo(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -145,6 +167,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (아이디 중복 검사)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.CheckIdDuplicateOutputVo checkIdDuplicate(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -177,6 +201,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (이메일 회원가입 본인 인증 이메일 발송)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.SendEmailVerificationForJoinOutputVo sendEmailVerificationForJoin(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -211,6 +237,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (전화번호 회원가입 본인 인증 문자 발송)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.SendPhoneVerificationForJoinOutputVo sendPhoneVerificationForJoin(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -245,6 +273,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (OAuth2 AccessToken 으로 회원가입 검증)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.CheckOauth2AccessTokenVerificationForJoinOutputVo checkOauth2AccessTokenVerificationForJoin(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -255,6 +285,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (OAuth2 IdToken 으로 회원가입 검증)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.CheckOauth2IdTokenVerificationForJoinOutputVo checkOauth2IdTokenVerificationForJoin(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -286,6 +318,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (이메일 비밀번호 찾기 본인 인증 이메일 발송)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.SendEmailVerificationForFindPasswordOutputVo sendEmailVerificationForFindPassword(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -320,6 +354,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (전화번호 비밀번호 찾기 본인 인증 문자 발송)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.SendPhoneVerificationForFindPasswordOutputVo sendPhoneVerificationForFindPassword(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -354,6 +390,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (내 이메일 리스트 가져오기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.GetMyEmailListOutputVo getMyEmailList(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -364,6 +402,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (내 전화번호 리스트 가져오기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.GetMyPhoneNumberListOutputVo getMyPhoneNumberList(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -374,6 +414,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (내 OAuth2 로그인 리스트 가져오기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.GetMyOauth2ListOutputVo getMyOauth2List(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse HttpServletResponse,
@@ -384,6 +426,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (이메일 추가하기 본인 인증 이메일 발송 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.SendEmailVerificationForAddNewEmailOutputVo sendEmailVerificationForAddNewEmail(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -412,6 +456,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (이메일 추가하기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.AddNewEmailOutputVo addNewEmail(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -436,6 +482,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (전화번호 추가하기 본인 인증 문자 발송 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.SendPhoneVerificationForAddNewPhoneNumberOutputVo sendPhoneVerificationForAddNewPhoneNumber(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -464,6 +512,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (전화번호 추가하기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.AddNewPhoneNumberOutputVo addNewPhoneNumber(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -534,6 +584,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (내 Profile 이미지 정보 리스트 가져오기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.GetMyProfileListOutputVo getMyProfileList(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -544,6 +596,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (내 대표 Profile 이미지 정보 가져오기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.GetMyFrontProfileOutputVo getMyFrontProfile(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -559,6 +613,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String authorization,
+            @Nullable @org.jetbrains.annotations.Nullable
             Long profileUid
     );
 
@@ -577,6 +632,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (내 프로필 이미지 추가 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.AddNewProfileOutputVo addNewProfile(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -599,6 +656,8 @@ public interface MyServiceTkAuthService {
 
     ////
     // (내 대표 이메일 정보 가져오기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.GetMyFrontEmailOutputVo getMyFrontEmail(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -614,12 +673,15 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String authorization,
+            @Nullable @org.jetbrains.annotations.Nullable
             Long emailUid
     );
 
 
     ////
     // (내 대표 전화번호 정보 가져오기 <>)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.GetMyFrontPhoneNumberOutputVo getMyFrontPhoneNumber(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -635,12 +697,15 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String authorization,
+            @Nullable @org.jetbrains.annotations.Nullable
             Long phoneNumberUid
     );
 
 
     ////
     // (Redis Key-Value 모두 조회 테스트)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     MyServiceTkAuthController.SelectAllRedisKeyValueSampleOutputVo selectAllRedisKeyValueSample(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse

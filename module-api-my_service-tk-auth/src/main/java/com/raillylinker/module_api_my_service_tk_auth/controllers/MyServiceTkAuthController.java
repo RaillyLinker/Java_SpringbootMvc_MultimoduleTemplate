@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 // API 의 로그인/비로그인 시의 결과를 달리하고 싶으면, 차라리 API 를 2개로 나누는 것이 더 좋습니다.
 // SpringSecurity 의 도움을 받지 않는다면 복잡한 인증 관련 코드를 적용하여 로그인 여부를 확인해야 하므로, API 코드가 지저분해지기 때문이죠.
@@ -63,6 +65,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.TEXT_PLAIN_VALUE}
     )
     @ResponseBody
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public String noLoggedInAccessTest(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -97,15 +101,17 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public String loggedInAccessTest(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.loggedInAccessTest(httpServletResponse, authorization);
+        return service.loggedInAccessTest(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
 
@@ -139,15 +145,17 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN'))")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public String adminAccessTest(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.adminAccessTest(httpServletResponse, authorization);
+        return service.adminAccessTest(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
 
@@ -181,15 +189,17 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated() and (hasRole('ROLE_DEVELOPER') or hasRole('ROLE_ADMIN'))")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public String developerAccessTest(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.developerAccessTest(httpServletResponse, authorization);
+        return service.developerAccessTest(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
 
@@ -291,6 +301,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public LoginOutputVo loginWithPassword(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -335,10 +346,12 @@ public class MyServiceTkAuthController {
     public record LoginOutputVo(
             @Schema(description = "로그인 성공 정보 (이 변수가 Null 이 아니라면 lockedOutputList 가 Null 입니다.)")
             @JsonProperty("loggedInOutput")
+            @Nullable @org.jetbrains.annotations.Nullable
             LoggedInOutput loggedInOutput,
 
             @Schema(description = "계정 잠김 정보 리스트 (이 변수가 Null 이 아니라면 loggedInOutput 이 Null 입니다. 최신순 정렬)")
             @JsonProperty("lockedOutputList")
+            @Nullable @org.jetbrains.annotations.Nullable
             List<LockedOutput> lockedOutputList
     ) {
         @Schema(description = "계정 잠김 정보")
@@ -359,10 +372,10 @@ public class MyServiceTkAuthController {
 
                 @Schema(
                         description = "계정 정지 만료 시간 (이 시간이 지나기 전까지 계정 정지 상태, null 이라면 무기한 정지)",
-                        required = false,
                         example = "2024_05_02_T_15_14_49_552_KST"
                 )
                 @JsonProperty("lockBefore")
+                @Nullable @org.jetbrains.annotations.Nullable
                 String lockBefore,
 
                 @Schema(description = "계정 정지 이유 코드(0 : 기타, 1 : 휴면계정, 2 : 패널티)", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
@@ -458,6 +471,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public GetOAuth2AccessTokenOutputVo getOAuth2AccessToken(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -534,6 +548,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public LoginOutputVo loginWithOAuth2AccessToken(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -601,6 +616,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public LoginOutputVo loginWithOAuth2IdToken(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -664,9 +680,10 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        service.logout(authorization, httpServletResponse);
+        service.logout(Objects.requireNonNull(authorization), httpServletResponse);
     }
 
 
@@ -707,12 +724,14 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public LoginOutputVo reissueJwt(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -761,9 +780,10 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        service.deleteAllJwtOfAMember(authorization, httpServletResponse);
+        service.deleteAllJwtOfAMember(Objects.requireNonNull(authorization), httpServletResponse);
     }
 
 
@@ -792,15 +812,17 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public GetMemberInfoOutputVo getMemberInfo(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.getMemberInfo(httpServletResponse, authorization);
+        return service.getMemberInfo(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
     public record GetMemberInfoOutputVo(
@@ -948,6 +970,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public CheckIdDuplicateOutputVo checkIdDuplicate(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1014,13 +1037,14 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "id", description = "아이디", example = "mrHong")
             @RequestParam("id")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String id
     ) {
-        service.updateId(httpServletResponse, authorization, id);
+        service.updateId(httpServletResponse, Objects.requireNonNull(authorization), id);
     }
 
 
@@ -1087,6 +1111,7 @@ public class MyServiceTkAuthController {
                     example = "test@gmail.com"
             )
             @JsonProperty("email")
+            @Nullable @org.jetbrains.annotations.Nullable
             String email,
 
             @Schema(
@@ -1094,6 +1119,7 @@ public class MyServiceTkAuthController {
                     example = "82)010-0000-0000"
             )
             @JsonProperty("phoneNumber")
+            @Nullable @org.jetbrains.annotations.Nullable
             String phoneNumber,
 
             @Schema(
@@ -1116,6 +1142,7 @@ public class MyServiceTkAuthController {
 
             @Schema(description = "프로필 이미지 파일")
             @JsonProperty("profileImageFile")
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartFile profileImageFile
     ) {
     }
@@ -1155,6 +1182,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public SendEmailVerificationForJoinOutputVo sendEmailVerificationForJoin(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1349,6 +1377,7 @@ public class MyServiceTkAuthController {
 
             @Schema(description = "프로필 이미지 파일")
             @JsonProperty("profileImageFile")
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartFile profileImageFile
     ) {
     }
@@ -1389,6 +1418,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public SendPhoneVerificationForJoinOutputVo sendPhoneVerificationForJoin(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1583,6 +1613,7 @@ public class MyServiceTkAuthController {
 
             @Schema(description = "프로필 이미지 파일")
             @JsonProperty("profileImageFile")
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartFile profileImageFile
     ) {
     }
@@ -1622,6 +1653,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public CheckOauth2AccessTokenVerificationForJoinOutputVo checkOauth2AccessTokenVerificationForJoin(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1728,6 +1760,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public CheckOauth2IdTokenVerificationForJoinOutputVo checkOauth2IdTokenVerificationForJoin(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1902,6 +1935,7 @@ public class MyServiceTkAuthController {
 
             @Schema(description = "프로필 이미지 파일")
             @JsonProperty("profileImageFile")
+            @Nullable @org.jetbrains.annotations.Nullable
             MultipartFile profileImageFile
     ) {
     }
@@ -1954,12 +1988,13 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             UpdateAccountPasswordInputVo inputVo
     ) {
-        service.updateAccountPassword(httpServletResponse, authorization, inputVo);
+        service.updateAccountPassword(httpServletResponse, Objects.requireNonNull(authorization), inputVo);
     }
 
     public record UpdateAccountPasswordInputVo(
@@ -1968,6 +2003,7 @@ public class MyServiceTkAuthController {
                     example = "kkdli!!"
             )
             @JsonProperty("oldPassword")
+            @Nullable @org.jetbrains.annotations.Nullable
             String oldPassword,
 
             @Schema(
@@ -1975,6 +2011,7 @@ public class MyServiceTkAuthController {
                     example = "fddsd##"
             )
             @JsonProperty("newPassword")
+            @Nullable @org.jetbrains.annotations.Nullable
             String newPassword
     ) {
     }
@@ -2014,6 +2051,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public SendEmailVerificationForFindPasswordOutputVo sendEmailVerificationForFindPassword(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -2203,6 +2241,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public SendPhoneVerificationForFindPasswordOutputVo sendPhoneVerificationForFindPassword(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -2383,15 +2422,17 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public GetMyEmailListOutputVo getMyEmailList(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.getMyEmailList(httpServletResponse, authorization);
+        return service.getMyEmailList(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
     public record GetMyEmailListOutputVo(
@@ -2446,15 +2487,17 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public GetMyPhoneNumberListOutputVo getMyPhoneNumberList(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.getMyPhoneNumberList(httpServletResponse, authorization);
+        return service.getMyPhoneNumberList(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
     public record GetMyPhoneNumberListOutputVo(
@@ -2510,15 +2553,17 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public GetMyOauth2ListOutputVo getMyOauth2List(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.getMyOauth2List(httpServletResponse, authorization);
+        return service.getMyOauth2List(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
     public record GetMyOauth2ListOutputVo(
@@ -2593,18 +2638,20 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public SendEmailVerificationForAddNewEmailOutputVo sendEmailVerificationForAddNewEmail(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendEmailVerificationForAddNewEmailInputVo inputVo
     ) {
-        return service.sendEmailVerificationForAddNewEmail(httpServletResponse, inputVo, authorization);
+        return service.sendEmailVerificationForAddNewEmail(httpServletResponse, inputVo, Objects.requireNonNull(authorization));
     }
 
     public record SendEmailVerificationForAddNewEmailInputVo(
@@ -2676,6 +2723,7 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "verificationUid", description = "검증 고유값", example = "1")
             @RequestParam("verificationUid")
@@ -2690,7 +2738,7 @@ public class MyServiceTkAuthController {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String verificationCode
     ) {
-        service.checkEmailVerificationForAddNewEmail(httpServletResponse, verificationUid, email, verificationCode, authorization);
+        service.checkEmailVerificationForAddNewEmail(httpServletResponse, verificationUid, email, verificationCode, Objects.requireNonNull(authorization));
     }
 
 
@@ -2736,18 +2784,20 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public AddNewEmailOutputVo addNewEmail(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             AddNewEmailInputVo inputVo
     ) {
-        return service.addNewEmail(httpServletResponse, inputVo, authorization);
+        return service.addNewEmail(httpServletResponse, inputVo, Objects.requireNonNull(authorization));
     }
 
     public record AddNewEmailInputVo(
@@ -2828,13 +2878,14 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "emailUid", description = "이메일의 고유값", example = "1")
             @PathVariable("emailUid")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long emailUid
     ) {
-        service.deleteMyEmail(httpServletResponse, emailUid, authorization);
+        service.deleteMyEmail(httpServletResponse, emailUid, Objects.requireNonNull(authorization));
     }
 
 
@@ -2878,18 +2929,20 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public SendPhoneVerificationForAddNewPhoneNumberOutputVo sendPhoneVerificationForAddNewPhoneNumber(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendPhoneVerificationForAddNewPhoneNumberInputVo inputVo
     ) {
-        return service.sendPhoneVerificationForAddNewPhoneNumber(httpServletResponse, inputVo, authorization);
+        return service.sendPhoneVerificationForAddNewPhoneNumber(httpServletResponse, inputVo, Objects.requireNonNull(authorization));
     }
 
     public record SendPhoneVerificationForAddNewPhoneNumberInputVo(
@@ -2961,6 +3014,7 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "verificationUid", description = "검증 고유값", example = "1")
             @RequestParam("verificationUid")
@@ -2975,7 +3029,7 @@ public class MyServiceTkAuthController {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String verificationCode
     ) {
-        service.checkPhoneVerificationForAddNewPhoneNumber(httpServletResponse, verificationUid, phoneNumber, verificationCode, authorization);
+        service.checkPhoneVerificationForAddNewPhoneNumber(httpServletResponse, verificationUid, phoneNumber, verificationCode, Objects.requireNonNull(authorization));
     }
 
 
@@ -3021,18 +3075,20 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public AddNewPhoneNumberOutputVo addNewPhoneNumber(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             AddNewPhoneNumberInputVo inputVo
     ) {
-        return service.addNewPhoneNumber(httpServletResponse, inputVo, authorization);
+        return service.addNewPhoneNumber(httpServletResponse, inputVo, Objects.requireNonNull(authorization));
     }
 
     public record AddNewPhoneNumberInputVo(
@@ -3113,13 +3169,14 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "phoneUid", description = "전화번호의 고유값", example = "1")
             @PathVariable("phoneUid")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long phoneUid
     ) {
-        service.deleteMyPhoneNumber(httpServletResponse, phoneUid, authorization);
+        service.deleteMyPhoneNumber(httpServletResponse, phoneUid, Objects.requireNonNull(authorization));
     }
 
 
@@ -3169,12 +3226,13 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             AddNewOauth2WithAccessTokenInputVo inputVo
     ) {
-        service.addNewOauth2WithAccessToken(httpServletResponse, inputVo, authorization);
+        service.addNewOauth2WithAccessToken(httpServletResponse, inputVo, Objects.requireNonNull(authorization));
     }
 
     public record AddNewOauth2WithAccessTokenInputVo(
@@ -3237,12 +3295,13 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             AddNewOauth2WithIdTokenInputVo inputVo
     ) {
-        service.addNewOauth2WithIdToken(httpServletResponse, inputVo, authorization);
+        service.addNewOauth2WithIdToken(httpServletResponse, inputVo, Objects.requireNonNull(authorization));
     }
 
     public record AddNewOauth2WithIdTokenInputVo(
@@ -3305,13 +3364,14 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "oAuth2Uid", description = "OAuth2 고유값", example = "1")
             @PathVariable("oAuth2Uid")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long oAuth2Uid
     ) {
-        service.deleteMyOauth2(httpServletResponse, oAuth2Uid, authorization);
+        service.deleteMyOauth2(httpServletResponse, oAuth2Uid, Objects.requireNonNull(authorization));
     }
 
 
@@ -3346,9 +3406,10 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        service.withdrawalMembership(httpServletResponse, authorization);
+        service.withdrawalMembership(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
 
@@ -3377,15 +3438,17 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public GetMyProfileListOutputVo getMyProfileList(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.getMyProfileList(httpServletResponse, authorization);
+        return service.getMyProfileList(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
     public record GetMyProfileListOutputVo(
@@ -3440,21 +3503,23 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public GetMyFrontProfileOutputVo getMyFrontProfile(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.getMyFrontProfile(httpServletResponse, authorization);
+        return service.getMyFrontProfile(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
     public record GetMyFrontProfileOutputVo(
-            @Schema(description = "내 대표 Profile 이미지 정보", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "내 대표 Profile 이미지 정보")
             @JsonProperty("myFrontProfileInfo")
-            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            @Nullable @org.jetbrains.annotations.Nullable
             ProfileInfo myFrontProfileInfo
     ) {
         @Schema(description = "Profile 정보")
@@ -3518,12 +3583,14 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "profileUid", description = "대표 프로필로 설정할 프로필의 고유값(null 이라면 대표 프로필 해제)", example = "1")
             @RequestParam("profileUid")
+            @Nullable @org.jetbrains.annotations.Nullable
             Long profileUid
     ) {
-        service.setMyFrontProfile(httpServletResponse, authorization, profileUid);
+        service.setMyFrontProfile(httpServletResponse, Objects.requireNonNull(authorization), profileUid);
     }
 
 
@@ -3573,13 +3640,14 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "profileUid", description = "프로필의 고유값", example = "1")
             @PathVariable("profileUid")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long profileUid
     ) {
-        service.deleteMyProfile(authorization, httpServletResponse, profileUid);
+        service.deleteMyProfile(Objects.requireNonNull(authorization), httpServletResponse, profileUid);
     }
 
 
@@ -3608,19 +3676,21 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public AddNewProfileOutputVo addNewProfile(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @ModelAttribute
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             AddNewProfileInputVo inputVo
     ) {
-        return service.addNewProfile(httpServletResponse, authorization, inputVo);
+        return service.addNewProfile(httpServletResponse, Objects.requireNonNull(authorization), inputVo);
     }
 
     public record AddNewProfileInputVo(
@@ -3689,6 +3759,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public ResponseEntity<Resource> downloadProfileFile(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -3727,21 +3798,23 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public GetMyFrontEmailOutputVo getMyFrontEmail(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.getMyFrontEmail(httpServletResponse, authorization);
+        return service.getMyFrontEmail(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
     public record GetMyFrontEmailOutputVo(
-            @Schema(description = "내 대표 이메일 정보", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "내 대표 이메일 정보")
             @JsonProperty("myFrontEmailInfo")
-            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            @Nullable @org.jetbrains.annotations.Nullable
             EmailInfo myFrontEmailInfo
     ) {
         @Schema(description = "이메일 정보")
@@ -3805,12 +3878,14 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "emailUid", description = "대표 이메일로 설정할 이메일의 고유값(null 이라면 대표 이메일 해제)", example = "1")
             @RequestParam("emailUid")
+            @Nullable @org.jetbrains.annotations.Nullable
             Long emailUid
     ) {
-        service.setMyFrontEmail(httpServletResponse, authorization, emailUid);
+        service.setMyFrontEmail(httpServletResponse, Objects.requireNonNull(authorization), emailUid);
     }
 
 
@@ -3839,21 +3914,23 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public GetMyFrontPhoneNumberOutputVo getMyFrontPhoneNumber(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization
     ) {
-        return service.getMyFrontPhoneNumber(httpServletResponse, authorization);
+        return service.getMyFrontPhoneNumber(httpServletResponse, Objects.requireNonNull(authorization));
     }
 
     public record GetMyFrontPhoneNumberOutputVo(
-            @Schema(description = "내 대표 전화번호 정보", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "내 대표 전화번호 정보")
             @JsonProperty("myFrontPhoneNumberInfo")
-            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            @Nullable @org.jetbrains.annotations.Nullable
             PhoneNumberInfo myFrontPhoneNumberInfo
     ) {
         @Schema(description = "전화번호 정보")
@@ -3917,12 +3994,14 @@ public class MyServiceTkAuthController {
             HttpServletResponse httpServletResponse,
             @Parameter(hidden = true)
             @RequestHeader("Authorization")
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Parameter(name = "phoneNumberUid", description = "대표 전화번호로 설정할 전화번호의 고유값(null 이라면 대표 전화번호 해제)", example = "1")
             @RequestParam("phoneNumberUid")
+            @Nullable @org.jetbrains.annotations.Nullable
             Long phoneNumberUid
     ) {
-        service.setMyFrontPhoneNumber(httpServletResponse, authorization, phoneNumberUid);
+        service.setMyFrontPhoneNumber(httpServletResponse, Objects.requireNonNull(authorization), phoneNumberUid);
     }
 
 
@@ -3945,6 +4024,7 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
+    @Nullable @org.jetbrains.annotations.Nullable
     public SelectAllRedisKeyValueSampleOutputVo selectAllRedisKeyValueSample(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull

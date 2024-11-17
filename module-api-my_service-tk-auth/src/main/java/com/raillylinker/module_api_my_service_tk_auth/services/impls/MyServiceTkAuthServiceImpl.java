@@ -13,6 +13,7 @@ import com.raillylinker.module_retrofit2.retrofit2_classes.RepositoryNetworkRetr
 import com.raillylinker.module_retrofit2.retrofit2_classes.request_apis.*;
 import com.raillylinker.module_security.util_components.AppleOAuthHelperUtil;
 import com.raillylinker.module_security.util_components.JwtTokenUtil;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -226,12 +227,17 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     @org.jetbrains.annotations.NotNull
     private final RepositoryNetworkRetrofit2 networkRetrofit2 = RepositoryNetworkRetrofit2.getInstance();
 
+    @Valid
+    @NotNull
+    @org.jetbrains.annotations.NotNull
     String externalAccessAddress;
 
 
     // ---------------------------------------------------------------------------------------------
     // <공개 메소드 공간>
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public String noLoggedInAccessTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
@@ -243,6 +249,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
     ////
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public String loggedInAccessTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -262,6 +270,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
     ////
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public String adminAccessTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -281,6 +291,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
     ////
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public String developerAccessTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -362,6 +374,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.LoginOutputVo loginWithPassword(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -514,6 +528,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
     ////
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.GetOAuth2AccessTokenOutputVo getOAuth2AccessToken(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -635,6 +651,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.LoginOutputVo loginWithOAuth2AccessToken(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -807,6 +825,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.LoginOutputVo loginWithOAuth2IdToken(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -990,7 +1010,10 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.LoginOutputVo reissueJwt(
+            @Nullable @org.jetbrains.annotations.Nullable
             String authorization,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.ReissueJwtInputVo inputVo,
@@ -1248,6 +1271,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
     ////
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.GetMemberInfoOutputVo getMemberInfo(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -1260,6 +1285,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
     ////
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.CheckIdDuplicateOutputVo checkIdDuplicate(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -1301,6 +1328,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.SendEmailVerificationForJoinOutputVo sendEmailVerificationForJoin(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -1343,6 +1372,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.SendPhoneVerificationForJoinOutputVo sendPhoneVerificationForJoin(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -1385,6 +1416,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.CheckOauth2AccessTokenVerificationForJoinOutputVo checkOauth2AccessTokenVerificationForJoin(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -1398,6 +1431,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.CheckOauth2IdTokenVerificationForJoinOutputVo checkOauth2IdTokenVerificationForJoin(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -1439,6 +1474,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.SendEmailVerificationForFindPasswordOutputVo sendEmailVerificationForFindPassword(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
@@ -1478,6 +1515,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.SendPhoneVerificationForFindPasswordOutputVo sendPhoneVerificationForFindPassword(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull SendPhoneVerificationForFindPasswordInputVo inputVo) {
         return null;
     }
@@ -1493,21 +1532,29 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.GetMyEmailListOutputVo getMyEmailList(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.GetMyPhoneNumberListOutputVo getMyPhoneNumberList(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.GetMyOauth2ListOutputVo getMyOauth2List(@org.jetbrains.annotations.NotNull HttpServletResponse HttpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.SendEmailVerificationForAddNewEmailOutputVo sendEmailVerificationForAddNewEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull SendEmailVerificationForAddNewEmailInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
@@ -1518,6 +1565,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.AddNewEmailOutputVo addNewEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull AddNewEmailInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
@@ -1528,6 +1577,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.SendPhoneVerificationForAddNewPhoneNumberOutputVo sendPhoneVerificationForAddNewPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull SendPhoneVerificationForAddNewPhoneNumberInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
@@ -1538,6 +1589,8 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.AddNewPhoneNumberOutputVo addNewPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull AddNewPhoneNumberInputVo inputVo, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
@@ -1568,17 +1621,22 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.GetMyProfileListOutputVo getMyProfileList(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.GetMyFrontProfileOutputVo getMyFrontProfile(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
 
     @Override
-    public void setMyFrontProfile(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization, Long profileUid) {
+    public void setMyFrontProfile(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization,
+                                  @Nullable @org.jetbrains.annotations.Nullable Long profileUid) {
 
     }
 
@@ -1588,11 +1646,15 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.AddNewProfileOutputVo addNewProfile(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization, MyServiceTkAuthController.@org.jetbrains.annotations.NotNull AddNewProfileInputVo inputVo) {
         return null;
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public ResponseEntity<Resource> downloadProfileFile(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String fileName) {
         return null;
     }
@@ -1603,21 +1665,27 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
     @Override
-    public void setMyFrontEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization, Long emailUid) {
+    public void setMyFrontEmail(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization,
+                                @Nullable @org.jetbrains.annotations.Nullable Long emailUid) {
 
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.GetMyFrontPhoneNumberOutputVo getMyFrontPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization) {
         return null;
     }
 
     @Override
-    public void setMyFrontPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization, Long phoneNumberUid) {
+    public void setMyFrontPhoneNumber(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse, @org.jetbrains.annotations.NotNull String authorization,
+                                      @Nullable @org.jetbrains.annotations.Nullable Long phoneNumberUid) {
 
     }
 
     @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public MyServiceTkAuthController.SelectAllRedisKeyValueSampleOutputVo selectAllRedisKeyValueSample(@org.jetbrains.annotations.NotNull HttpServletResponse httpServletResponse) {
         return null;
     }
