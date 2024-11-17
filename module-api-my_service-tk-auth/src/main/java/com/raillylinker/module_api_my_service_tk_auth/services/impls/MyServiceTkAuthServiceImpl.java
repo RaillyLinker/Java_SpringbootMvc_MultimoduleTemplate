@@ -2744,6 +2744,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
     // todo
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -2774,6 +2775,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void findPasswordWithPhoneNumber(
             @org.jetbrains.annotations.NotNull
@@ -2828,6 +2830,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -2862,6 +2865,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -2878,6 +2882,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void deleteMyEmail(
             @org.jetbrains.annotations.NotNull
@@ -2892,6 +2897,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -2926,6 +2932,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -2942,6 +2949,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void deleteMyPhoneNumber(
             @org.jetbrains.annotations.NotNull
@@ -2956,6 +2964,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void addNewOauth2WithAccessToken(
             @org.jetbrains.annotations.NotNull
@@ -2970,6 +2979,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void addNewOauth2WithIdToken(
             @org.jetbrains.annotations.NotNull
@@ -2984,6 +2994,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void deleteMyOauth2(
             @org.jetbrains.annotations.NotNull
@@ -2998,6 +3009,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void withdrawalMembership(
             @org.jetbrains.annotations.NotNull
@@ -3038,6 +3050,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void setMyFrontProfile(
             @org.jetbrains.annotations.NotNull
@@ -3052,6 +3065,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void deleteMyProfile(
             @org.jetbrains.annotations.NotNull
@@ -3066,6 +3080,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -3108,6 +3123,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void setMyFrontEmail(
             @org.jetbrains.annotations.NotNull
@@ -3136,6 +3152,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void setMyFrontPhoneNumber(
             @org.jetbrains.annotations.NotNull

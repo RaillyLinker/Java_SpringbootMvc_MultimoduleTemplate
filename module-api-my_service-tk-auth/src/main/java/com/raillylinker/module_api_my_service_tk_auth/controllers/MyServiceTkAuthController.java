@@ -101,7 +101,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public String loggedInAccessTest(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -145,7 +146,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN'))")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public String adminAccessTest(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -189,7 +191,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated() and (hasRole('ROLE_DEVELOPER') or hasRole('ROLE_ADMIN'))")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public String developerAccessTest(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -301,7 +304,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public LoginOutputVo loginWithPassword(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -471,7 +475,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public GetOAuth2AccessTokenOutputVo getOAuth2AccessToken(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -548,7 +553,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public LoginOutputVo loginWithOAuth2AccessToken(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -616,7 +622,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public LoginOutputVo loginWithOAuth2IdToken(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -724,7 +731,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public LoginOutputVo reissueJwt(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -812,7 +820,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public GetMemberInfoOutputVo getMemberInfo(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -970,7 +979,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public CheckIdDuplicateOutputVo checkIdDuplicate(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1092,7 +1102,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             JoinTheMembershipForTestInputVo inputVo
-    ) {
+    ) throws IOException {
         service.joinTheMembershipForTest(httpServletResponse, inputVo);
     }
 
@@ -1182,7 +1192,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public SendEmailVerificationForJoinOutputVo sendEmailVerificationForJoin(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1190,7 +1201,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendEmailVerificationForJoinInputVo inputVo
-    ) {
+    ) throws Exception {
         return service.sendEmailVerificationForJoin(httpServletResponse, inputVo);
     }
 
@@ -1325,7 +1336,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             JoinTheMembershipWithEmailInputVo inputVo
-    ) {
+    ) throws IOException {
         service.joinTheMembershipWithEmail(httpServletResponse, inputVo);
     }
 
@@ -1418,7 +1429,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public SendPhoneVerificationForJoinOutputVo sendPhoneVerificationForJoin(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1561,7 +1573,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             JoinTheMembershipWithPhoneNumberInputVo inputVo
-    ) {
+    ) throws IOException {
         service.joinTheMembershipWithPhoneNumber(httpServletResponse, inputVo);
     }
 
@@ -1653,7 +1665,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public CheckOauth2AccessTokenVerificationForJoinOutputVo checkOauth2AccessTokenVerificationForJoin(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1661,7 +1674,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             CheckOauth2AccessTokenVerificationForJoinInputVo inputVo
-    ) {
+    ) throws IOException {
         return service.checkOauth2AccessTokenVerificationForJoin(httpServletResponse, inputVo);
     }
 
@@ -1760,7 +1773,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public CheckOauth2IdTokenVerificationForJoinOutputVo checkOauth2IdTokenVerificationForJoin(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -1883,7 +1897,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             JoinTheMembershipWithOauth2InputVo inputVo
-    ) {
+    ) throws IOException {
         service.joinTheMembershipWithOauth2(httpServletResponse, inputVo);
     }
 
@@ -2051,7 +2065,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public SendEmailVerificationForFindPasswordOutputVo sendEmailVerificationForFindPassword(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -2059,7 +2074,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendEmailVerificationForFindPasswordInputVo inputVo
-    ) {
+    ) throws Exception {
         return service.sendEmailVerificationForFindPassword(httpServletResponse, inputVo);
     }
 
@@ -2185,7 +2200,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             FindPasswordWithEmailInputVo inputVo
-    ) {
+    ) throws Exception {
         service.findPasswordWithEmail(httpServletResponse, inputVo);
     }
 
@@ -2241,7 +2256,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public SendPhoneVerificationForFindPasswordOutputVo sendPhoneVerificationForFindPassword(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -2422,7 +2438,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public GetMyEmailListOutputVo getMyEmailList(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -2487,7 +2504,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public GetMyPhoneNumberListOutputVo getMyPhoneNumberList(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -2553,7 +2571,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public GetMyOauth2ListOutputVo getMyOauth2List(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -2638,7 +2657,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public SendEmailVerificationForAddNewEmailOutputVo sendEmailVerificationForAddNewEmail(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -2784,7 +2804,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public AddNewEmailOutputVo addNewEmail(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -2929,7 +2950,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public SendPhoneVerificationForAddNewPhoneNumberOutputVo sendPhoneVerificationForAddNewPhoneNumber(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -3075,7 +3097,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public AddNewPhoneNumberOutputVo addNewPhoneNumber(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -3438,7 +3461,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public GetMyProfileListOutputVo getMyProfileList(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -3503,7 +3527,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public GetMyFrontProfileOutputVo getMyFrontProfile(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -3676,7 +3701,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public AddNewProfileOutputVo addNewProfile(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -3759,7 +3785,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public ResponseEntity<Resource> downloadProfileFile(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -3798,7 +3825,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public GetMyFrontEmailOutputVo getMyFrontEmail(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -3914,7 +3942,8 @@ public class MyServiceTkAuthController {
     )
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public GetMyFrontPhoneNumberOutputVo getMyFrontPhoneNumber(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -4024,7 +4053,8 @@ public class MyServiceTkAuthController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseBody
-    @Nullable @org.jetbrains.annotations.Nullable
+    @Nullable
+    @org.jetbrains.annotations.Nullable
     public SelectAllRedisKeyValueSampleOutputVo selectAllRedisKeyValueSample(
             @Parameter(hidden = true)
             @Valid @NotNull @org.jetbrains.annotations.NotNull
