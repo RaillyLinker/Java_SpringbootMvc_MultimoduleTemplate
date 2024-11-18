@@ -4,6 +4,9 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 // Naver SMS 발송 유틸 객체
@@ -15,7 +18,7 @@ public interface NaverSmsSenderComponent {
     Boolean sendSms(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendSmsInputVo inputVo
-    );
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     // (알림톡 보내기)
     @Nullable
@@ -23,7 +26,7 @@ public interface NaverSmsSenderComponent {
     SendAlimTalkOutputVo sendAlimTalk(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendAlimTalkInputVo inputVo
-    );
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
 
     // ---------------------------------------------------------------------------------------------
@@ -51,7 +54,7 @@ public interface NaverSmsSenderComponent {
             List<@Valid @NotNull MessageVo> messages              // 메시지(최대 100 개)
     ) {
         // MessageVo 클래스
-        record MessageVo(
+        public record MessageVo(
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
                 String countryCode,                // 국가 코드 (ex : 82)
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -76,7 +79,7 @@ public interface NaverSmsSenderComponent {
         }
 
         // ItemHighlightVo 클래스
-        record ItemHighlightVo(
+        public record ItemHighlightVo(
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
                 String title,       // 아이템 하이라이트 제목, 아이템 리스트 유형의 템플릿에서만 사용 가능
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -85,14 +88,14 @@ public interface NaverSmsSenderComponent {
         }
 
         // ItemVo 클래스
-        record ItemVo(
+        public record ItemVo(
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
                 List<@Valid @NotNull ListItemVo> list,       // 아이템 리스트, 아이템리스트 유형의 템플릿에서만 사용 가능
                 @Nullable @org.jetbrains.annotations.Nullable
                 SummaryVo summary            // 아이템 요약 정보, 아이템리스트 유형의 템플릿에서만 사용 가능
         ) {
             // ListItemVo 클래스
-            record ListItemVo(
+            public record ListItemVo(
                     @Valid @NotNull @org.jetbrains.annotations.NotNull
                     String title,              // 아이템 리스트 제목, 아이템리스트 유형의 템플릿에서만 사용 가능
                     @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -101,7 +104,7 @@ public interface NaverSmsSenderComponent {
             }
 
             // SummaryVo 클래스
-            record SummaryVo(
+            public record SummaryVo(
                     @Valid @NotNull @org.jetbrains.annotations.NotNull
                     String title,              // 아이템 요약 제목, 아이템리스트 유형의 템플릿에서만 사용 가능
                     @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -111,7 +114,7 @@ public interface NaverSmsSenderComponent {
         }
 
         // ButtonVo 클래스
-        record ButtonVo(
+        public record ButtonVo(
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
                 String type,              // 버튼 Type
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -128,7 +131,7 @@ public interface NaverSmsSenderComponent {
         }
 
         // FailOverConfigVo 클래스
-        record FailOverConfigVo(
+        public record FailOverConfigVo(
                 @Nullable @org.jetbrains.annotations.Nullable
                 String type,              // Failover SMS 메시지 Type
                 @Nullable @org.jetbrains.annotations.Nullable
@@ -147,7 +150,7 @@ public interface NaverSmsSenderComponent {
             List<@Valid @NotNull MessageResultVo> messageResults // 메시지 전송 결과
     ) {
         // MessageResultVo 클래스
-        record MessageResultVo(
+        public record MessageResultVo(
                 @Nullable @org.jetbrains.annotations.Nullable
                 String countryCode,           // 수신자 국가번호, default: 82
                 @Valid @NotNull @org.jetbrains.annotations.NotNull

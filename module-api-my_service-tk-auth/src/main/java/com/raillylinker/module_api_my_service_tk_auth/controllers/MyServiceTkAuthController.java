@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Objects;
 
@@ -1438,7 +1440,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendPhoneVerificationForJoinInputVo inputVo
-    ) {
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return service.sendPhoneVerificationForJoin(httpServletResponse, inputVo);
     }
 
@@ -2265,7 +2267,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendPhoneVerificationForFindPasswordInputVo inputVo
-    ) {
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return service.sendPhoneVerificationForFindPassword(httpServletResponse, inputVo);
     }
 
@@ -2390,7 +2392,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             FindPasswordWithPhoneNumberInputVo inputVo
-    ) {
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         service.findPasswordWithPhoneNumber(httpServletResponse, inputVo);
     }
 
@@ -2963,7 +2965,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             SendPhoneVerificationForAddNewPhoneNumberInputVo inputVo
-    ) {
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return service.sendPhoneVerificationForAddNewPhoneNumber(httpServletResponse, inputVo, Objects.requireNonNull(authorization));
     }
 

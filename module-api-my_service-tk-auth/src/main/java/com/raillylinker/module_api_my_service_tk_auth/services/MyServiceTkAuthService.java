@@ -10,6 +10,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public interface MyServiceTkAuthService {
     // (비 로그인 접속 테스트)
@@ -244,7 +246,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendPhoneVerificationForJoinInputVo inputVo
-    );
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
 
     ////
@@ -361,7 +363,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendPhoneVerificationForFindPasswordInputVo inputVo
-    );
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
 
     ////
@@ -385,7 +387,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.FindPasswordWithPhoneNumberInputVo inputVo
-    );
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
 
     ////
@@ -491,7 +493,7 @@ public interface MyServiceTkAuthService {
             MyServiceTkAuthController.SendPhoneVerificationForAddNewPhoneNumberInputVo inputVo,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String authorization
-    );
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
 
     ////

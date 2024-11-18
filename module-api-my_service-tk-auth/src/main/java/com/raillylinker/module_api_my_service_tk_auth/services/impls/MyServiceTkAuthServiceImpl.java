@@ -38,6 +38,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -1829,7 +1831,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendPhoneVerificationForJoinInputVo inputVo
-    ) {
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // 입력 데이터 검증
         boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.existsByPhoneNumberAndRowDeleteDateStr(
                 inputVo.phoneNumber(), "/"
@@ -2758,7 +2760,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.SendPhoneVerificationForFindPasswordInputVo inputVo
-    ) {
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // 입력 데이터 검증
         boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository
                 .existsByPhoneNumberAndRowDeleteDateStr(inputVo.phoneNumber(), "/");
@@ -2869,7 +2871,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.FindPasswordWithPhoneNumberInputVo inputVo
-    ) {
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         Optional<Db1_RaillyLinkerCompany_TotalAuthFindPwWithPhoneVerification> phoneNumberVerificationOpt =
                 db1RaillyLinkerCompanyTotalAuthFindPwWithPhoneVerificationRepository
                         .findByUidAndRowDeleteDateStr(inputVo.verificationUid(), "/");
@@ -3410,7 +3412,7 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             MyServiceTkAuthController.SendPhoneVerificationForAddNewPhoneNumberInputVo inputVo,
             @org.jetbrains.annotations.NotNull
             String authorization
-    ) {
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         Long memberUid = jwtTokenUtil.getMemberUid(
                 authorization.split(" ")[1].trim(),
                 AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,

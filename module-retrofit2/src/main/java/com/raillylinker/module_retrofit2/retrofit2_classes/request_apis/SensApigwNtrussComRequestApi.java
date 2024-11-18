@@ -384,7 +384,7 @@ public interface SensApigwNtrussComRequestApi {
                 }
             }
 
-            record ButtonVo(
+            public record ButtonVo(
                 /*
                     type        name        필수 항목
                     DS          배송 조회
