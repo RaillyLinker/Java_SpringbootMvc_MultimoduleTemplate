@@ -33,4 +33,31 @@ public interface PdfGenerator {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HashMap<String, String> savedImgFilePathMap
     );
+
+
+    ////
+    byte[] createPdfByteArrayFromHtmlString2(
+            String htmlString, // PDF 로 변환할 HTML String (ex : <!DOCTYPE html> <html> ....)
+            // 폰트 파일 맵 (키 : html 의 @font-face src 에 입력한 파일명, 값 : html 의 @font-face src 에 url('주소') 이런 형식으로 치환될 값)
+            /*
+                 map value ex : {"NanumGothicFile.ttf" : "http://127.0.0.1:8080/test.ttf"}
+                 html ex :
+                 @font-face {
+                     font-family: NanumGothic;
+                     src: "NanumGothicFile.ttf";
+                     -fs-pdf-font-embed: embed;
+                     -fs-pdf-font-encoding: Identity-H;
+                 }
+             */
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HashMap<String, String> resourceFontFileNameMap,
+            // 이미지 파일 맵 (키 : html 의 img src 에 입력한 파일명, 값 : 로컬에 저장된 이미지 파일 full 경로)
+            /*
+                 map value ex : {"html_to_pdf_sample.jpg" : "C:\Dev\test.jpg"}
+                 html ex :
+                 <img src="html_to_pdf_sample.jpg" />
+             */
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HashMap<String, byte[]> imageByteArrayMap
+    );
 }

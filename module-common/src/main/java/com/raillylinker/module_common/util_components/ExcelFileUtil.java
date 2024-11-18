@@ -40,7 +40,7 @@ public interface ExcelFileUtil {
             List<@Valid @NotNull Integer> columnRangeIdxList, // 가져올 열 범위 인덱스 리스트 null 이라면 전부 (0부터 시작)
             @Nullable @org.jetbrains.annotations.Nullable
             Integer minColumnLength // 결과 컬럼의 최소 길이 (길이를 넘으면 그대로, 미만이라면 "" 로 채움)
-    ) throws IOException, OpenXML4JException, SAXException, ParserConfigurationException;
+    ) throws Exception;
 
     // (액셀 파일생성)
     // inputExcelSheetDataMap : [시트이름][행번호][컬럼번호] == 셀값
