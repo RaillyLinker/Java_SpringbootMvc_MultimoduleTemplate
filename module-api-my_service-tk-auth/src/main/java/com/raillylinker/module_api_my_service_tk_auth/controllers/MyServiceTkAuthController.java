@@ -3254,7 +3254,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             AddNewOauth2WithAccessTokenInputVo inputVo
-    ) {
+    ) throws IOException {
         service.addNewOauth2WithAccessToken(httpServletResponse, inputVo, Objects.requireNonNull(authorization));
     }
 
@@ -3715,7 +3715,7 @@ public class MyServiceTkAuthController {
             @RequestBody
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             AddNewProfileInputVo inputVo
-    ) {
+    ) throws IOException {
         return service.addNewProfile(httpServletResponse, Objects.requireNonNull(authorization), inputVo);
     }
 
@@ -3795,7 +3795,7 @@ public class MyServiceTkAuthController {
             @PathVariable("fileName")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String fileName
-    ) {
+    ) throws IOException {
         return service.downloadProfileFile(httpServletResponse, fileName);
     }
 

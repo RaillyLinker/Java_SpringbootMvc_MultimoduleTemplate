@@ -545,7 +545,7 @@ public interface MyServiceTkAuthService {
             MyServiceTkAuthController.AddNewOauth2WithAccessTokenInputVo inputVo,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String authorization
-    );
+    ) throws IOException;
 
 
     ////
@@ -641,7 +641,7 @@ public interface MyServiceTkAuthService {
             String authorization,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.AddNewProfileInputVo inputVo
-    );
+    ) throws IOException;
 
 
     ////
@@ -651,7 +651,7 @@ public interface MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String fileName
-    );
+    ) throws IOException;
 
 
     ////

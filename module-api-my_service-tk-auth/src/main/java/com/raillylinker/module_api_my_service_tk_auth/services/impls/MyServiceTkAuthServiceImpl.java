@@ -8,6 +8,7 @@ import com.raillylinker.module_jpa.annotations.CustomTransactional;
 import com.raillylinker.module_jpa.configurations.jpa_configs.Db1MainConfig;
 import com.raillylinker.module_jpa.jpa_beans.db1_main.entities.*;
 import com.raillylinker.module_jpa.jpa_beans.db1_main.repositories.*;
+import com.raillylinker.module_redis.abstract_classes.BasicRedisMap;
 import com.raillylinker.module_redis.redis_map_components.redis1_main.Redis1_Map_TotalAuthForceExpireAuthorizationSet;
 import com.raillylinker.module_retrofit2.retrofit2_classes.RepositoryNetworkRetrofit2;
 import com.raillylinker.module_retrofit2.retrofit2_classes.request_apis.*;
@@ -20,7 +21,10 @@ import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +32,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import retrofit2.Response;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -3318,7 +3324,6 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
     }
 
 
-    // todo
     ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
@@ -3330,7 +3335,66 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberEmail> myEmailList =
+                db1RaillyLinkerCompanyTotalAuthMemberEmailRepository
+                        .findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        if (myEmailList.isEmpty()) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthMemberEmail myEmailVo = null;
+
+        for (var myEmail : myEmailList) {
+            if (myEmail.uid.equals(emailUid)) {
+                myEmailVo = myEmail;
+                break;
+            }
+        }
+
+        if (myEmailVo == null) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        boolean isOauth2Exists =
+                db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository
+                        .existsByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        boolean isMemberPhoneExists =
+                db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository
+                        .existsByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        if (isOauth2Exists ||
+                (memberData.accountPassword != null && myEmailList.size() > 1) ||
+                (memberData.accountPassword != null && isMemberPhoneExists)) {
+            myEmailVo.rowDeleteDateStr =
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.save(myEmailVo);
+
+            if (memberData.frontTotalAuthMemberEmail != null &&
+                    memberData.frontTotalAuthMemberEmail.uid.equals(emailUid)) {
+                memberData.frontTotalAuthMemberEmail = null;
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+            }
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+        }
     }
 
 
@@ -3347,7 +3411,62 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        boolean memberExists =
+                db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository
+                        .existsByPhoneNumberAndRowDeleteDateStr(inputVo.phoneNumber(), "/");
+
+        if (memberExists) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        long verificationTimeSec = 60 * 10;
+        String verificationCode = String.format("%06d", new Random().nextInt(999999));
+
+        var memberAddPhoneNumberVerificationData =
+                db1RaillyLinkerCompanyTotalAuthAddPhoneVerificationRepository.save(
+                        new Db1_RaillyLinkerCompany_TotalAuthAddPhoneVerification(
+                                memberData,
+                                inputVo.phoneNumber(),
+                                verificationCode,
+                                LocalDateTime.now().plusSeconds(verificationTimeSec)
+                        )
+                );
+
+        String[] phoneNumberSplit = inputVo.phoneNumber().split("\\)");
+        String countryCode = phoneNumberSplit[0];
+        String phoneNumber = phoneNumberSplit[1].replace("-", "").replace(" ", "");
+
+        boolean sendSmsResult = naverSmsSenderComponent.sendSms(
+                new NaverSmsSenderComponent.SendSmsInputVo(
+                        "SMS",
+                        countryCode,
+                        phoneNumber,
+                        "[Springboot Mvc Project Template - 전화번호 추가] 인증번호 [" + verificationCode + "]"
+                )
+        );
+
+        if (!sendSmsResult) {
+            throw new RuntimeException();
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.SendPhoneVerificationForAddNewPhoneNumberOutputVo(
+                memberAddPhoneNumberVerificationData.uid,
+                memberAddPhoneNumberVerificationData.verificationExpireWhen
+                        .atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+        );
     }
 
 
@@ -3365,7 +3484,45 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Optional<Db1_RaillyLinkerCompany_TotalAuthAddPhoneVerification> phoneNumberVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthAddPhoneVerificationRepository.findByUidAndRowDeleteDateStr(
+                        verificationUid,
+                        "/"
+                );
+
+        if (phoneNumberVerificationOpt.isEmpty()) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthAddPhoneVerification phoneNumberVerification = phoneNumberVerificationOpt.get();
+
+        if (!phoneNumberVerification.totalAuthMember.uid.equals(memberUid) ||
+                !phoneNumberVerification.phoneNumber.equals(phoneNumber)) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(phoneNumberVerification.verificationExpireWhen)) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        if (phoneNumberVerification.verificationSecret.equals(verificationCode)) {
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+        }
     }
 
 
@@ -3382,7 +3539,78 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        Optional<Db1_RaillyLinkerCompany_TotalAuthAddPhoneVerification> phoneNumberVerificationOpt =
+                db1RaillyLinkerCompanyTotalAuthAddPhoneVerificationRepository.findByUidAndRowDeleteDateStr(
+                        inputVo.verificationUid(),
+                        "/"
+                );
+
+        if (phoneNumberVerificationOpt.isEmpty()) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthAddPhoneVerification phoneNumberVerification = phoneNumberVerificationOpt.get();
+
+        if (!phoneNumberVerification.totalAuthMember.uid.equals(memberUid) ||
+                !phoneNumberVerification.phoneNumber.equals(inputVo.phoneNumber())) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        if (LocalDateTime.now().isAfter(phoneNumberVerification.verificationExpireWhen)) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return null;
+        }
+
+        boolean codeMatched = phoneNumberVerification.verificationSecret.equals(inputVo.verificationCode());
+
+        if (codeMatched) {
+            boolean isUserExists =
+                    db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.existsByPhoneNumberAndRowDeleteDateStr(
+                            inputVo.phoneNumber(),
+                            "/"
+                    );
+
+            if (isUserExists) {
+                httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                httpServletResponse.setHeader("api-result-code", "4");
+                return null;
+            }
+
+            Db1_RaillyLinkerCompany_TotalAuthMemberPhone memberPhoneData =
+                    db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.save(
+                            new Db1_RaillyLinkerCompany_TotalAuthMemberPhone(memberData, inputVo.phoneNumber())
+                    );
+
+            phoneNumberVerification.rowDeleteDateStr =
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            db1RaillyLinkerCompanyTotalAuthAddPhoneVerificationRepository.save(phoneNumberVerification);
+
+            if (inputVo.frontPhoneNumber()) {
+                memberData.frontTotalAuthMemberPhone = memberPhoneData;
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+            }
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+            return new MyServiceTkAuthController.AddNewPhoneNumberOutputVo(memberPhoneData.uid);
+        } else {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "3");
+            return null;
+        }
     }
 
 
@@ -3397,7 +3625,70 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberPhone> myPhoneList =
+                db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(
+                        memberData, "/"
+                );
+
+        if (myPhoneList.isEmpty()) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthMemberPhone myPhoneVo = null;
+
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberPhone myPhone : myPhoneList) {
+            if (myPhone.uid.equals(phoneUid)) {
+                myPhoneVo = myPhone;
+                break;
+            }
+        }
+
+        if (myPhoneVo == null) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        boolean isOauth2Exists =
+                db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.existsByTotalAuthMemberAndRowDeleteDateStr(
+                        memberData, "/"
+                );
+
+        boolean isMemberEmailExists =
+                db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.existsByTotalAuthMemberAndRowDeleteDateStr(
+                        memberData, "/"
+                );
+
+        if (isOauth2Exists ||
+                (memberData.accountPassword != null && myPhoneList.size() > 1) ||
+                (memberData.accountPassword != null && isMemberEmailExists)) {
+
+            myPhoneVo.rowDeleteDateStr =
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.save(myPhoneVo);
+
+            if (memberData.frontTotalAuthMemberPhone != null &&
+                    memberData.frontTotalAuthMemberPhone.uid.equals(phoneUid)) {
+                memberData.frontTotalAuthMemberPhone = null;
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+            }
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+        }
     }
 
 
@@ -3411,8 +3702,87 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             MyServiceTkAuthController.AddNewOauth2WithAccessTokenInputVo inputVo,
             @org.jetbrains.annotations.NotNull
             String authorization
-    ) {
+    ) throws IOException {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        int snsTypeCode;
+        String snsId;
+
+        switch (inputVo.oauth2TypeCode()) {
+            case 1: // GOOGLE
+                Response<WwwGoogleapisComRequestApi.GetOauth2V1UserInfoOutputVO> responseGoogle = networkRetrofit2.wwwGoogleapisComRequestApi.getOauth2V1UserInfo(
+                        inputVo.oauth2AccessToken()
+                ).execute();
+
+                if (responseGoogle.code() != 200 || responseGoogle.body() == null) {
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "1");
+                    return;
+                }
+
+                snsTypeCode = 1;
+                snsId = responseGoogle.body().id();
+                break;
+
+            case 2: // NAVER
+                Response<OpenapiNaverComRequestApi.GetV1NidMeOutputVO> responseNaver = networkRetrofit2.openapiNaverComRequestApi.getV1NidMe(
+                        inputVo.oauth2AccessToken()
+                ).execute();
+
+                if (responseNaver.body() == null) {
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "1");
+                    return;
+                }
+
+                snsTypeCode = 2;
+                snsId = responseNaver.body().response().id();
+                break;
+
+            case 3: // KAKAO TALK
+                Response<KapiKakaoComRequestApi.GetV2UserMeOutputVO> responseKakao = networkRetrofit2.kapiKakaoComRequestApi.getV2UserMe(
+                        inputVo.oauth2AccessToken()
+                ).execute();
+
+                if (responseKakao.code() != 200 || responseKakao.body() == null) {
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "1");
+                    return;
+                }
+
+                snsTypeCode = 3;
+                snsId = String.valueOf(responseKakao.body().id());
+                break;
+
+            default:
+                classLogger.info("SNS Login Type " + inputVo.oauth2TypeCode() + " Not Supported");
+                httpServletResponse.setStatus(400);
+                return;
+        }
+
+        boolean memberExists =
+                db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.existsByOauth2TypeCodeAndOauth2IdAndRowDeleteDateStr(
+                        (byte) snsTypeCode, Objects.requireNonNull(snsId), "/"
+                );
+
+        if (memberExists) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.save(
+                new Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login(memberData, (byte) snsTypeCode, snsId)
+        );
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -3427,7 +3797,61 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        int snsTypeCode;
+        String snsId;
+
+        switch (inputVo.oauth2TypeCode()) {
+            case 4: // Apple
+                AppleOAuthHelperUtil.AppleProfileData appleInfo = appleOAuthHelperUtil.getAppleMemberData(inputVo.oauth2IdToken());
+
+                if (appleInfo != null) {
+                    snsId = appleInfo.snsId();
+                } else {
+                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+                    httpServletResponse.setHeader("api-result-code", "1");
+                    return;
+                }
+
+                snsTypeCode = 4;
+                break;
+
+            default:
+                classLogger.info("SNS Login Type " + inputVo.oauth2TypeCode() + " Not Supported");
+                httpServletResponse.setStatus(400);
+                return;
+        }
+
+        // 사용중인지 검증
+        boolean memberExists = db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository
+                .existsByOauth2TypeCodeAndOauth2IdAndRowDeleteDateStr(
+                        (byte) snsTypeCode, snsId, "/"
+                );
+
+        if (memberExists) { // 이미 사용중인 SNS 인증
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+            return;
+        }
+
+        // SNS 인증 추가
+        db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.save(
+                new Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login(
+                        memberData,
+                        (byte) snsTypeCode,
+                        snsId
+                )
+        );
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -3442,7 +3866,62 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login> myOAuth2List =
+                db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository
+                        .findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        if (myOAuth2List.isEmpty()) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login myOAuth2Vo = null;
+
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login myOAuth2 : myOAuth2List) {
+            if (myOAuth2.uid.equals(oAuth2Uid)) {
+                myOAuth2Vo = myOAuth2;
+                break;
+            }
+        }
+
+        if (myOAuth2Vo == null) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        boolean isMemberEmailExists = db1RaillyLinkerCompanyTotalAuthMemberEmailRepository
+                .existsByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        boolean isMemberPhoneExists = db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository
+                .existsByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        if (myOAuth2List.size() > 1 ||
+                (memberData.accountPassword != null && isMemberEmailExists) ||
+                (memberData.accountPassword != null && isMemberPhoneExists)
+        ) {
+            // 로그인 정보 삭제
+            myOAuth2Vo.rowDeleteDateStr =
+                    LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+
+            db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.save(myOAuth2Vo);
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            // 이외의 경우
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "2");
+        }
     }
 
 
@@ -3455,7 +3934,96 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        // 비활성화 및 관련 처리
+        String now = LocalDateTime.now()
+                .atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberRole role : memberData.totalAuthMemberRoleList) {
+            role.rowDeleteDateStr = now;
+            db1RaillyLinkerCompanyTotalAuthMemberRoleRepository.save(role);
+        }
+
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberEmail email : memberData.totalAuthMemberEmailList) {
+            email.rowDeleteDateStr = now;
+            db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.save(email);
+        }
+
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberPhone phone : memberData.totalAuthMemberPhoneList) {
+            phone.rowDeleteDateStr = now;
+            db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.save(phone);
+        }
+
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberProfile profile : memberData.totalAuthMemberProfileList) {
+            profile.rowDeleteDateStr = now;
+            db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.save(profile);
+        }
+
+        for (Db1_RaillyLinkerCompany_TotalAuthAddEmailVerification verification : memberData.totalAuthAddEmailVerificationList) {
+            verification.rowDeleteDateStr = now;
+            db1RaillyLinkerCompanyTotalAuthAddEmailVerificationRepository.save(verification);
+        }
+
+        for (Db1_RaillyLinkerCompany_TotalAuthAddPhoneVerification verification : memberData.totalAuthAddPhoneVerificationList) {
+            verification.rowDeleteDateStr = now;
+            db1RaillyLinkerCompanyTotalAuthAddPhoneVerificationRepository.save(verification);
+        }
+
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberLockHistory lockHistory : memberData.totalAuthMemberLockHistoryList) {
+            lockHistory.rowDeleteDateStr = now;
+            db1RaillyLinkerCompanyTotalAuthMemberLockHistoryRepository.save(lockHistory);
+        }
+
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberOauth2Login oauth2Login : memberData.totalAuthMemberOauth2LoginList) {
+            oauth2Login.rowDeleteDateStr = now;
+            db1RaillyLinkerCompanyTotalAuthMemberOauth2LoginRepository.save(oauth2Login);
+        }
+
+        // 토큰 만료 처리
+        List<Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory> tokenEntityList = db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository
+                .findAllByTotalAuthMemberAndAccessTokenExpireWhenAfterAndRowDeleteDateStr(memberData, LocalDateTime.now(), "/");
+
+        for (Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory tokenEntity : tokenEntityList) {
+            tokenEntity.logoutDate = LocalDateTime.now();
+            db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository.save(tokenEntity);
+
+            String tokenType = tokenEntity.tokenType;
+            String accessToken = tokenEntity.accessToken;
+
+            Long accessTokenExpireRemainSeconds = "Bearer".equals(tokenType)
+                    ? jwtTokenUtil.getRemainSeconds(accessToken)
+                    : null;
+
+            try {
+                redis1MapTotalAuthForceExpireAuthorizationSet.saveKeyValue(
+                        tokenType + "_" + accessToken,
+                        new Redis1_Map_TotalAuthForceExpireAuthorizationSet.ValueVo(),
+                        Objects.requireNonNull(accessTokenExpireRemainSeconds) * 1000
+                );
+            } catch (Exception e) {
+                classLogger.error("error ", e);
+            }
+        }
+
+        for (Db1_RaillyLinkerCompany_TotalAuthLogInTokenHistory tokenHistory : memberData.totalAuthLogInTokenHistoryList) {
+            tokenHistory.rowDeleteDateStr = now;
+            db1RaillyLinkerCompanyTotalAuthLogInTokenHistoryRepository.save(tokenHistory);
+        }
+
+        // 회원탈퇴 처리
+        memberData.rowDeleteDateStr = now;
+        db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -3469,7 +4037,30 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberProfile> profileData =
+                db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(
+                        memberData, "/");
+
+        List<MyServiceTkAuthController.GetMyProfileListOutputVo.ProfileInfo> myProfileList = new ArrayList<>();
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberProfile profile : profileData) {
+            myProfileList.add(new MyServiceTkAuthController.GetMyProfileListOutputVo.ProfileInfo(
+                    profile.uid,
+                    profile.imageFullUrl,
+                    profile.uid.equals(memberData.frontTotalAuthMemberProfile.uid)
+            ));
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.GetMyProfileListOutputVo(myProfileList);
     }
 
 
@@ -3483,7 +4074,32 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberProfile> profileData =
+                db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(
+                        memberData, "/");
+
+        MyServiceTkAuthController.GetMyFrontProfileOutputVo.ProfileInfo myProfile = null;
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberProfile profile : profileData) {
+            if (memberData.frontTotalAuthMemberProfile != null && profile.uid.equals(memberData.frontTotalAuthMemberProfile.uid)) {
+                myProfile = new MyServiceTkAuthController.GetMyFrontProfileOutputVo.ProfileInfo(
+                        profile.uid,
+                        profile.imageFullUrl
+                );
+                break;
+            }
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.GetMyFrontProfileOutputVo(myProfile);
     }
 
 
@@ -3498,7 +4114,50 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Nullable @org.jetbrains.annotations.Nullable
             Long profileUid
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberProfile> profileDataList =
+                db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(
+                        memberData, "/");
+
+        if (profileDataList.isEmpty()) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (profileUid == null) {
+            memberData.frontTotalAuthMemberProfile = null;
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthMemberProfile selectedProfile = null;
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberProfile profile : profileDataList) {
+            if (profileUid.equals(profile.uid)) {
+                selectedProfile = profile;
+            }
+        }
+
+        if (selectedProfile == null) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        memberData.frontTotalAuthMemberProfile = selectedProfile;
+        db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -3513,7 +4172,42 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             Long profileUid
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        // Get profile
+        Optional<Db1_RaillyLinkerCompany_TotalAuthMemberProfile> profileDataOpt =
+                db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.findByUidAndTotalAuthMemberAndRowDeleteDateStr(
+                        profileUid, memberData, "/");
+
+        if (profileDataOpt.isEmpty()) {
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        Db1_RaillyLinkerCompany_TotalAuthMemberProfile profileData = profileDataOpt.get();
+
+        // Deactivate profile
+        profileData.rowDeleteDateStr =
+                LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+        db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.save(profileData);
+        // !!! Delete profile image file !!!
+
+        if (memberData.frontTotalAuthMemberProfile != null &&
+                Objects.equals(memberData.frontTotalAuthMemberProfile.uid, profileUid)) {
+            // Update member data if the deleted profile is the front profile
+            memberData.frontTotalAuthMemberProfile = null;
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -3529,8 +4223,52 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             String authorization,
             @org.jetbrains.annotations.NotNull
             MyServiceTkAuthController.AddNewProfileInputVo inputVo
-    ) {
-        return null;
+    ) throws IOException {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        // File storage directory
+        Path saveDirectoryPath = Paths.get("./by_product_files/member/profile").toAbsolutePath().normalize();
+
+        // Create the directory if not exists
+        Files.createDirectories(saveDirectoryPath);
+
+        // Get file name and extension
+        String multiPartFileNameString = StringUtils.cleanPath(Objects.requireNonNull(inputVo.profileImageFile().getOriginalFilename()));
+        int fileExtensionSplitIdx = multiPartFileNameString.lastIndexOf('.');
+
+        String fileNameWithOutExtension = fileExtensionSplitIdx == -1 ? multiPartFileNameString :
+                multiPartFileNameString.substring(0, fileExtensionSplitIdx);
+        String fileExtension = fileExtensionSplitIdx == -1 ? "" :
+                multiPartFileNameString.substring(fileExtensionSplitIdx + 1);
+
+        String savedFileName = fileNameWithOutExtension + "(" + LocalDateTime.now().atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")) + ")." + fileExtension;
+
+        // Save file
+        inputVo.profileImageFile().transferTo(saveDirectoryPath.resolve(savedFileName).normalize());
+
+        String savedProfileImageUrl = externalAccessAddress + "/my-service/tk/auth/member-profile/" + savedFileName;
+
+        Db1_RaillyLinkerCompany_TotalAuthMemberProfile profileData =
+                db1RaillyLinkerCompanyTotalAuthMemberProfileRepository.save(
+                        new Db1_RaillyLinkerCompany_TotalAuthMemberProfile(memberData, savedProfileImageUrl));
+
+        if (inputVo.frontProfile()) {
+            memberData.frontTotalAuthMemberProfile = profileData;
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+
+        return new MyServiceTkAuthController.AddNewProfileOutputVo(
+                profileData.uid, profileData.imageFullUrl);
     }
 
 
@@ -3543,8 +4281,27 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             HttpServletResponse httpServletResponse,
             @org.jetbrains.annotations.NotNull
             String fileName
-    ) {
-        return null;
+    ) throws IOException {
+        // Project root directory (path where settings.gradle is located)
+        String projectRootAbsolutePathString = new File("").getAbsolutePath();
+
+        // File absolute path and name
+        Path serverFilePathObject = Paths.get(projectRootAbsolutePathString + "/by_product_files/member/profile/" + fileName);
+
+        if (Files.isDirectory(serverFilePathObject) || Files.notExists(serverFilePathObject)) {
+            // If it's a directory or file doesn't exist
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return null;
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, String.valueOf(ContentDisposition.builder("attachment")
+                        .filename(fileName, StandardCharsets.UTF_8)
+                        .build()))
+                .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(serverFilePathObject))
+                .body(new InputStreamResource(Files.newInputStream(serverFilePathObject)));
     }
 
 
@@ -3556,7 +4313,29 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberEmail> emailData =
+                db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        MyServiceTkAuthController.GetMyFrontEmailOutputVo.EmailInfo myEmail = null;
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberEmail email : emailData) {
+            if (memberData.frontTotalAuthMemberEmail != null && email.uid.equals(memberData.frontTotalAuthMemberEmail.uid)) {
+                myEmail = new MyServiceTkAuthController.GetMyFrontEmailOutputVo.EmailInfo(
+                        email.uid, email.emailAddress);
+                break;
+            }
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.GetMyFrontEmailOutputVo(myEmail);
     }
 
 
@@ -3571,7 +4350,54 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Nullable @org.jetbrains.annotations.Nullable
             Long emailUid
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        // Get my email list
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberEmail> emailDataList =
+                db1RaillyLinkerCompanyTotalAuthMemberEmailRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        if (emailDataList.isEmpty()) {
+            // If there are no emails
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (emailUid == null) {
+            memberData.frontTotalAuthMemberEmail = null;
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+            return;
+        }
+
+        // Find the selected email
+        Db1_RaillyLinkerCompany_TotalAuthMemberEmail selectedEmail = null;
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberEmail email : emailDataList) {
+            if (emailUid.equals(email.uid)) {
+                selectedEmail = email;
+            }
+        }
+
+        if (selectedEmail == null) {
+            // If the selected email doesn't exist
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        // Select the profile email
+        memberData.frontTotalAuthMemberEmail = selectedEmail;
+        db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -3585,7 +4411,29 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             String authorization
     ) {
-        return null;
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
+
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberPhone> phoneNumberData =
+                db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        MyServiceTkAuthController.GetMyFrontPhoneNumberOutputVo.PhoneNumberInfo myPhone = null;
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberPhone phone : phoneNumberData) {
+            if (memberData.frontTotalAuthMemberPhone != null && phone.uid.equals(memberData.frontTotalAuthMemberPhone.uid)) {
+                myPhone = new MyServiceTkAuthController.GetMyFrontPhoneNumberOutputVo.PhoneNumberInfo(
+                        phone.uid, phone.phoneNumber);
+                break;
+            }
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.GetMyFrontPhoneNumberOutputVo(myPhone);
     }
 
 
@@ -3600,7 +4448,54 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @Nullable @org.jetbrains.annotations.Nullable
             Long phoneNumberUid
     ) {
+        Long memberUid = jwtTokenUtil.getMemberUid(
+                authorization.split(" ")[1].trim(),
+                AUTH_JWT_CLAIMS_AES256_INITIALIZATION_VECTOR,
+                AUTH_JWT_CLAIMS_AES256_ENCRYPTION_KEY
+        );
 
+        Db1_RaillyLinkerCompany_TotalAuthMember memberData =
+                db1RaillyLinkerCompanyTotalAuthMemberRepository.findByUidAndRowDeleteDateStr(memberUid, "/").get();
+
+        // Get my phone number list
+        List<Db1_RaillyLinkerCompany_TotalAuthMemberPhone> phoneNumberData =
+                db1RaillyLinkerCompanyTotalAuthMemberPhoneRepository.findAllByTotalAuthMemberAndRowDeleteDateStr(memberData, "/");
+
+        if (phoneNumberData.isEmpty()) {
+            // If there are no phone numbers
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        if (phoneNumberUid == null) {
+            memberData.frontTotalAuthMemberPhone = null;
+            db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+            return;
+        }
+
+        // Find the selected phone number
+        Db1_RaillyLinkerCompany_TotalAuthMemberPhone selectedPhone = null;
+        for (Db1_RaillyLinkerCompany_TotalAuthMemberPhone phone : phoneNumberData) {
+            if (phoneNumberUid.equals(phone.uid)) {
+                selectedPhone = phone;
+            }
+        }
+
+        if (selectedPhone == null) {
+            // If the selected phone number doesn't exist
+            httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            httpServletResponse.setHeader("api-result-code", "1");
+            return;
+        }
+
+        // Select the profile phone number
+        memberData.frontTotalAuthMemberPhone = selectedPhone;
+        db1RaillyLinkerCompanyTotalAuthMemberRepository.save(memberData);
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -3612,6 +4507,21 @@ public class MyServiceTkAuthServiceImpl implements MyServiceTkAuthService {
             @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
     ) {
-        return null;
+        List<BasicRedisMap.RedisMapDataVo<Redis1_Map_TotalAuthForceExpireAuthorizationSet.ValueVo>> keyValueList = redis1MapTotalAuthForceExpireAuthorizationSet.findAllKeyValues();
+
+        List<MyServiceTkAuthController.SelectAllRedisKeyValueSampleOutputVo.KeyValueVo> testEntityListVoList =
+                new ArrayList<>();
+        for (BasicRedisMap.RedisMapDataVo<Redis1_Map_TotalAuthForceExpireAuthorizationSet.ValueVo> keyValue : keyValueList) {
+            testEntityListVoList.add(
+                    new MyServiceTkAuthController.SelectAllRedisKeyValueSampleOutputVo.KeyValueVo(
+                            keyValue.key(),
+                            keyValue.expireTimeMs()
+                    )
+            );
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkAuthController.SelectAllRedisKeyValueSampleOutputVo(testEntityListVoList);
+
     }
 }
