@@ -343,6 +343,40 @@ public interface MyServiceTkSampleDatabaseTestService {
 
 
     ////
+    // (외래키 관련 테이블 Rows 조회 (QueryDsl))
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    MyServiceTkSampleDatabaseTestController.SelectFkTableRowsWithQueryDslOutputVo selectFkTableRowsWithQueryDsl(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse
+    );
+
+
+    ////
+    // (외래키 관련 테이블 Rows 조회 및 부모 테이블 이름으로 필터링 (QueryDsl))
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    MyServiceTkSampleDatabaseTestController.SelectFkTableRowsByParentNameFilterWithQueryDslOutputVo selectFkTableRowsByParentNameFilterWithQueryDsl(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            String parentName
+    );
+
+
+    ////
+    // (외래키 관련 테이블 부모 테이블 고유번호로 자식 테이블 리스트 검색 (QueryDsl))
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    MyServiceTkSampleDatabaseTestController.SelectFkTableChildListWithQueryDslOutputVo selectFkTableChildListWithQueryDsl(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Long parentUid
+    );
+
+
+    ////
     // (외래키 자식 테이블 Row 삭제 테스트)
     void deleteFkChildRowSample(
             @Valid @NotNull @org.jetbrains.annotations.NotNull

@@ -1064,6 +1064,131 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    public MyServiceTkSampleDatabaseTestController.SelectFkTableRowsWithQueryDslOutputVo selectFkTableRowsWithQueryDsl(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse
+    ) {
+        var resultEntityList = db1TemplateRepositoryDsl.findParentWithChildren();
+
+        var entityVoList = new ArrayList<MyServiceTkSampleDatabaseTestController.SelectFkTableRowsWithQueryDslOutputVo.ParentEntityVo>();
+        for (var resultEntity : resultEntityList) {
+            var childEntityVoList = new ArrayList<MyServiceTkSampleDatabaseTestController.SelectFkTableRowsWithQueryDslOutputVo.ParentEntityVo.ChildEntityVo>();
+
+            for (var childEntity : resultEntity.fkTestManyToOneChildList) {
+                childEntityVoList.add(
+                        new MyServiceTkSampleDatabaseTestController.SelectFkTableRowsWithQueryDslOutputVo.ParentEntityVo.ChildEntityVo(
+                                childEntity.uid,
+                                childEntity.childName,
+                                childEntity.rowCreateDate.atZone(ZoneId.systemDefault())
+                                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                                childEntity.rowUpdateDate.atZone(ZoneId.systemDefault())
+                                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+                        )
+                );
+            }
+
+
+            entityVoList.add(
+                    new MyServiceTkSampleDatabaseTestController.SelectFkTableRowsWithQueryDslOutputVo.ParentEntityVo(
+                            resultEntity.uid,
+                            resultEntity.parentName,
+                            resultEntity.rowCreateDate.atZone(ZoneId.systemDefault())
+                                    .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                            resultEntity.rowUpdateDate.atZone(ZoneId.systemDefault())
+                                    .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                            childEntityVoList
+                    )
+            );
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkSampleDatabaseTestController.SelectFkTableRowsWithQueryDslOutputVo(entityVoList);
+    }
+
+
+    ////
+    @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    public MyServiceTkSampleDatabaseTestController.SelectFkTableRowsByParentNameFilterWithQueryDslOutputVo selectFkTableRowsByParentNameFilterWithQueryDsl(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            String parentName
+    ) {
+        var resultEntityList = db1TemplateRepositoryDsl.findParentWithChildrenByName(parentName);
+
+        var entityVoList = new ArrayList<MyServiceTkSampleDatabaseTestController.SelectFkTableRowsByParentNameFilterWithQueryDslOutputVo.ParentEntityVo>();
+        for (var resultEntity : resultEntityList) {
+            var childEntityVoList = new ArrayList<MyServiceTkSampleDatabaseTestController.SelectFkTableRowsByParentNameFilterWithQueryDslOutputVo.ParentEntityVo.ChildEntityVo>();
+
+            for (var childEntity : resultEntity.fkTestManyToOneChildList) {
+                childEntityVoList.add(
+                        new MyServiceTkSampleDatabaseTestController.SelectFkTableRowsByParentNameFilterWithQueryDslOutputVo.ParentEntityVo.ChildEntityVo(
+                                childEntity.uid,
+                                childEntity.childName,
+                                childEntity.rowCreateDate.atZone(ZoneId.systemDefault())
+                                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                                childEntity.rowUpdateDate.atZone(ZoneId.systemDefault())
+                                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+                        )
+                );
+            }
+
+
+            entityVoList.add(
+                    new MyServiceTkSampleDatabaseTestController.SelectFkTableRowsByParentNameFilterWithQueryDslOutputVo.ParentEntityVo(
+                            resultEntity.uid,
+                            resultEntity.parentName,
+                            resultEntity.rowCreateDate.atZone(ZoneId.systemDefault())
+                                    .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                            resultEntity.rowUpdateDate.atZone(ZoneId.systemDefault())
+                                    .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                            childEntityVoList
+                    )
+            );
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkSampleDatabaseTestController.SelectFkTableRowsByParentNameFilterWithQueryDslOutputVo(entityVoList);
+    }
+
+
+    ////
+    @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    public MyServiceTkSampleDatabaseTestController.SelectFkTableChildListWithQueryDslOutputVo selectFkTableChildListWithQueryDsl(
+            @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @org.jetbrains.annotations.NotNull
+            Long parentUid
+    ) {
+        var resultEntityList = db1TemplateRepositoryDsl.findChildByParentId(parentUid);
+
+        var entityVoList = new ArrayList<MyServiceTkSampleDatabaseTestController.SelectFkTableChildListWithQueryDslOutputVo.ChildEntityVo>();
+        for (var resultEntity : resultEntityList) {
+            entityVoList.add(
+                    new MyServiceTkSampleDatabaseTestController.SelectFkTableChildListWithQueryDslOutputVo.ChildEntityVo(
+                            resultEntity.uid,
+                            resultEntity.childName,
+                            resultEntity.rowCreateDate.atZone(ZoneId.systemDefault())
+                                    .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                            resultEntity.rowUpdateDate.atZone(ZoneId.systemDefault())
+                                    .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
+                    )
+            );
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkSampleDatabaseTestController.SelectFkTableChildListWithQueryDslOutputVo(entityVoList);
+    }
+
+
+    ////
     @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     public void deleteFkChildRowSample(
