@@ -1,4 +1,4 @@
-package com.raillylinker.module_batch.configurations;
+package com.raillylinker.module_batch.batch_components;
 
 import com.raillylinker.module_jpa.configurations.jpa_configs.Db1MainConfig;
 import jakarta.validation.Valid;
@@ -7,27 +7,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-@EnableBatchProcessing(
-        dataSourceRef = Db1MainConfig.DATABASE_DIRECTORY_NAME + "_DataSource",
-        transactionManagerRef = Db1MainConfig.TRANSACTION_NAME,
-        tablePrefix = "batch_metadata.BATCH_"
-)
-public class TaskletBatchTestConfig {
-    public TaskletBatchTestConfig(
+@Component
+public class TaskletBatchTest {
+    public TaskletBatchTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             JobRepository jobRepository,
             @Qualifier(Db1MainConfig.TRANSACTION_NAME)
@@ -55,7 +49,7 @@ public class TaskletBatchTestConfig {
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    private final Logger classLogger = LoggerFactory.getLogger(TaskletBatchTestConfig.class);
+    private final Logger classLogger = LoggerFactory.getLogger(TaskletBatchTest.class);
 
 
     // ---------------------------------------------------------------------------------------------
