@@ -11,6 +11,7 @@ dependencies {
     implementation project(":module-jpa")
     implementation project(":module-redis")
     implementation project(":module-mongodb")
+    implementation project(":module-mybatis")
 
     // (Spring Starter Web)
     // : 스프링 부트 웹 개발
