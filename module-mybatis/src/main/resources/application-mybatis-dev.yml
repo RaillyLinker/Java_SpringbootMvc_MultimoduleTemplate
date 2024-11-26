@@ -1,0 +1,19 @@
+# (실행 환경 dev 설정)
+# : 개발 환경 개발자들을 위한 환경 설정
+
+spring:
+  config:
+    activate: # 프로필명 설정
+      on-profile: mybatis-dev
+
+# MyBatis DataSource 설정
+datasource-mybatis:
+  # MyBatis 추가
+  # 작명법은, 앞에 mybatis{index}-{제목} 형식으로 하기(다른 datasource 설정과의 통일성을 위해)
+
+  # (주 사용 MyBatis)
+  mybatis1-main:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://127.0.0.1:3306/first_schema?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&autoReconnect=true
+    username: root
+    password: todo1234!

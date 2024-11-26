@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.raillylinker.module_mybatis.mybatis_beans.mybatis2_sub.mappers.Mybatis2_Template_TestData_Mapper">
+
+    <select id="selectTestDataById" parameterType="Long" resultType="mybatis2_template_testData">
+        SELECT *
+        FROM template.test_data
+        WHERE uid = #{value}
+    </select>
+
+</mapper>

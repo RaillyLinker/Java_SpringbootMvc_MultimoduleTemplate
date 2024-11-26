@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+}
+
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    // (모듈)
+
+    // (Mybatis)
+    api("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3")
+    implementation 'com.mysql:mysql-connector-j:9.1.0' // MySQL
+
+    // (AOP)
+    implementation 'org.springframework.boot:spring-boot-starter-aop:3.3.5'
+}
