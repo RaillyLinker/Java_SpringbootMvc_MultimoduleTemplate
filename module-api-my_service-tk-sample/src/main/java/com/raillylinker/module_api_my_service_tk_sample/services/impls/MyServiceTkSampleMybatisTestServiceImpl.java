@@ -6,7 +6,6 @@ import com.raillylinker.module_mybatis.annotations.CustomMybatisTransactional;
 import com.raillylinker.module_mybatis.configurations.mybatis_configs.Mybatis1MainConfig;
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData;
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.mappers.Mybatis1_Template_TestData_Mapper;
-import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -44,9 +43,7 @@ public class MyServiceTkSampleMybatisTestServiceImpl implements MyServiceTkSampl
     // <공개 메소드 공간>
     @Override
     @CustomMybatisTransactional(transactionManagerBeanNameList = {Mybatis1MainConfig.TRANSACTION_NAME})
-    @Nullable
-    @org.jetbrains.annotations.Nullable
-    public MyServiceTkSampleMybatisTestController.InsertDataSampleOutputVo insertDataSample(
+    public void insertDataSample(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse,
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -67,67 +64,5 @@ public class MyServiceTkSampleMybatisTestServiceImpl implements MyServiceTkSampl
         );
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
-
-//        return new MyServiceTkSampleMybatisTestController.InsertDataSampleOutputVo(
-//                result.uid,
-//                result.content,
-//                result.randomNum,
-//                result.testDatetime.atZone(ZoneId.systemDefault())
-//                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
-//                result.rowCreateDate.atZone(ZoneId.systemDefault())
-//                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
-//                result.rowUpdateDate.atZone(ZoneId.systemDefault())
-//                        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
-//                result.rowDeleteDateStr
-//        );
-        return null;
-    }
-
-
-    /// /
-    @Override
-    @Nullable
-    @org.jetbrains.annotations.Nullable
-    public MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo selectRowsSample(
-            @Valid @NotNull @org.jetbrains.annotations.NotNull
-            HttpServletResponse httpServletResponse
-    ) {
-//        List<Db1_Template_TestData> resultEntityList = db1TemplateTestsRepository.findAllByRowDeleteDateStrOrderByRowCreateDate("/");
-//        List<MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo.TestEntityVo> entityVoList = new ArrayList<>();
-//        for (Db1_Template_TestData resultEntity : resultEntityList) {
-//            entityVoList.add(new MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo.TestEntityVo(
-//                    resultEntity.uid,
-//                    resultEntity.content,
-//                    resultEntity.randomNum,
-//                    resultEntity.testDatetime.atZone(ZoneId.systemDefault())
-//                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
-//                    resultEntity.rowCreateDate.atZone(ZoneId.systemDefault())
-//                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
-//                    resultEntity.rowUpdateDate.atZone(ZoneId.systemDefault())
-//                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
-//                    resultEntity.rowDeleteDateStr
-//            ));
-//        }
-//
-//        List<Db1_Template_TestData> logicalDeleteEntityVoList = db1TemplateTestsRepository.findAllByRowDeleteDateStrNotOrderByRowCreateDate("/");
-//        List<MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo.TestEntityVo> logicalDeleteVoList = new ArrayList<>();
-//        for (Db1_Template_TestData resultEntity : logicalDeleteEntityVoList) {
-//            logicalDeleteVoList.add(new MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo.TestEntityVo(
-//                    resultEntity.uid,
-//                    resultEntity.content,
-//                    resultEntity.randomNum,
-//                    resultEntity.testDatetime.atZone(ZoneId.systemDefault())
-//                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
-//                    resultEntity.rowCreateDate.atZone(ZoneId.systemDefault())
-//                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
-//                    resultEntity.rowUpdateDate.atZone(ZoneId.systemDefault())
-//                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
-//                    resultEntity.rowDeleteDateStr
-//            ));
-//        }
-//
-//        httpServletResponse.setStatus(HttpStatus.OK.value());
-//        return new MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo(entityVoList, logicalDeleteVoList);
-        return null;
     }
 }
