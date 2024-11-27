@@ -1,15 +1,14 @@
 package com.raillylinker.module_api_my_service_tk_sample.services.impls;
 
-import com.raillylinker.module_api_my_service_tk_sample.controllers.MyServiceTkSampleDatabaseTestController;
 import com.raillylinker.module_api_my_service_tk_sample.controllers.MyServiceTkSampleMybatisTestController;
 import com.raillylinker.module_api_my_service_tk_sample.services.MyServiceTkSampleMybatisTestService;
 import com.raillylinker.module_jpa.annotations.CustomTransactional;
 import com.raillylinker.module_jpa.configurations.jpa_configs.Db1MainConfig;
-import com.raillylinker.module_jpa.jpa_beans.db1_main.entities.Db1_Template_TestData;
 import com.raillylinker.module_mybatis.annotations.CustomMybatisTransactional;
 import com.raillylinker.module_mybatis.configurations.mybatis_configs.Mybatis1MainConfig;
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData;
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.mappers.Mybatis1_Template_TestData_Mapper;
+import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.models.FindAllOrderByNearestRandomNumResultVo;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -180,5 +179,38 @@ public class MyServiceTkSampleMybatisTestServiceImpl implements MyServiceTkSampl
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
         return new MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo(entityVoList, logicalDeleteVoList);
+    }
+
+
+    /// /
+    @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    public MyServiceTkSampleMybatisTestController.SelectRowsOrderByRandomNumSampleOutputVo selectRowsOrderByRandomNumSample(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Integer num
+    ) {
+        List<FindAllOrderByNearestRandomNumResultVo> foundEntityList = mybatis1TemplateTestDataMapper.findAllOrderByNearestRandomNum(num);
+
+        List<MyServiceTkSampleMybatisTestController.SelectRowsOrderByRandomNumSampleOutputVo.TestEntityVo> testEntityVoList = new ArrayList<>();
+        for (FindAllOrderByNearestRandomNumResultVo entity : foundEntityList) {
+            testEntityVoList.add(new MyServiceTkSampleMybatisTestController.SelectRowsOrderByRandomNumSampleOutputVo.TestEntityVo(
+                    entity.uid,
+                    entity.content,
+                    entity.randomNum,
+                    entity.testDatetime.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    entity.rowCreateDate.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    entity.rowUpdateDate.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    entity.distance
+            ));
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkSampleMybatisTestController.SelectRowsOrderByRandomNumSampleOutputVo(testEntityVoList);
     }
 }

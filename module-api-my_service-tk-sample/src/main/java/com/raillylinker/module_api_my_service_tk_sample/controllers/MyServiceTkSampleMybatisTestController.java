@@ -88,7 +88,7 @@ public class MyServiceTkSampleMybatisTestController {
     }
 
 
-    ////
+    /// /
     @Operation(
             summary = "DB Rows 삭제 테스트 API",
             description = "테스트 테이블의 모든 Row 를 모두 삭제합니다.\n\n"
@@ -118,7 +118,7 @@ public class MyServiceTkSampleMybatisTestController {
     }
 
 
-    ////
+    /// /
     @Operation(
             summary = "DB Row 삭제 테스트",
             description = "테스트 테이블의 Row 하나를 삭제합니다.\n\n"
@@ -159,7 +159,7 @@ public class MyServiceTkSampleMybatisTestController {
     }
 
 
-    ////
+    /// /
     @Operation(
             summary = "DB Rows 조회 테스트",
             description = "테스트 테이블의 모든 Rows 를 반환합니다.\n\n"
@@ -232,6 +232,76 @@ public class MyServiceTkSampleMybatisTestController {
                 @JsonProperty("deleteDate")
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
                 String deleteDate
+        ) {
+        }
+    }
+
+
+    /// /
+    @Operation(
+            summary = "DB 테이블의 random_num 컬럼 근사치 기준으로 정렬한 리스트 조회 API",
+            description = "테이블의 row 중 random_num 컬럼과 num 파라미터의 값의 근사치로 정렬한 리스트 반환\n\n"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "정상 동작")
+    })
+    @GetMapping(path = "/rows/order-by-random-num-nearest", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    public SelectRowsOrderByRandomNumSampleOutputVo selectRowsOrderByRandomNumSample(
+            @Parameter(hidden = true)
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Parameter(name = "num", description = "근사값 정렬의 기준", example = "1")
+            @RequestParam("num")
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Integer num
+    ) {
+        return service.selectRowsOrderByRandomNumSample(httpServletResponse, num);
+    }
+
+    public record SelectRowsOrderByRandomNumSampleOutputVo(
+            @Schema(description = "아이템 리스트", requiredMode = Schema.RequiredMode.REQUIRED)
+            @JsonProperty("testEntityVoList")
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            List<@Valid @NotNull TestEntityVo> testEntityVoList
+    ) {
+        public record TestEntityVo(
+                @Schema(description = "글 고유번호", requiredMode = Schema.RequiredMode.REQUIRED, example = "1234")
+                @JsonProperty("uid")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Long uid,
+
+                @Schema(description = "글 본문", requiredMode = Schema.RequiredMode.REQUIRED, example = "테스트 텍스트입니다.")
+                @JsonProperty("content")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String content,
+
+                @Schema(description = "자동 생성 숫자", requiredMode = Schema.RequiredMode.REQUIRED, example = "21345")
+                @JsonProperty("randomNum")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Integer randomNum,
+
+                @Schema(description = "테스트용 일시 데이터(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+                @JsonProperty("testDatetime")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String testDatetime,
+
+                @Schema(description = "글 작성일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+                @JsonProperty("createDate")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String createDate,
+
+                @Schema(description = "글 수정일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+                @JsonProperty("updateDate")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String updateDate,
+
+                @Schema(description = "기준과의 절대거리", requiredMode = Schema.RequiredMode.REQUIRED, example = "34")
+                @JsonProperty("distance")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Integer distance
         ) {
         }
     }
