@@ -2,6 +2,9 @@ package com.raillylinker.module_api_my_service_tk_sample.services.impls;
 
 import com.raillylinker.module_api_my_service_tk_sample.controllers.MyServiceTkSampleMybatisTestController;
 import com.raillylinker.module_api_my_service_tk_sample.services.MyServiceTkSampleMybatisTestService;
+import com.raillylinker.module_jpa.annotations.CustomTransactional;
+import com.raillylinker.module_jpa.configurations.jpa_configs.Db1MainConfig;
+import com.raillylinker.module_jpa.jpa_beans.db1_main.entities.Db1_Template_TestData;
 import com.raillylinker.module_mybatis.annotations.CustomMybatisTransactional;
 import com.raillylinker.module_mybatis.configurations.mybatis_configs.Mybatis1MainConfig;
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData;
@@ -15,8 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class MyServiceTkSampleMybatisTestServiceImpl implements MyServiceTkSampleMybatisTestService {
@@ -62,6 +67,34 @@ public class MyServiceTkSampleMybatisTestServiceImpl implements MyServiceTkSampl
                                 .toLocalDateTime()
                 )
         );
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+    }
+
+
+    /// /
+    @CustomMybatisTransactional(transactionManagerBeanNameList = {Mybatis1MainConfig.TRANSACTION_NAME})
+    @Override
+    public void deleteRowsSample(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Boolean deleteLogically
+    ) {
+        if (deleteLogically) {
+            List<Mybatis1_Template_TestData> entityList = mybatis1TemplateTestDataMapper.findAllTestData();
+            String nowStr = LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"));
+            for (Mybatis1_Template_TestData entity : entityList) {
+                System.out.println(entity.uid);
+                entity.rowDeleteDateStr = nowStr;
+                mybatis1TemplateTestDataMapper.updateTestDateRowDeleteDateStr(entity);
+            }
+        } else {
+            List<Mybatis1_Template_TestData> entityList = mybatis1TemplateTestDataMapper.findAllTestData2();
+            for (Mybatis1_Template_TestData entity : entityList) {
+                mybatis1TemplateTestDataMapper.deleteUserById(entity.uid);
+            }
+        }
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
     }

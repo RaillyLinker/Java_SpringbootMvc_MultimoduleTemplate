@@ -11,4 +11,21 @@
         WHERE uid = #{value}
     </select>
 
+    <select id="findAllTestData" resultType="mybatis1_template_testData">
+        SELECT *
+        FROM template.test_data
+        WHERE row_delete_date_str = '/'
+    </select>
+
+    <select id="findAllTestData2" resultType="mybatis1_template_testData">
+        SELECT *
+        FROM template.test_data
+    </select>
+
+    <update id="updateTestDateRowDeleteDateStr" parameterType="mybatis1_template_testData">
+        UPDATE template.test_data
+        SET row_delete_date_str = #{rowDeleteDateStr}
+        WHERE uid = #{uid}
+    </update>
+
 </mapper>

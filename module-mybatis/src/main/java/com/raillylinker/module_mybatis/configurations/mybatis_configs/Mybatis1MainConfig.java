@@ -1,5 +1,6 @@
 package com.raillylinker.module_mybatis.configurations.mybatis_configs;
 
+import com.raillylinker.module_mybatis.const_objects.ModuleConst;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -20,7 +21,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @MapperScan(
-        basePackages = "com.raillylinker.module_mybatis.mybatis_beans." + Mybatis1MainConfig.MYBATIS_MAPPERS_NAME + ".mappers",
+        basePackages = ModuleConst.PACKAGE_NAME + ".mybatis_beans." + Mybatis1MainConfig.MYBATIS_MAPPERS_NAME + ".mappers",
         sqlSessionFactoryRef = Mybatis1MainConfig.MYBATIS_SQL_SESSION_FACTORY_BEAN_NAME
 )
 @EnableTransactionManagement

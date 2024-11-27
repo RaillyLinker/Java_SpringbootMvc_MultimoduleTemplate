@@ -13,4 +13,14 @@ public interface MyServiceTkSampleMybatisTestService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             MyServiceTkSampleMybatisTestController.InsertDataSampleInputVo inputVo
     );
+
+
+    ////
+    // (DB Rows 삭제 테스트 API)
+    void deleteRowsSample(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Boolean deleteLogically
+    );
 }

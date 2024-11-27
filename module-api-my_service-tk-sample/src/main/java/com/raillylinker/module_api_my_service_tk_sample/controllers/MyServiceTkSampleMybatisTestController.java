@@ -81,4 +81,34 @@ public class MyServiceTkSampleMybatisTestController {
             String dateString
     ) {
     }
+
+
+    ////
+    @Operation(
+            summary = "DB Rows 삭제 테스트 API",
+            description = "테스트 테이블의 모든 Row 를 모두 삭제합니다.\n\n"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "정상 동작"
+            )
+    })
+    @DeleteMapping(
+            path = "/rows",
+            consumes = MediaType.ALL_VALUE,
+            produces = MediaType.ALL_VALUE
+    )
+    @ResponseBody
+    public void deleteRowsSample(
+            @Parameter(hidden = true)
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Parameter(name = "deleteLogically", description = "논리적 삭제 여부", example = "true")
+            @RequestParam("deleteLogically")
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Boolean deleteLogically
+    ) {
+        service.deleteRowsSample(httpServletResponse, deleteLogically);
+    }
 }

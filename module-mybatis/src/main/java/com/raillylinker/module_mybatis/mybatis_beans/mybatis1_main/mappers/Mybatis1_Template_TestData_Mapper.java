@@ -1,11 +1,9 @@
 package com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.mappers;
 
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -48,5 +46,21 @@ public interface Mybatis1_Template_TestData_Mapper {
     )
     Optional<Mybatis1_Template_TestData> findByUid(@Param("uid") Long uid);
 
+    @Delete("""
+            DELETE 
+            FROM 
+                template.test_data 
+            WHERE 
+                uid = #{uid}
+            """
+    )
+    int deleteUserById(@Param("uid") Long uid);
+
     Optional<Mybatis1_Template_TestData> selectTestDataById(Long id);
+
+    List<Mybatis1_Template_TestData> findAllTestData();
+
+    List<Mybatis1_Template_TestData> findAllTestData2();
+
+    int updateTestDateRowDeleteDateStr(Mybatis1_Template_TestData mybatis1TemplateTestData);
 }
