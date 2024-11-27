@@ -19,20 +19,7 @@ class ModuleTest {
     Mybatis2_Template_TestData_Mapper mybatis2TemplateTestDataMapper;
 
     @Test
-    void tryRedisLockAndUnlock() {
-        // 첫 번째 tryLock 테스트 (락을 획득)
-        Optional<Mybatis1_Template_TestData> result1 = mybatis1TemplateTestDataMapper.findByUidWithAnnotation(1L);
-        if (result1.isPresent()) {
-            System.out.println();
-            System.out.println("result1");
-            System.out.println(result1.get().randomNum);
-            System.out.println();
-        } else {
-            System.out.println();
-            System.out.println("result1 is null");
-            System.out.println();
-        }
-
+    void mybatisBasicTest() {
         Optional<Mybatis1_Template_TestData> result2 = mybatis1TemplateTestDataMapper.findByUid(1L);
         if (result2.isPresent()) {
             System.out.println("result2");
@@ -43,21 +30,6 @@ class ModuleTest {
             System.out.println();
         }
 
-
-
-
-
-        Optional<Mybatis2_Template_TestData> result12 = mybatis2TemplateTestDataMapper.findByUid(1L);
-        if (result12.isPresent()) {
-            System.out.println();
-            System.out.println("result12");
-            System.out.println(result12.get().randomNum);
-            System.out.println();
-        } else {
-            System.out.println();
-            System.out.println("result12 is null");
-            System.out.println();
-        }
 
         Optional<Mybatis2_Template_TestData> result22 = mybatis2TemplateTestDataMapper.selectTestDataById(1L);
         if (result22.isPresent()) {

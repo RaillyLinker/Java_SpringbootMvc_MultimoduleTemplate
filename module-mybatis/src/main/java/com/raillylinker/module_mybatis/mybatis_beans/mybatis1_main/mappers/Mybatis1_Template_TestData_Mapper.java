@@ -35,20 +35,6 @@ public interface Mybatis1_Template_TestData_Mapper {
     )
     void save(Mybatis1_Template_TestData testData);
 
-    @Select("""
-            SELECT 
-                * 
-            FROM 
-                template.test_data 
-            WHERE 
-                uid = #{uid}
-            """
-    )
-    Optional<Mybatis1_Template_TestData> findByUidWithAnnotation(
-            @Param("uid")
-            Long uid
-    );
-
     @Delete("""
             DELETE 
             FROM 
