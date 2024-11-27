@@ -4,8 +4,22 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.mappers.Mybatis1_Template_TestData_Mapper">
+    <!-- Result Mapping 객체 타입 정의 -->
+    <resultMap
+            id="mybatis1_template_testData"
+            type="com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData"
+    >
+        <id column="uid" property="uid"/>
+        <result column="row_create_date" property="rowCreateDate"/>
+        <result column="row_update_date" property="rowUpdateDate"/>
+        <result column="row_delete_date_str" property="rowDeleteDateStr"/>
+        <result column="content" property="content"/>
+        <result column="random_num" property="randomNum"/>
+        <result column="test_datetime" property="testDatetime"/>
+    </resultMap>
 
-    <select id="findByUid" parameterType="Long" resultType="mybatis1_template_testData">
+    <!-- 매퍼 함수 쿼리 추가 -->
+    <select id="findByUid" parameterType="Long" resultMap="mybatis1_template_testData">
         <![CDATA[
         SELECT *
         FROM template.test_data
@@ -14,7 +28,7 @@
         ]]>
     </select>
 
-    <select id="findAllWithoutLogicalDeleted" resultType="mybatis1_template_testData">
+    <select id="findAllWithoutLogicalDeleted" resultMap="mybatis1_template_testData">
         <![CDATA[
         SELECT *
         FROM template.test_data
@@ -22,7 +36,7 @@
         ]]>
     </select>
 
-    <select id="findAllLogicalDeleted" resultType="mybatis1_template_testData">
+    <select id="findAllLogicalDeleted" resultMap="mybatis1_template_testData">
         <![CDATA[
         SELECT *
         FROM template.test_data
@@ -30,14 +44,15 @@
         ]]>
     </select>
 
-    <select id="findAll" resultType="mybatis1_template_testData">
+    <select id="findAll" resultMap="mybatis1_template_testData">
         <![CDATA[
         SELECT *
         FROM template.test_data
         ]]>
     </select>
 
-    <update id="updateToRowDeleteDateStr" parameterType="mybatis1_template_testData">
+    <update id="updateToRowDeleteDateStr"
+            parameterType="com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData">
         <![CDATA[
         UPDATE template.test_data
         SET row_delete_date_str = #{rowDeleteDateStr}

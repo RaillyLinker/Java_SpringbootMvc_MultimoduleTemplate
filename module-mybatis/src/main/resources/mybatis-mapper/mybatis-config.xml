@@ -3,17 +3,17 @@
 
 <configuration>
 
-    <settings>
-        <setting name="mapUnderscoreToCamelCase" value="true"/>
-    </settings>
+<!--    <settings>-->
+<!--        <setting name="mapUnderscoreToCamelCase" value="true"/>-->
+<!--    </settings>-->
 
-    <typeAliases>
-        <typeAlias alias="mybatis1_template_testData"
-                   type="com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData"/>
+<!--    <typeAliases>-->
+<!--        <typeAlias alias="mybatis1_template_testData"-->
+<!--                   type="com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData"/>-->
 
-        <typeAlias alias="mybatis2_template_testData"
-                   type="com.raillylinker.module_mybatis.mybatis_beans.mybatis2_sub.entities.Mybatis2_Template_TestData"/>
-    </typeAliases>
+<!--        <typeAlias alias="mybatis2_template_testData"-->
+<!--                   type="com.raillylinker.module_mybatis.mybatis_beans.mybatis2_sub.entities.Mybatis2_Template_TestData"/>-->
+<!--    </typeAliases>-->
 
     <typeHandlers>
     </typeHandlers>
