@@ -44,7 +44,10 @@ public interface Mybatis1_Template_TestData_Mapper {
                 uid = #{uid}
             """
     )
-    Optional<Mybatis1_Template_TestData> findByUid(@Param("uid") Long uid);
+    Optional<Mybatis1_Template_TestData> findByUidWithAnnotation(
+            @Param("uid")
+            Long uid
+    );
 
     @Delete("""
             DELETE 
@@ -54,13 +57,16 @@ public interface Mybatis1_Template_TestData_Mapper {
                 uid = #{uid}
             """
     )
-    int deleteUserById(@Param("uid") Long uid);
+    void deleteByUid(
+            @Param("uid")
+            Long uid
+    );
 
-    Optional<Mybatis1_Template_TestData> selectTestDataById(Long id);
+    Optional<Mybatis1_Template_TestData> findByUid(Long uid);
 
-    List<Mybatis1_Template_TestData> findAllTestData();
+    List<Mybatis1_Template_TestData> findAllWithoutLogicalDeleted();
 
-    List<Mybatis1_Template_TestData> findAllTestData2();
+    List<Mybatis1_Template_TestData> findAll();
 
-    int updateTestDateRowDeleteDateStr(Mybatis1_Template_TestData mybatis1TemplateTestData);
+    void updateToRowDeleteDateStr(Mybatis1_Template_TestData mybatis1TemplateTestData);
 }

@@ -23,4 +23,16 @@ public interface MyServiceTkSampleMybatisTestService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Boolean deleteLogically
     );
+
+
+    ////
+    // (DB Row 삭제 테스트)
+    void deleteRowSample(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Long index,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Boolean deleteLogically
+    );
 }

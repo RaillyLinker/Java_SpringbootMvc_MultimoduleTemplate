@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raillylinker.module_api_my_service_tk_sample.services.MyServiceTkSampleMybatisTestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -110,5 +112,46 @@ public class MyServiceTkSampleMybatisTestController {
             Boolean deleteLogically
     ) {
         service.deleteRowsSample(httpServletResponse, deleteLogically);
+    }
+
+
+    ////
+    @Operation(
+            summary = "DB Row 삭제 테스트",
+            description = "테스트 테이블의 Row 하나를 삭제합니다.\n\n"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "정상 동작"),
+            @ApiResponse(
+                    responseCode = "204",
+                    content = @Content(),
+                    description = "Response Body 가 없습니다.\n\n" +
+                            "Response Headers 를 확인하세요.",
+                    headers = @Header(
+                            name = "api-result-code",
+                            description = "(Response Code 반환 원인) - Required\n\n" +
+                                    "1 : index 에 해당하는 데이터가 데이터베이스에 존재하지 않습니다.\n\n",
+                            schema = @Schema(type = "string")
+                    )
+            )
+    })
+    @DeleteMapping(
+            path = "/row/{index}",
+            consumes = MediaType.ALL_VALUE,
+            produces = MediaType.ALL_VALUE
+    )
+    @ResponseBody
+    public void deleteRowSample(
+            @Parameter(hidden = true)
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Parameter(name = "index", description = "글 인덱스", example = "1") @PathVariable("index")
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Long index,
+            @Parameter(name = "deleteLogically", description = "논리적 삭제 여부", example = "true") @RequestParam("deleteLogically")
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            Boolean deleteLogically
+    ) {
+        service.deleteRowSample(httpServletResponse, index, deleteLogically);
     }
 }
