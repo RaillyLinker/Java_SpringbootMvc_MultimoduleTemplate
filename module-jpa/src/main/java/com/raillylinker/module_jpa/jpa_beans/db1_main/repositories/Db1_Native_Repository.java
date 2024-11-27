@@ -52,13 +52,13 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<@Valid @NotNull ForC7N5OutputVo> forC7N5(
+    List<@Valid @NotNull FindAllFromTemplateTestDataByNotDeletedWithRandomNumDistanceOutputVo> findAllFromTemplateTestDataByNotDeletedWithRandomNumDistance(
             @Param("num")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer num
     );
 
-    interface ForC7N5OutputVo {
+    interface FindAllFromTemplateTestDataByNotDeletedWithRandomNumDistanceOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -96,7 +96,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
-    ////
+    /// /
     @Query(
             nativeQuery = true,
             value = """
@@ -119,13 +119,13 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<@Valid @NotNull ForC7N6OutputVo> forC7N6(
+    List<@Valid @NotNull FindAllFromTemplateTestDataByNotDeletedWithRowCreateDateDistanceOutputVo> findAllFromTemplateTestDataByNotDeletedWithRowCreateDateDistance(
             @Param("date")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             LocalDateTime date
     );
 
-    interface ForC7N6OutputVo {
+    interface FindAllFromTemplateTestDataByNotDeletedWithRowCreateDateDistanceOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -163,7 +163,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
-    ////
+    /// /
     @Query(
             nativeQuery = true,
             value = """
@@ -194,7 +194,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Page<@Valid @NotNull ForC7N8OutputVo> forC7N8(
+    Page<@Valid @NotNull FindPageAllFromTemplateTestDataByNotDeletedWithRandomNumDistanceOutputVo> findPageAllFromTemplateTestDataByNotDeletedWithRandomNumDistance(
             @Param("num")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer num,
@@ -202,7 +202,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
             Pageable pageable
     );
 
-    interface ForC7N8OutputVo {
+    interface FindPageAllFromTemplateTestDataByNotDeletedWithRandomNumDistanceOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -240,7 +240,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
-    ////
+    /// /
     @Modifying
     @Query(
             nativeQuery = true, // Native Query 에서 Delete, Update 문은 이것을 붙여야함
@@ -254,7 +254,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
                     uid = :uid
                     """
     )
-    void forC7N10(
+    void updateToTemplateTestDataSetContentAndTestDateTimeByUid(
             @Param("uid")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long uid,
@@ -267,7 +267,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     );
 
 
-    ////
+    /// /
     @Query(
             nativeQuery = true,
             value = """
@@ -299,7 +299,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Page<@Valid @NotNull ForC7N11OutputVo> forC7N11(
+    Page<@Valid @NotNull FindPageAllFromTemplateTestDataBySearchKeywordOutputVo> findPageAllFromTemplateTestDataBySearchKeyword(
             @Param("searchKeyword")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String searchKeyword,
@@ -307,7 +307,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
             Pageable pageable
     );
 
-    interface ForC7N11OutputVo {
+    interface FindPageAllFromTemplateTestDataBySearchKeywordOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -340,7 +340,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
-    ////
+    /// /
     /*
         [중복 없는 페이징 구현 쿼리 설명]
         - 아래 방법은, 논리적 삭제를 사용하는 테이블에만 사용이 가능하며,
@@ -435,7 +435,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<@Valid @NotNull ForC7N14OutputVo> forC7N14(
+    List<@Valid @NotNull FindAllFromTemplateTestDataForNoDuplicatedPagingOutputVo> findAllFromTemplateTestDataForNoDuplicatedPaging(
             @Param("lastItemUid")
             @Nullable @org.jetbrains.annotations.Nullable
             Long lastItemUid,
@@ -444,7 +444,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
             Integer pageElementsCount
     );
 
-    interface ForC7N14OutputVo {
+    interface FindAllFromTemplateTestDataForNoDuplicatedPagingOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -482,7 +482,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
-    ////
+    /// /
     /*
         forC7N14 에 대해서 전체 카운팅 쿼리를 따로 만들어야 합니다.
         forC7N14 에서 From 문에서 사용하는 서브 쿼리를 제거하고,
@@ -503,28 +503,10 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    Long forC7N14I1();
+    Long countFromTemplateTestDataByNotDeleted();
 
 
-    ////
-    @Query(
-            nativeQuery = true,
-            value = """
-                    SELECT 
-                    COUNT(*) 
-                    FROM 
-                    template.test_data AS test_data 
-                    WHERE 
-                    test_data.row_delete_date_str = '/'
-                    """
-    )
-    @Valid
-    @NotNull
-    @org.jetbrains.annotations.NotNull
-    Long forC7N16();
-
-
-    ////
+    /// /
     @Query(
             nativeQuery = true,
             value = """
@@ -542,13 +524,13 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
                     test_data.uid = :testTableUid
                     """
     )
-    Optional<ForC7N17OutputVo> forC7N17(
+    Optional<FindFromTemplateTestDataByNotDeletedAndUidOutputVo> findFromTemplateTestDataByNotDeletedAndUid(
             @Param("testTableUid")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long testTableUid
     );
 
-    interface ForC7N17OutputVo {
+    interface FindFromTemplateTestDataByNotDeletedAndUidOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -581,7 +563,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
-    ////
+    /// /
     @Query(
             nativeQuery = true,
             value = """
@@ -606,9 +588,9 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<@Valid @NotNull ForC7N24Dot1OutputVo> forC7N24Dot1();
+    List<@Valid @NotNull FindAllFromTemplateFkTestManyToOneChildInnerJoinParentByNotDeletedOutputVo> findAllFromTemplateFkTestManyToOneChildInnerJoinParentByNotDeleted();
 
-    interface ForC7N24Dot1OutputVo {
+    interface FindAllFromTemplateFkTestManyToOneChildInnerJoinParentByNotDeletedOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -641,6 +623,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
+    /// /
     @Query(
             nativeQuery = true,
             value = """
@@ -676,13 +659,13 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    ForC7N25OutputVo forC7N25(
+    MultiCaseBooleanReturnTestOutputVo multiCaseBooleanReturnTest(
             @Param("inputVal")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Boolean inputVal
     );
 
-    interface ForC7N25OutputVo {
+    interface MultiCaseBooleanReturnTestOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -710,7 +693,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
-    ////
+    /// /
     @Query(
             nativeQuery = true,
             value = """
@@ -732,13 +715,13 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<ForC7N26OutputVo> forC7N26(
+    List<FindAllFromTemplateTestDataByContentOutputVo> findAllFromTemplateTestDataByContent(
             @Param("content")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String content
     );
 
-    interface ForC7N26OutputVo {
+    interface FindAllFromTemplateTestDataByContentOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -771,7 +754,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
-    ////
+    /// /
     /*
         [가장 최근의 자식 테이블만 Join 쿼리 설명]
         1. 가장 외곽의 From 부분은 부모 테이블을 이용하여 정상적으로 필터링을 하면 됩니다.
@@ -847,9 +830,9 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<@Valid @NotNull ForC7N27OutputVo> forC7N27();
+    List<@Valid @NotNull FindAllFromTemplateFkTestParentWithNearestChildOnlyOutputVo> findAllFromTemplateFkTestParentWithNearestChildOnly();
 
-    interface ForC7N27OutputVo {
+    interface FindAllFromTemplateFkTestParentWithNearestChildOnlyOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -918,7 +901,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<ForC9N5OutputVo> forC9N5(
+    List<FindAllFromTemplateTestMapInnerHaversineCoordDistanceAreaOutputVo> findAllFromTemplateTestMapInnerHaversineCoordDistanceArea(
             @Param("latitude")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Double latitude,
@@ -930,7 +913,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
             Double radiusKiloMeter
     );
 
-    interface ForC9N5OutputVo {
+    interface FindAllFromTemplateTestMapInnerHaversineCoordDistanceAreaOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull
@@ -953,7 +936,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     }
 
 
-    ////
+    /// /
     @Query(
             nativeQuery = true,
             value = """
@@ -984,7 +967,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
     @Valid
     @NotNull
     @org.jetbrains.annotations.NotNull
-    List<ForC9N6OutputVo> forC9N6(
+    List<FindAllFromTemplateTestMapInnerCoordSquareAreaOutputVo> findAllFromTemplateTestMapInnerCoordSquareArea(
             @Param("northLatitude")
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Double northLatitude,
@@ -999,7 +982,7 @@ public interface Db1_Native_Repository extends JpaRepository<Db1_Template_TestDa
             Double westLongitude
     );
 
-    interface ForC9N6OutputVo {
+    interface FindAllFromTemplateTestMapInnerCoordSquareAreaOutputVo {
         @Valid
         @NotNull
         @org.jetbrains.annotations.NotNull

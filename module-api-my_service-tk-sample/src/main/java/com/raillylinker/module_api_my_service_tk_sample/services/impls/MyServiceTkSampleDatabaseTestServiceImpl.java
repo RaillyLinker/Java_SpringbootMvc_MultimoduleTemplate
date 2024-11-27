@@ -239,10 +239,10 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer num
     ) {
-        List<Db1_Native_Repository.ForC7N5OutputVo> foundEntityList = db1NativeRepository.forC7N5(num);
+        List<Db1_Native_Repository.FindAllFromTemplateTestDataByNotDeletedWithRandomNumDistanceOutputVo> foundEntityList = db1NativeRepository.findAllFromTemplateTestDataByNotDeletedWithRandomNumDistance(num);
 
         List<MyServiceTkSampleDatabaseTestController.SelectRowsOrderByRandomNumSampleOutputVo.TestEntityVo> testEntityVoList = new ArrayList<>();
-        for (Db1_Native_Repository.ForC7N5OutputVo entity : foundEntityList) {
+        for (Db1_Native_Repository.FindAllFromTemplateTestDataByNotDeletedWithRandomNumDistanceOutputVo entity : foundEntityList) {
             testEntityVoList.add(new MyServiceTkSampleDatabaseTestController.SelectRowsOrderByRandomNumSampleOutputVo.TestEntityVo(
                     entity.getUid(),
                     entity.getContent(),
@@ -272,13 +272,13 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             String dateString
     ) {
-        List<Db1_Native_Repository.ForC7N6OutputVo> foundEntityList = db1NativeRepository.forC7N6(
+        List<Db1_Native_Repository.FindAllFromTemplateTestDataByNotDeletedWithRowCreateDateDistanceOutputVo> foundEntityList = db1NativeRepository.findAllFromTemplateTestDataByNotDeletedWithRowCreateDateDistance(
                 ZonedDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z"))
                         .toLocalDateTime()
         );
 
         List<MyServiceTkSampleDatabaseTestController.SelectRowsOrderByRowCreateDateSampleOutputVo.TestEntityVo> testEntityVoList = new ArrayList<>();
-        for (Db1_Native_Repository.ForC7N6OutputVo entity : foundEntityList) {
+        for (Db1_Native_Repository.FindAllFromTemplateTestDataByNotDeletedWithRowCreateDateDistanceOutputVo entity : foundEntityList) {
             testEntityVoList.add(new MyServiceTkSampleDatabaseTestController.SelectRowsOrderByRowCreateDateSampleOutputVo.TestEntityVo(
                     entity.getUid(),
                     entity.getContent(),
@@ -350,10 +350,10 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             Integer num
     ) {
         Pageable pageable = PageRequest.of(page - 1, pageElementsCount);
-        Page<Db1_Native_Repository.ForC7N8OutputVo> voList = db1NativeRepository.forC7N8(num, pageable);
+        Page<Db1_Native_Repository.FindPageAllFromTemplateTestDataByNotDeletedWithRandomNumDistanceOutputVo> voList = db1NativeRepository.findPageAllFromTemplateTestDataByNotDeletedWithRandomNumDistance(num, pageable);
 
         List<MyServiceTkSampleDatabaseTestController.SelectRowsNativeQueryPageSampleOutputVo.TestEntityVo> testEntityVoList = new ArrayList<>();
-        for (Db1_Native_Repository.ForC7N8OutputVo vo : voList) {
+        for (Db1_Native_Repository.FindPageAllFromTemplateTestDataByNotDeletedWithRandomNumDistanceOutputVo vo : voList) {
             testEntityVoList.add(new MyServiceTkSampleDatabaseTestController.SelectRowsNativeQueryPageSampleOutputVo.TestEntityVo(
                     vo.getUid(),
                     vo.getContent(),
@@ -433,7 +433,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
         Db1_Template_TestData testEntity = testEntityOpt.get();
 
-        db1NativeRepository.forC7N10(
+        db1NativeRepository.updateToTemplateTestDataSetContentAndTestDateTimeByUid(
                 testTableUid,
                 inputVo.content(),
                 ZonedDateTime.parse(inputVo.dateString(), DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")).toLocalDateTime()
@@ -458,10 +458,10 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             String searchKeyword
     ) {
         Pageable pageable = PageRequest.of(page - 1, pageElementsCount);
-        Page<Db1_Native_Repository.ForC7N11OutputVo> voList = db1NativeRepository.forC7N11(searchKeyword, pageable);
+        Page<Db1_Native_Repository.FindPageAllFromTemplateTestDataBySearchKeywordOutputVo> voList = db1NativeRepository.findPageAllFromTemplateTestDataBySearchKeyword(searchKeyword, pageable);
 
         List<MyServiceTkSampleDatabaseTestController.SelectRowWhereSearchingKeywordSampleOutputVo.TestEntityVo> testEntityVoList = new ArrayList<>();
-        for (Db1_Native_Repository.ForC7N11OutputVo vo : voList) {
+        for (Db1_Native_Repository.FindPageAllFromTemplateTestDataBySearchKeywordOutputVo vo : voList) {
             testEntityVoList.add(new MyServiceTkSampleDatabaseTestController.SelectRowWhereSearchingKeywordSampleOutputVo.TestEntityVo(
                     vo.getUid(),
                     vo.getContent(),
@@ -545,11 +545,11 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer pageElementsCount
     ) {
-        List<Db1_Native_Repository.ForC7N14OutputVo> voList = db1NativeRepository.forC7N14(lastItemUid, pageElementsCount);
-        Long count = db1NativeRepository.forC7N14I1();
+        List<Db1_Native_Repository.FindAllFromTemplateTestDataForNoDuplicatedPagingOutputVo> voList = db1NativeRepository.findAllFromTemplateTestDataForNoDuplicatedPaging(lastItemUid, pageElementsCount);
+        Long count = db1NativeRepository.countFromTemplateTestDataByNotDeleted();
 
         List<MyServiceTkSampleDatabaseTestController.SelectRowsNoDuplicatePagingSampleOutputVo.TestEntityVo> testEntityVoList = new ArrayList<>();
-        for (Db1_Native_Repository.ForC7N14OutputVo vo : voList) {
+        for (Db1_Native_Repository.FindAllFromTemplateTestDataForNoDuplicatedPagingOutputVo vo : voList) {
             testEntityVoList.add(new MyServiceTkSampleDatabaseTestController.SelectRowsNoDuplicatePagingSampleOutputVo.TestEntityVo(
                     vo.getUid(),
                     vo.getContent(),
@@ -591,7 +591,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
     ) {
-        Long count = db1NativeRepository.forC7N16();
+        Long count = db1NativeRepository.countFromTemplateTestDataByNotDeleted();
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
         return new MyServiceTkSampleDatabaseTestController.SelectRowsCountByNativeQuerySampleOutputVo(count);
@@ -608,7 +608,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Long testTableUid
     ) {
-        Optional<Db1_Native_Repository.ForC7N17OutputVo> entityOpt = db1NativeRepository.forC7N17(testTableUid);
+        Optional<Db1_Native_Repository.FindFromTemplateTestDataByNotDeletedAndUidOutputVo> entityOpt = db1NativeRepository.findFromTemplateTestDataByNotDeletedAndUid(testTableUid);
 
         if (entityOpt.isEmpty()) {
             httpServletResponse.setStatus(HttpStatus.OK.value());
@@ -616,7 +616,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             return null;
         }
 
-        Db1_Native_Repository.ForC7N17OutputVo entity = entityOpt.get();
+        Db1_Native_Repository.FindFromTemplateTestDataByNotDeletedAndUidOutputVo entity = entityOpt.get();
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
         return new MyServiceTkSampleDatabaseTestController.SelectRowByNativeQuerySampleOutputVo(
@@ -896,10 +896,10 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
     ) {
-        List<Db1_Native_Repository.ForC7N24Dot1OutputVo> resultEntityList = db1NativeRepository.forC7N24Dot1();
+        List<Db1_Native_Repository.FindAllFromTemplateFkTestManyToOneChildInnerJoinParentByNotDeletedOutputVo> resultEntityList = db1NativeRepository.findAllFromTemplateFkTestManyToOneChildInnerJoinParentByNotDeleted();
 
         List<MyServiceTkSampleDatabaseTestController.SelectFkTestTableRowsByNativeQuerySampleDot1OutputVo.ChildEntityVo> entityVoList = new ArrayList<>();
-        for (Db1_Native_Repository.ForC7N24Dot1OutputVo resultEntity : resultEntityList) {
+        for (Db1_Native_Repository.FindAllFromTemplateFkTestManyToOneChildInnerJoinParentByNotDeletedOutputVo resultEntity : resultEntityList) {
             entityVoList.add(new MyServiceTkSampleDatabaseTestController.SelectFkTestTableRowsByNativeQuerySampleDot1OutputVo.ChildEntityVo(
                     resultEntity.getChildUid(),
                     resultEntity.getChildName(),
@@ -936,7 +936,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             );
         }
 
-        var resultEntity = db1NativeRepository.forC7N25(inputVal);
+        var resultEntity = db1NativeRepository.multiCaseBooleanReturnTest(inputVal);
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
         return new MyServiceTkSampleDatabaseTestController.GetNativeQueryReturnValueTestOutputVo(
@@ -997,7 +997,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             );
         }
 
-        var nativeQueryResultEntityList = db1NativeRepository.forC7N26(searchKeyword);
+        var nativeQueryResultEntityList = db1NativeRepository.findAllFromTemplateTestDataByContent(searchKeyword);
         var nativeQueryResultList = new ArrayList<MyServiceTkSampleDatabaseTestController.SqlInjectionTestOutputVo.TestEntityVo>();
 
         for (var nativeQueryEntity : nativeQueryResultEntityList) {
@@ -1033,7 +1033,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             HttpServletResponse httpServletResponse
     ) {
-        var resultEntityList = db1NativeRepository.forC7N27();
+        var resultEntityList = db1NativeRepository.findAllFromTemplateFkTestParentWithNearestChildOnly();
 
         var entityVoList = new ArrayList<MyServiceTkSampleDatabaseTestController.SelectFkTableRowsWithLatestChildSampleOutputVo.ParentEntityVo>();
         for (var resultEntity : resultEntityList) {

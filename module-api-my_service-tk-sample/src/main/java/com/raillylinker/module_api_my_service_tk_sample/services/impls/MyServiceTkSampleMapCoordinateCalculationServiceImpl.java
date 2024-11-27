@@ -256,10 +256,10 @@ public class MyServiceTkSampleMapCoordinateCalculationServiceImpl implements MyS
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Double radiusKiloMeter
     ) {
-        List<Db1_Native_Repository.ForC9N5OutputVo> entityList = db1NativeRepository.forC9N5(anchorLatitude, anchorLongitude, radiusKiloMeter);
+        List<Db1_Native_Repository.FindAllFromTemplateTestMapInnerHaversineCoordDistanceAreaOutputVo> entityList = db1NativeRepository.findAllFromTemplateTestMapInnerHaversineCoordDistanceArea(anchorLatitude, anchorLongitude, radiusKiloMeter);
 
         List<MyServiceTkSampleMapCoordinateCalculationController.SelectCoordinateDataRowsInRadiusKiloMeterSampleOutputVo.CoordinateCalcResult> coordinateCalcResultList = new ArrayList<>();
-        for (Db1_Native_Repository.ForC9N5OutputVo entity : entityList) {
+        for (Db1_Native_Repository.FindAllFromTemplateTestMapInnerHaversineCoordDistanceAreaOutputVo entity : entityList) {
             coordinateCalcResultList.add(
                     new MyServiceTkSampleMapCoordinateCalculationController.SelectCoordinateDataRowsInRadiusKiloMeterSampleOutputVo.CoordinateCalcResult(
                             entity.getUid(),
@@ -292,10 +292,10 @@ public class MyServiceTkSampleMapCoordinateCalculationServiceImpl implements MyS
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Double westLongitude
     ) {
-        List<Db1_Native_Repository.ForC9N6OutputVo> entityList = db1NativeRepository.forC9N6(northLatitude, eastLongitude, southLatitude, westLongitude);
+        List<Db1_Native_Repository.FindAllFromTemplateTestMapInnerCoordSquareAreaOutputVo> entityList = db1NativeRepository.findAllFromTemplateTestMapInnerCoordSquareArea(northLatitude, eastLongitude, southLatitude, westLongitude);
 
         List<MyServiceTkSampleMapCoordinateCalculationController.SelectCoordinateDataRowsInCoordinateBoxSampleOutputVo.CoordinateCalcResult> coordinateCalcResultList = new ArrayList<>();
-        for (Db1_Native_Repository.ForC9N6OutputVo entity : entityList) {
+        for (Db1_Native_Repository.FindAllFromTemplateTestMapInnerCoordSquareAreaOutputVo entity : entityList) {
             coordinateCalcResultList.add(
                     new MyServiceTkSampleMapCoordinateCalculationController.SelectCoordinateDataRowsInCoordinateBoxSampleOutputVo.CoordinateCalcResult(
                             entity.getUid(),
