@@ -305,4 +305,87 @@ public class MyServiceTkSampleMybatisTestController {
         ) {
         }
     }
+
+
+    ////
+    @Operation(
+            summary = "DB 테이블의 row_create_date 컬럼 근사치 기준으로 정렬한 리스트 조회 API",
+            description = "테이블의 row 중 row_create_date 컬럼과 dateString 파라미터의 값의 근사치로 정렬한 리스트 반환\n\n"
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "정상 동작"
+                    )
+            }
+    )
+    @GetMapping(
+            path = "/rows/order-by-create-date-nearest",
+            consumes = MediaType.ALL_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    public SelectRowsOrderByRowCreateDateSampleOutputVo selectRowsOrderByRowCreateDateSample(
+            @Parameter(hidden = true)
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Parameter(
+                    name = "dateString",
+                    description = "원하는 날짜(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)",
+                    example = "2024_05_02_T_15_14_49_552_KST"
+            )
+            @RequestParam("dateString")
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            String dateString
+    ) {
+        return service.selectRowsOrderByRowCreateDateSample(httpServletResponse, dateString);
+    }
+
+    public record SelectRowsOrderByRowCreateDateSampleOutputVo(
+            @JsonProperty("testEntityVoList")
+            @Schema(description = "아이템 리스트", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            List<@Valid @NotNull TestEntityVo> testEntityVoList
+    ) {
+        public record TestEntityVo(
+                @JsonProperty("uid")
+                @Schema(description = "글 고유번호", requiredMode = Schema.RequiredMode.REQUIRED, example = "1234")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Long uid,
+
+                @JsonProperty("content")
+                @Schema(description = "글 본문", requiredMode = Schema.RequiredMode.REQUIRED, example = "테스트 텍스트입니다.")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String content,
+
+                @JsonProperty("randomNum")
+                @Schema(description = "자동 생성 숫자", requiredMode = Schema.RequiredMode.REQUIRED, example = "21345")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Integer randomNum,
+
+                @JsonProperty("testDatetime")
+                @Schema(description = "테스트용 일시 데이터(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String testDatetime,
+
+                @JsonProperty("createDate")
+                @Schema(description = "글 작성일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String createDate,
+
+                @JsonProperty("updateDate")
+                @Schema(description = "글 수정일(yyyy_MM_dd_'T'_HH_mm_ss_SSS_z)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024_05_02_T_15_14_49_552_KST")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                String updateDate,
+
+                @JsonProperty("timeDiffMicroSec")
+                @Schema(description = "기준과의 절대차이(마이크로 초)", requiredMode = Schema.RequiredMode.REQUIRED, example = "34")
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                Long timeDiffMicroSec
+        ) {
+        }
+    }
 }

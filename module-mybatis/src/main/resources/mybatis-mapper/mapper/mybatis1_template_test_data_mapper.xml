@@ -31,6 +31,19 @@
         <result column="distance" property="distance"/>
     </resultMap>
 
+    <resultMap
+            id="findAllOrderByNearestRowCreateDateResultVo"
+            type="com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.models.FindAllOrderByNearestRowCreateDateResultVo"
+    >
+        <id column="uid" property="uid"/>
+        <result column="row_create_date" property="rowCreateDate"/>
+        <result column="row_update_date" property="rowUpdateDate"/>
+        <result column="content" property="content"/>
+        <result column="random_num" property="randomNum"/>
+        <result column="test_datetime" property="testDatetime"/>
+        <result column="timeDiffMicroSec" property="timeDiffMicroSec"/>
+    </resultMap>
+
     <!-- 매퍼 함수 쿼리 추가 -->
     <select id="findByUid" parameterType="Long" resultMap="mybatis1_template_testData">
         <![CDATA[
@@ -73,18 +86,18 @@
         ]]>
     </update>
 
-    <select id="findAllOrderByNearestRandomNum" parameterType="Integer" resultMap="findAllOrderByNearestRandomNumResultVo">
+    <select id="findAllOrderByNearestRowCreateDate" parameterType="java.time.LocalDateTime" resultMap="findAllOrderByNearestRowCreateDateResultVo">
         <![CDATA[
         SELECT test_data.uid,
-               test_data.row_create_date,
-               test_data.row_update_date,
                test_data.content,
                test_data.random_num,
                test_data.test_datetime,
-               ABS(test_data.random_num - #{value}) AS distance
+               test_data.row_create_date,
+               test_data.row_update_date,
+               ABS(TIMESTAMPDIFF(MICROSECOND, test_data.row_create_date, #{value})) AS timeDiffMicroSec
         FROM template.test_data AS test_data
         WHERE test_data.row_delete_date_str = '/'
-        ORDER BY distance
+        ORDER BY timeDiffMicroSec
         ]]>
     </select>
 

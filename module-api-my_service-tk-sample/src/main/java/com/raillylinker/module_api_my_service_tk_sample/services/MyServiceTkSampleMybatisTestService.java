@@ -58,4 +58,16 @@ public interface MyServiceTkSampleMybatisTestService {
             @Valid @NotNull @org.jetbrains.annotations.NotNull
             Integer num
     );
+
+
+    ////
+    // (DB 테이블의 row_create_date 컬럼 근사치 기준으로 정렬한 리스트 조회 API)
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    MyServiceTkSampleMybatisTestController.SelectRowsOrderByRowCreateDateSampleOutputVo selectRowsOrderByRowCreateDateSample(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse,
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            String dateString
+    );
 }

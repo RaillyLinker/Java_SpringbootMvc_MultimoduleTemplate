@@ -2,8 +2,10 @@ package com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.mappers;
 
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData;
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.models.FindAllOrderByNearestRandomNumResultVo;
+import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.models.FindAllOrderByNearestRowCreateDateResultVo;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,4 +62,6 @@ public interface Mybatis1_Template_TestData_Mapper {
     void updateToRowDeleteDateStr(Mybatis1_Template_TestData mybatis1TemplateTestData);
 
     List<FindAllOrderByNearestRandomNumResultVo> findAllOrderByNearestRandomNum(int num);
+
+    List<FindAllOrderByNearestRowCreateDateResultVo> findAllOrderByNearestRowCreateDate(LocalDateTime date);
 }
