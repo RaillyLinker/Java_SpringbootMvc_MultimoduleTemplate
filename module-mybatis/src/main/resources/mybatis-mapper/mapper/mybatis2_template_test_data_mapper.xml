@@ -6,9 +6,11 @@
 <mapper namespace="com.raillylinker.module_mybatis.mybatis_beans.mybatis2_sub.mappers.Mybatis2_Template_TestData_Mapper">
 
     <select id="selectTestDataById" parameterType="Long" resultType="mybatis2_template_testData">
+        <![CDATA[
         SELECT *
         FROM template.test_data
         WHERE uid = #{value}
+        ]]>
     </select>
 
 </mapper>
