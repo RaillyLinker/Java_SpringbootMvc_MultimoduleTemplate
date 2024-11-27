@@ -18,6 +18,12 @@
         WHERE row_delete_date_str = '/'
     </select>
 
+    <select id="findAllLogicalDeleted" resultType="mybatis1_template_testData">
+        SELECT *
+        FROM template.test_data
+        WHERE row_delete_date_str != '/'
+    </select>
+
     <select id="findAll" resultType="mybatis1_template_testData">
         SELECT *
         FROM template.test_data

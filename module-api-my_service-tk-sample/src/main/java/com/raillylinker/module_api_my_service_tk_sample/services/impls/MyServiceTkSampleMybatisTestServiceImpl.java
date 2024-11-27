@@ -1,13 +1,16 @@
 package com.raillylinker.module_api_my_service_tk_sample.services.impls;
 
+import com.raillylinker.module_api_my_service_tk_sample.controllers.MyServiceTkSampleDatabaseTestController;
 import com.raillylinker.module_api_my_service_tk_sample.controllers.MyServiceTkSampleMybatisTestController;
 import com.raillylinker.module_api_my_service_tk_sample.services.MyServiceTkSampleMybatisTestService;
 import com.raillylinker.module_jpa.annotations.CustomTransactional;
 import com.raillylinker.module_jpa.configurations.jpa_configs.Db1MainConfig;
+import com.raillylinker.module_jpa.jpa_beans.db1_main.entities.Db1_Template_TestData;
 import com.raillylinker.module_mybatis.annotations.CustomMybatisTransactional;
 import com.raillylinker.module_mybatis.configurations.mybatis_configs.Mybatis1MainConfig;
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.entities.Mybatis1_Template_TestData;
 import com.raillylinker.module_mybatis.mybatis_beans.mybatis1_main.mappers.Mybatis1_Template_TestData_Mapper;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,5 +133,52 @@ public class MyServiceTkSampleMybatisTestServiceImpl implements MyServiceTkSampl
         }
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
+    }
+
+
+    /// /
+    @Override
+    @Nullable
+    @org.jetbrains.annotations.Nullable
+    public MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo selectRowsSample(
+            @Valid @NotNull @org.jetbrains.annotations.NotNull
+            HttpServletResponse httpServletResponse
+    ) {
+        List<Mybatis1_Template_TestData> resultEntityList = mybatis1TemplateTestDataMapper.findAllWithoutLogicalDeleted();
+        List<MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo.TestEntityVo> entityVoList = new ArrayList<>();
+        for (Mybatis1_Template_TestData resultEntity : resultEntityList) {
+            entityVoList.add(new MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo.TestEntityVo(
+                    resultEntity.uid,
+                    resultEntity.content,
+                    resultEntity.randomNum,
+                    resultEntity.testDatetime.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    resultEntity.rowCreateDate.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    resultEntity.rowUpdateDate.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    resultEntity.rowDeleteDateStr
+            ));
+        }
+
+        List<Mybatis1_Template_TestData> logicalDeleteEntityVoList = mybatis1TemplateTestDataMapper.findAllLogicalDeleted();
+        List<MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo.TestEntityVo> logicalDeleteVoList = new ArrayList<>();
+        for (Mybatis1_Template_TestData resultEntity : logicalDeleteEntityVoList) {
+            logicalDeleteVoList.add(new MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo.TestEntityVo(
+                    resultEntity.uid,
+                    resultEntity.content,
+                    resultEntity.randomNum,
+                    resultEntity.testDatetime.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    resultEntity.rowCreateDate.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    resultEntity.rowUpdateDate.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_'T'_HH_mm_ss_SSS_z")),
+                    resultEntity.rowDeleteDateStr
+            ));
+        }
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        return new MyServiceTkSampleMybatisTestController.SelectRowsSampleOutputVo(entityVoList, logicalDeleteVoList);
     }
 }

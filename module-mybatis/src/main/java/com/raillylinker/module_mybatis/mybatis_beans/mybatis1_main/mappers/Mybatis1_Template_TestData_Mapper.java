@@ -66,6 +66,8 @@ public interface Mybatis1_Template_TestData_Mapper {
 
     List<Mybatis1_Template_TestData> findAllWithoutLogicalDeleted();
 
+    List<Mybatis1_Template_TestData> findAllLogicalDeleted();
+
     List<Mybatis1_Template_TestData> findAll();
 
     void updateToRowDeleteDateStr(Mybatis1_Template_TestData mybatis1TemplateTestData);
