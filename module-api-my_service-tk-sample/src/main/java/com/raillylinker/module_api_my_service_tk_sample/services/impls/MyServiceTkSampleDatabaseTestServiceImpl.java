@@ -183,6 +183,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -230,6 +231,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -263,6 +265,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -299,6 +302,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -336,6 +340,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -444,6 +449,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -534,6 +540,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -569,6 +576,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -584,6 +592,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -599,6 +608,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -662,6 +672,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -844,6 +855,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -889,6 +901,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -919,6 +932,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -950,6 +964,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -1026,6 +1041,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -1064,6 +1080,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -1110,6 +1127,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -1158,6 +1176,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable

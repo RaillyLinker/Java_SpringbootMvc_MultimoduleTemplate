@@ -243,6 +243,7 @@ public class MyServiceTkSampleMapCoordinateCalculationServiceImpl implements MyS
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -277,6 +278,7 @@ public class MyServiceTkSampleMapCoordinateCalculationServiceImpl implements MyS
 
 
     ////
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable

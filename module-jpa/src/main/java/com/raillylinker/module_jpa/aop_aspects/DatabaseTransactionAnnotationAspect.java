@@ -71,9 +71,18 @@ public class DatabaseTransactionAnnotationAspect {
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
                 PlatformTransactionManager platformTransactionManager = (PlatformTransactionManager) applicationContext.getBean(transactionManagerBeanName);
 
+                // CustomTransactional 에서 읽기 전용 속성 확인
+                @Valid @NotNull
+                boolean readOnly = customTransactional.readOnly();
+
+                // readOnly 설정을 transactionDefinition 에 적용
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
+                defaultTransactionDefinition.setReadOnly(readOnly);
+
                 // transaction 시작 및 정보 저장
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
-                TransactionStatus transactionStatus = platformTransactionManager.getTransaction(new DefaultTransactionDefinition());
+                TransactionStatus transactionStatus = platformTransactionManager.getTransaction(defaultTransactionDefinition);
                 transactionManagerAndTransactionStatusList.add(Pair.of(platformTransactionManager, transactionStatus));
             }
 
