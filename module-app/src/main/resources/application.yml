@@ -44,6 +44,8 @@ spring:
         - jpa-local
         - common
         - common-local
+        - quartz
+        - quartz-local
         - mybatis
         - mybatis-local
       dev8080:
@@ -59,6 +61,8 @@ spring:
         - jpa-dev
         - common
         - common-dev
+        - quartz
+        - quartz-dev
         - mybatis
         - mybatis-dev
       prod80:
@@ -74,6 +78,8 @@ spring:
         - jpa-prod
         - common
         - common-prod
+        - quartz
+        - quartz-prod
         - mybatis
         - mybatis-prod
     default: local8080 # jar 실행시 프로필 설정이 없을 때 적용할 프로필

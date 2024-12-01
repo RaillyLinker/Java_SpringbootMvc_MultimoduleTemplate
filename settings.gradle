@@ -14,6 +14,7 @@ include 'module-common'
 include 'module-security'
 include 'module-batch'
 include 'module-mybatis'
+include 'module-quartz'
 
 include 'module-api-root'
 include 'module-api-my_service-sc'
