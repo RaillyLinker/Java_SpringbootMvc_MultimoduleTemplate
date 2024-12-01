@@ -44,8 +44,8 @@ public class MyServiceTkSampleMongoDbTestServiceImpl implements MyServiceTkSampl
 
     // ---------------------------------------------------------------------------------------------
     // <공개 메소드 공간>
-    @CustomMongoDbTransactional(transactionManagerBeanNameList = {Mdb1MainConfig.TRANSACTION_NAME})
     // ReplicaSet 환경이 아니면 에러가 납니다.
+    @CustomMongoDbTransactional(transactionManagerBeanNameList = {Mdb1MainConfig.TRANSACTION_NAME})
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -79,6 +79,8 @@ public class MyServiceTkSampleMongoDbTestServiceImpl implements MyServiceTkSampl
 
 
     ////
+    // ReplicaSet 환경이 아니면 에러가 납니다.
+    @CustomMongoDbTransactional(transactionManagerBeanNameList = {Mdb1MainConfig.TRANSACTION_NAME})
     @Override
     public void deleteAllDocumentTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -92,6 +94,8 @@ public class MyServiceTkSampleMongoDbTestServiceImpl implements MyServiceTkSampl
 
 
     ////
+    // ReplicaSet 환경이 아니면 에러가 납니다.
+    @CustomMongoDbTransactional(transactionManagerBeanNameList = {Mdb1MainConfig.TRANSACTION_NAME})
     @Override
     public void deleteDocumentTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull
@@ -115,6 +119,8 @@ public class MyServiceTkSampleMongoDbTestServiceImpl implements MyServiceTkSampl
 
 
     ////
+    // ReplicaSet 환경이 아니면 에러가 납니다.
+    @CustomMongoDbTransactional(transactionManagerBeanNameList = {Mdb1MainConfig.TRANSACTION_NAME}, readOnly = true)
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -148,8 +154,8 @@ public class MyServiceTkSampleMongoDbTestServiceImpl implements MyServiceTkSampl
 
 
     ////
-    @CustomMongoDbTransactional(transactionManagerBeanNameList = {Mdb1MainConfig.TRANSACTION_NAME})
     // ReplicaSet 환경이 아니면 에러가 납니다.
+    @CustomMongoDbTransactional(transactionManagerBeanNameList = {Mdb1MainConfig.TRANSACTION_NAME})
     @Override
     public void transactionRollbackTest(
             @Valid @NotNull @org.jetbrains.annotations.NotNull

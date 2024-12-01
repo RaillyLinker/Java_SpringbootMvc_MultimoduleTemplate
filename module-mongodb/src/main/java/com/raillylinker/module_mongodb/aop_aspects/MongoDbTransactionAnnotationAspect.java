@@ -59,8 +59,7 @@ public class MongoDbTransactionAnnotationAspect {
 
         // transactionManager and transactionStatus 리스트
         @Valid @NotNull @org.jetbrains.annotations.NotNull
-        List<@Valid @NotNull Pair<@Valid @NotNull PlatformTransactionManager, @Valid @NotNull TransactionStatus>> transactionManagerAndTransactionStatusList =
-                new ArrayList<>();
+        List<Pair<PlatformTransactionManager, TransactionStatus>> transactionManagerAndTransactionStatusList = new ArrayList<>();
 
         try {
             // annotation 에 설정된 transaction 순차 실행 및 저장
@@ -71,11 +70,20 @@ public class MongoDbTransactionAnnotationAspect {
             for (@Valid @NotNull @org.jetbrains.annotations.NotNull String transactionManagerBeanName : customTransactional.transactionManagerBeanNameList()) {
                 // annotation 에 저장된 transactionManager Bean 이름으로 Bean 객체 가져오기
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
-                MongoTransactionManager platformTransactionManager = (MongoTransactionManager) applicationContext.getBean(transactionManagerBeanName);
+                PlatformTransactionManager platformTransactionManager = (PlatformTransactionManager) applicationContext.getBean(transactionManagerBeanName);
+
+                // CustomTransactional 에서 읽기 전용 속성 확인
+                @Valid @NotNull
+                boolean readOnly = customTransactional.readOnly();
+
+                // readOnly 설정을 transactionDefinition 에 적용
+                @Valid @NotNull @org.jetbrains.annotations.NotNull
+                DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
+                defaultTransactionDefinition.setReadOnly(readOnly);
 
                 // transaction 시작 및 정보 저장
                 @Valid @NotNull @org.jetbrains.annotations.NotNull
-                TransactionStatus transactionStatus = platformTransactionManager.getTransaction(new DefaultTransactionDefinition());
+                TransactionStatus transactionStatus = platformTransactionManager.getTransaction(defaultTransactionDefinition);
                 transactionManagerAndTransactionStatusList.add(Pair.of(platformTransactionManager, transactionStatus));
             }
 
@@ -83,9 +91,8 @@ public class MongoDbTransactionAnnotationAspect {
             proceed = joinPoint.proceed();
 
             // annotation 에 설정된 transaction commit 역순 실행 및 저장
-            for (@Valid @NotNull @org.jetbrains.annotations.NotNull Integer transactionManagerIdx = transactionManagerAndTransactionStatusList.size() - 1; transactionManagerIdx >= 0; transactionManagerIdx--) {
-                @Valid @NotNull @org.jetbrains.annotations.NotNull
-                Pair<PlatformTransactionManager, TransactionStatus> transactionManager = transactionManagerAndTransactionStatusList.get(transactionManagerIdx);
+            for (int transactionManagerIdx = transactionManagerAndTransactionStatusList.size() - 1; transactionManagerIdx >= 0; transactionManagerIdx--) {
+                @Valid @NotNull @org.jetbrains.annotations.NotNull Pair<PlatformTransactionManager, TransactionStatus> transactionManager = transactionManagerAndTransactionStatusList.get(transactionManagerIdx);
                 transactionManager.getFirst().commit(transactionManager.getSecond());
             }
         } catch (@Valid @NotNull @org.jetbrains.annotations.NotNull Exception e) {

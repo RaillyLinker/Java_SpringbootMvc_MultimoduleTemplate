@@ -14,4 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CustomMongoDbTransactional {
     @Valid @NotNull @org.jetbrains.annotations.NotNull String[] transactionManagerBeanNameList();
+
+    @Valid @NotNull
+    boolean readOnly() default false;
 }
