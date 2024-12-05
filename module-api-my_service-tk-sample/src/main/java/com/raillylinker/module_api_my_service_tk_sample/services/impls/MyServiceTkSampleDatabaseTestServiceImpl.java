@@ -932,7 +932,7 @@ public class MyServiceTkSampleDatabaseTestServiceImpl implements MyServiceTkSamp
 
 
     ////
-    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME}, readOnly = true)
+    @CustomTransactional(transactionManagerBeanNameList = {Db1MainConfig.TRANSACTION_NAME})
     @Override
     @Nullable
     @org.jetbrains.annotations.Nullable
