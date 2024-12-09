@@ -3,10 +3,14 @@ package com.raillylinker.module_scheduler.configurations;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
+@EnableScheduling // 스케쥴러 사용 설정
+@EnableAsync // 스케쥴러의 Async 사용 설정
 @Configuration
 public class SchedulerConfig implements SchedulingConfigurer {
     @Override
